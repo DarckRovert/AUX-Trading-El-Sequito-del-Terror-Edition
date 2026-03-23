@@ -28,7 +28,9 @@ function aux.handle.LOAD2()
 	if aux.account_data and aux.account_data.sharing and not name then
 		aux.thread(aux.when, aux.later(5), function()
 			local shouldJoin = true
-			for i, channel in ipairs({GetChannelList()}) do
+			local list = {GetChannelList()}
+			for i = 1, getn(list) do
+				local channel = list[i]
 				if channel == "LFT" then
 					shouldJoin = false
 					break
@@ -159,7 +161,8 @@ end
 function weighted_median(list)
 	sort(list, function(a,b) return a.value < b.value end)
 	local weight = 0
-	for _, v in ipairs(list) do
+	for i = 1, getn(list) do
+		local v = list[i]
 		weight = weight + v.weight
 		if weight >= .5 then
 			return v.value
