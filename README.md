@@ -2,7 +2,7 @@
 
 ## Sistema Profesional de Trading y Monopolio
 
-**Versión:** 5.0 (Full Trading Suite)  
+**Versión:** 5.1.0 (Full Lua 5.0 Audit & Stable)  
 **Autor:** Elnazzareno (DarckRovert)  
 **Clan:** El Séquito del Terror 🔮  
 **Servidor:** Turtle WoW  

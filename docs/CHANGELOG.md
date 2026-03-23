@@ -3,6 +3,22 @@
 **Por Elnazzareno (DarckRovert)**  
 **El Séquito del Terror** 🔮
 
+## [5.1.0] - 2026-03-23
+
+### 🦾 Auditoría Completa Lua 5.0 (WoW 1.12)
+- **100% Compatibilidad Estricta**: Reemplazo total de `ipairs` por bucles manuales `for i=1, getn(t)` en todo el proyecto.
+- **Optimización de Métodos de String**: Sustitución de `string.gmatch` por `string.gfind` y uso extensivo de `string.find`/`string.sub` para compatibilidad máxima.
+- **Seguridad Aritmética**: Reemplazo del operador `%` por `math.mod` en toda la lógica de paginación y formateo.
+
+### 🔧 Infraestructura del Núcleo
+- **Core Proxy Fix (package.lua)**: Corrección del sistema de módulos para permitir lectura/escritura en el entorno `M`. Previene errores de exportación `nil` en módulos complejos.
+- **UX/UI Stability**: Corregido error crítico de "parent nil" en la pestaña de Oportunidades y Sniper.
+- **Internal Registry**: Deduplicación y limpieza de `localization.lua` para acceso ultra-rápido a traducciones.
+
+### 🎩 Mejoras en Trading
+- **Gestión de Memoria Mejorada**: Optimización de `accounting.lua` y `log.lua` para escaneos de miles de items.
+- **Validación de Datos**: Añadida protección contra datos corruptos en el historial de precios.
+
 ---
 
 ## [4.0.0] - 2026-01-17

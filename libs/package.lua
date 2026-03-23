@@ -14,6 +14,7 @@ local function create_module(name)
 		__newindex=function(_, k, v)
 			environment[k], exports[k] = v, v
 		end,
+		__index=environment,
 	})
 	environment._M = environment
 	environments[name] = environment

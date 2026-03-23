@@ -4,6 +4,7 @@
 ## Title: aux
 ## Notes: Auction House replacement
 ## SavedVariables: aux, AuxTradingMarketData, AuxTradingAccounting, AuxPriceHistory
+## Version: 5.1.0
 
 libs\package.lua
 libs\T.lua
@@ -54,6 +55,7 @@ tabs\bids\frame.lua
 
 core\crafting.lua
 
+tabs\trading\localization.lua
 tabs\trading\core.lua
 tabs\trading\strategies.lua
 tabs\trading\groups.lua

@@ -3,7 +3,8 @@ module 'aux'
 local gui = require 'aux.gui'
 
 function handle.LOAD()
-	for _, v in ipairs(tab_info) do
+	for i = 1, getn(tab_info) do
+		local v = tab_info[i]
 		tabs:create_tab(v.name)
 	end
 end
