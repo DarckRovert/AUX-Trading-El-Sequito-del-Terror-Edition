@@ -3,7 +3,7 @@ module 'aux.tabs.trading'
 local aux = require 'aux'
 local M = getfenv()
 
-aux.print('[AUCTIONING_UI] Módulo de UI de subastas cargado')
+aux.print(L["[AUCTIONING_UI] Módulo de UI de subastas cargado"])
 
 -- ============================================================================
 -- Auctioning UI - Interfaz de Posteo Automático
@@ -45,29 +45,29 @@ end
 
 function M.crear_auctioning_ui(parent)
     if not parent then 
-        aux.print('[AUCTIONING_UI] ERROR: parent es nil')
+        aux.print(L["[AUCTIONING_UI] ERROR: parent es nil"])
         return nil 
     end
     
-    aux.print('[AUCTIONING_UI] Creando panel...')
+    aux.print(L["[AUCTIONING_UI] Creando panel..."])
     
     local f = CreateFrame('Frame', nil, parent)
     f:SetAllPoints()
     f:Hide()
     
-    aux.print('[AUCTIONING_UI] Frame creado')
+    aux.print(L["[AUCTIONING_UI] Frame creado"])
     
     -- Titulo
     local title = f:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     title:SetPoint('TOP', 0, -20)
-    title:SetText('AUCTIONING - Posteo Automatico')
+    title:SetText(L["AUCTIONING - Posteo Automatico"])
     
-    aux.print('[AUCTIONING_UI] Titulo creado')
+    aux.print(L["[AUCTIONING_UI] Titulo creado"])
     
     -- Descripcion
     local desc = f:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     desc:SetPoint('TOP', title, 'BOTTOM', 0, -5)
-    desc:SetText('Postea items automaticamente con precios optimos')
+    desc:SetText(L["Postea items automaticamente con precios optimos"])
     
     -- ========================================================================
     -- Panel de Grupos (Izquierda)
@@ -87,14 +87,14 @@ function M.crear_auctioning_ui(parent)
     -- Titulo de grupos
     local grupos_title = grupos_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     grupos_title:SetPoint('TOP', 0, -15)
-    grupos_title:SetText('Grupos')
+    grupos_title:SetText(L["Grupos"])
     
     -- Boton crear grupo
     local btn_crear_grupo = CreateFrame('Button', nil, grupos_panel, 'UIPanelButtonTemplate')
     btn_crear_grupo:SetWidth(180)
     btn_crear_grupo:SetHeight(25)
     btn_crear_grupo:SetPoint('TOP', grupos_title, 'BOTTOM', 0, -10)
-    btn_crear_grupo:SetText('Crear Grupo')
+    btn_crear_grupo:SetText(L["Crear Grupo"])
     btn_crear_grupo:SetScript('OnClick', function()
         M.mostrar_dialogo_crear_grupo()
     end)
@@ -153,7 +153,7 @@ function M.crear_auctioning_ui(parent)
     -- Titulo
     local detalles_title = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     detalles_title:SetPoint('TOP', 0, -15)
-    detalles_title:SetText('Configuracion')
+    detalles_title:SetText(L["Configuracion"])
     detalles_panel.title = detalles_title
     
     -- Configuracion
@@ -162,7 +162,7 @@ function M.crear_auctioning_ui(parent)
     -- Undercut
     local undercut_label = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     undercut_label:SetPoint('TOPLEFT', 20, y_offset)
-    undercut_label:SetText('Undercut:')
+    undercut_label:SetText(L["Undercut:"])
     
     local undercut_input = CreateFrame('EditBox', nil, detalles_panel, 'InputBoxTemplate')
     undercut_input:SetWidth(80)
@@ -177,7 +177,7 @@ function M.crear_auctioning_ui(parent)
     -- Min Price %
     local min_price_label = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     min_price_label:SetPoint('TOPLEFT', 20, y_offset)
-    min_price_label:SetText('Min Price %:')
+    min_price_label:SetText(L["Min Price %:"])
     
     local min_price_input = CreateFrame('EditBox', nil, detalles_panel, 'InputBoxTemplate')
     min_price_input:SetWidth(80)
@@ -192,7 +192,7 @@ function M.crear_auctioning_ui(parent)
     -- Max Price %
     local max_price_label = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     max_price_label:SetPoint('TOPLEFT', 20, y_offset)
-    max_price_label:SetText('Max Price %:')
+    max_price_label:SetText(L["Max Price %:"])
     
     local max_price_input = CreateFrame('EditBox', nil, detalles_panel, 'InputBoxTemplate')
     max_price_input:SetWidth(80)
@@ -207,7 +207,7 @@ function M.crear_auctioning_ui(parent)
     -- Stack Size
     local stack_label = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stack_label:SetPoint('TOPLEFT', 20, y_offset)
-    stack_label:SetText('Stack Size:')
+    stack_label:SetText(L["Stack Size:"])
     
     local stack_input = CreateFrame('EditBox', nil, detalles_panel, 'InputBoxTemplate')
     stack_input:SetWidth(80)
@@ -222,7 +222,7 @@ function M.crear_auctioning_ui(parent)
     -- Duration
     local duration_label = detalles_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     duration_label:SetPoint('TOPLEFT', 20, y_offset)
-    duration_label:SetText('Duracion:')
+    duration_label:SetText(L["Duracion:"])
     
     local duration_dropdown = CreateFrame('Frame', nil, detalles_panel)
     duration_dropdown:SetWidth(120)
@@ -238,12 +238,12 @@ function M.crear_auctioning_ui(parent)
     btn_postear:SetWidth(150)
     btn_postear:SetHeight(30)
     btn_postear:SetPoint('TOPLEFT', 20, y_offset)
-    btn_postear:SetText('Postear Grupo')
+    btn_postear:SetText(L["Postear Grupo"])
     btn_postear:SetScript('OnClick', function()
         if selected_group then
             M.postear_grupo_seleccionado()
         else
-            aux.print('|cFFFF0000Selecciona un grupo primero|r')
+            aux.print(L["|cFFFF0000Selecciona un grupo primero|r"])
         end
     end)
     
@@ -251,7 +251,7 @@ function M.crear_auctioning_ui(parent)
     btn_cancel_repost:SetWidth(150)
     btn_cancel_repost:SetHeight(30)
     btn_cancel_repost:SetPoint('LEFT', btn_postear, 'RIGHT', 10, 0)
-    btn_cancel_repost:SetText('Cancel/Repost')
+    btn_cancel_repost:SetText(L["Cancel/Repost"])
     btn_cancel_repost:SetScript('OnClick', function()
         M.ejecutar_cancel_repost()
     end)
@@ -276,13 +276,13 @@ function M.crear_auctioning_ui(parent)
     -- Titulo
     local stats_title = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     stats_title:SetPoint('TOP', 0, -15)
-    stats_title:SetText('Estadisticas')
+    stats_title:SetText(L["Estadisticas"])
     
     -- Stats
     local stats_text = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_text:SetPoint('TOPLEFT', 15, -50)
     stats_text:SetJustifyH('LEFT')
-    stats_text:SetText('Cargando...')
+    stats_text:SetText(L["Cargando..."])
     stats_panel.stats_text = stats_text
     
     f.stats_panel = stats_panel
@@ -295,14 +295,14 @@ function M.crear_auctioning_ui(parent)
     btn_postear_todos:SetWidth(200)
     btn_postear_todos:SetHeight(35)
     btn_postear_todos:SetPoint('BOTTOM', 0, 20)
-    btn_postear_todos:SetText('POSTEAR TODOS LOS GRUPOS')
+    btn_postear_todos:SetText(L["POSTEAR TODOS LOS GRUPOS"])
     btn_postear_todos:SetScript('OnClick', function()
         M.postear_todos_los_grupos()
     end)
     
     auctioning_panel = f
     
-    aux.print('[AUCTIONING_UI] Panel completado y retornando')
+    aux.print(L["[AUCTIONING_UI] Panel completado y retornando"])
     
     return f
 end
@@ -312,14 +312,14 @@ end
 -- ============================================================================
 
 function M.actualizar_auctioning_ui()
-    aux.print('[AUCTIONING_UI] actualizar_auctioning_ui llamado')
+    aux.print(L["[AUCTIONING_UI] actualizar_auctioning_ui llamado"])
     
     if not auctioning_panel then 
-        aux.print('[AUCTIONING_UI] ERROR: auctioning_panel es nil')
+        aux.print(L["[AUCTIONING_UI] ERROR: auctioning_panel es nil"])
         return 
     end
     
-    aux.print('[AUCTIONING_UI] Actualizando UI...')
+    aux.print(L["[AUCTIONING_UI] Actualizando UI..."])
     
     -- Actualizar lista de grupos
     M.actualizar_lista_grupos()
@@ -374,7 +374,7 @@ end
 
 function M.seleccionar_grupo(grupo_nombre)
     selected_group = grupo_nombre
-    aux.print(string.format('|cFF00FF00Grupo seleccionado: %s|r', grupo_nombre))
+    aux.print(string.format(L["|cFF00FF00Grupo seleccionado: %s|r"], grupo_nombre))
     
     -- Actualizar UI con configuración del grupo
     -- TODO: Cargar configuración del grupo
@@ -383,7 +383,7 @@ end
 function M.postear_grupo_seleccionado()
     if not selected_group then return end
     
-    aux.print('|cFF00FF00[Auctioning]|r Posteando grupo: ' .. selected_group)
+    aux.print(L["|cFF00FF00[Auctioning]|r Posteando grupo: "] .. selected_group)
     
     -- Usar integración UI para postear
     if M.toggle_auto_post_for_ui then
@@ -395,7 +395,7 @@ function M.postear_grupo_seleccionado()
 end
 
 function M.postear_todos_los_grupos()
-    aux.print('|cFF00FF00[Auctioning]|r Posteando todos los grupos...')
+    aux.print(L["|cFF00FF00[Auctioning]|r Posteando todos los grupos..."])
     
     -- Habilitar auto-posting
     if M.toggle_auto_post_for_ui then
@@ -406,13 +406,13 @@ function M.postear_todos_los_grupos()
 end
 
 function M.ejecutar_cancel_repost()
-    aux.print('|cFF00FF00[Auctioning]|r Ejecutando cancel/repost...')
+    aux.print(L["|cFF00FF00[Auctioning]|r Ejecutando cancel/repost..."])
     
     -- Verificar undercuts usando integración UI
     if M.check_undercuts_for_ui then
         M.check_undercuts_for_ui()
     else
-        aux.print('|cFFFF4444[Auctioning]|r Función de undercut no disponible')
+        aux.print(L["|cFFFF4444[Auctioning]|r Función de undercut no disponible"])
     end
     
     M.actualizar_auctioning_ui()
@@ -421,9 +421,9 @@ end
 function M.mostrar_dialogo_crear_grupo()
     -- Use StaticPopup for group name input
     StaticPopupDialogs["AUX_CREATE_GROUP"] = {
-        text = "Nombre del nuevo grupo:",
-        button1 = "Crear",
-        button2 = "Cancelar",
+        text = L["Nombre del nuevo grupo:"],
+        button1 = L["Crear"],
+        button2 = L["Cancelar"],
         hasEditBox = true,
         OnAccept = function()
             local nombre = getglobal(this:GetParent():GetName().."EditBox"):GetText()
@@ -431,11 +431,11 @@ function M.mostrar_dialogo_crear_grupo()
                 -- Use groups module to create
                 if M.modules.groups and M.modules.groups.crear_grupo then
                     M.modules.groups.crear_grupo(nombre)
-                    aux.print(string.format('|cFF00FF00Grupo creado: %s|r', nombre))
+                    aux.print(string.format(L["|cFF00FF00Grupo creado: %s|r"], nombre))
                     M.actualizar_auctioning_ui()
                 else
                     -- Fallback: Create locally
-                    aux.print(string.format('|cFF00FF00Grupo "%s" creado|r', nombre))
+                    aux.print(string.format(L["|cFF00FF00Grupo \"%s\" creado|r"], nombre))
                 end
             end
         end,
@@ -453,4 +453,4 @@ M.modules.auctioning_ui = {
     actualizar_auctioning_ui = M.actualizar_auctioning_ui,
 }
 
-aux.print('[AUCTIONING_UI] Módulo registrado correctamente')
+aux.print(L["[AUCTIONING_UI] Módulo registrado correctamente"])

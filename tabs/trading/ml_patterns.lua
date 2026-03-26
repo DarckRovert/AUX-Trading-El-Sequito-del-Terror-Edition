@@ -7,7 +7,7 @@ local history = require 'aux.core.history'
 -- Machine Learning Patterns - Aprendizaje de Patrones de Mercado
 -- ============================================================================
 
-aux.print('[ML_PATTERNS] Módulo de machine learning cargado')
+aux.print(L['[ML_PATTERNS] Módulo de machine learning cargado'])
 
 -- ============================================================================
 -- Time-based Pattern Analysis
@@ -142,7 +142,7 @@ function get_best_time_to_buy(item_key)
     if not time_patterns[item_key] then
         return {
             available = false,
-            reason = 'no_data',
+            reason = L['no_data'],
         }
     end
     
@@ -177,14 +177,14 @@ function get_best_time_to_buy(item_key)
     end
     
     -- Nombres de días
-    local day_names = {'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'}
+    local day_names = {L['Domingo'], L['Lunes'], L['Martes'], L['Miércoles'], L['Jueves'], L['Viernes'], L['Sábado']}
     
     return {
         available = true,
         best_hour = best_hour,
         best_hour_avg_price = lowest_avg,
         best_day = best_day,
-        best_day_name = best_day and day_names[best_day] or 'Unknown',
+        best_day_name = best_day and day_names[best_day] or L['Unknown'],
         best_day_avg_price = lowest_day_avg,
         confidence = calculate_pattern_confidence(pattern),
     }
@@ -195,7 +195,7 @@ function get_best_time_to_sell(item_key)
     if not time_patterns[item_key] then
         return {
             available = false,
-            reason = 'no_data',
+            reason = L['no_data'],
         }
     end
     
@@ -229,14 +229,14 @@ function get_best_time_to_sell(item_key)
         end
     end
     
-    local day_names = {'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'}
+    local day_names = {L['Domingo'], L['Lunes'], L['Martes'], L['Miércoles'], L['Jueves'], L['Viernes'], L['Sábado']}
     
     return {
         available = true,
         best_hour = best_hour,
         best_hour_avg_price = highest_avg,
         best_day = best_day,
-        best_day_name = best_day and day_names[best_day] or 'Unknown',
+        best_day_name = best_day and day_names[best_day] or L['Unknown'],
         best_day_avg_price = highest_day_avg,
         confidence = calculate_pattern_confidence(pattern),
     }
@@ -289,7 +289,7 @@ function classify_item(item_key)
         return {
             classification = 'unknown',
             confidence = 0,
-            reason = 'insufficient_data',
+            reason = L['insufficient_data'],
         }
     end
     
@@ -496,7 +496,7 @@ function detect_price_patterns(item_key, days)
         tinsert(patterns, {
             type = 'weekly_cycle',
             confidence = weekly_cycle.confidence,
-            description = 'Precio sigue un ciclo semanal',
+            description = L['Precio sigue un ciclo semanal'],
             data = weekly_cycle,
         })
     end
@@ -507,7 +507,7 @@ function detect_price_patterns(item_key, days)
         tinsert(patterns, {
             type = 'seasonal',
             confidence = seasonal.confidence,
-            description = 'Precio tiene variación estacional',
+            description = L['Precio tiene variación estacional'],
             data = seasonal,
         })
     end
@@ -518,7 +518,7 @@ function detect_price_patterns(item_key, days)
         tinsert(patterns, {
             type = 'price_spikes',
             confidence = spikes.confidence,
-            description = 'Precio tiene picos regulares',
+            description = L['Precio tiene picos regulares'],
             data = spikes,
         })
     end
@@ -529,7 +529,7 @@ function detect_price_patterns(item_key, days)
         tinsert(patterns, {
             type = 'stable',
             confidence = stability.confidence,
-            description = 'Precio es estable',
+            description = L['Precio es estable'],
             data = stability,
         })
     end
@@ -743,7 +743,7 @@ end
 aux.event_listener('LOAD2', function()
     init_time_patterns()
     init_item_classifications()
-    aux.print('[ML_PATTERNS] Sistema de machine learning inicializado')
+    aux.print(L['[ML_PATTERNS] Sistema de machine learning inicializado'])
 end)
 
 function update_ml_patterns_ui(ml_frame)
@@ -762,34 +762,34 @@ function create_ml_patterns_ui(ml_frame)
     -- Título
     local title = ml_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     title:SetPoint('TOPLEFT', 20, -20)
-    title:SetText('|cFFFFD700Machine Learning Patterns|r')
+    title:SetText(L['|cFFFFD700Machine Learning Patterns|r'])
     
     -- Descripción
     local desc = ml_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     desc:SetPoint('TOPLEFT', 20, -50)
     desc:SetPoint('TOPRIGHT', -20, -50)
     desc:SetJustifyH('LEFT')
-    desc:SetText('|cFF888888Análisis de patrones temporales y predicción de precios usando machine learning.|r')
+    desc:SetText(L['|cFF888888Análisis de patrones temporales y predicción de precios usando machine learning.|r'])
     
     -- Información de estado
     local status = ml_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     status:SetPoint('TOPLEFT', 20, -100)
-    status:SetText('|cFFFFFF00Estado: |cFF00FF00Módulo cargado correctamente|r')
+    status:SetText(L['|cFFFFFF00Estado: |cFF00FF00Módulo cargado correctamente|r'])
     
     -- Botón de entrenamiento
     local train_button = CreateFrame('Button', nil, ml_frame, 'UIPanelButtonTemplate')
     train_button:SetPoint('TOPRIGHT', -20, -20)
     train_button:SetWidth(120)
     train_button:SetHeight(25)
-    train_button:SetText('Entrenar Modelo')
+    train_button:SetText(L['Entrenar Modelo'])
     train_button:SetScript('OnClick', function()
         train_model()
     end)
 end
 
 function train_model()
-    aux.print('|cFFFFD700Entrenando modelo de ML...|r')
-    aux.print('|cFF00FF00Modelo entrenado exitosamente|r')
+    aux.print(L['|cFFFFD700Entrenando modelo de ML...|r'])
+    aux.print(L['|cFF00FF00Modelo entrenado exitosamente|r'])
 end
 
 local M = getfenv()
@@ -829,7 +829,7 @@ M.get_max_values_for_item = get_max_values_for_item
 function M.mark_item_as_popular(item_key)
     if item_key then
         popular_items[item_key] = true
-        aux.print('|cFFFFD700[ML]|r Item marcado como popular: ' .. item_key)
+        aux.print(L['|cFFFFD700[ML]|r Item marcado como popular: '] .. item_key)
         return true
     end
     return false
@@ -868,5 +868,5 @@ function M.get_ml_history_stats()
     return stats
 end
 
-aux.print('[ML_PATTERNS] Funciones exportadas al módulo')
-aux.print('[ML_PATTERNS] Historial ML: ' .. ML_HISTORY_CONFIG.default_max_values .. ' valores (normal), ' .. ML_HISTORY_CONFIG.popular_item_max_values .. ' valores (popular)')
+aux.print(L['[ML_PATTERNS] Funciones exportadas al módulo'])
+aux.print(L['[ML_PATTERNS] Historial ML: '] .. ML_HISTORY_CONFIG.default_max_values .. L[' valores (normal), '] .. ML_HISTORY_CONFIG.popular_item_max_values .. L[' valores (popular)'])

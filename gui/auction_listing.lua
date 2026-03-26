@@ -635,9 +635,11 @@ local methods = {
     end,
 
     UpdateRowInfo = function(self)
-	    for _, v in ipairs(self.rowInfo) do
+	    for i = 1, getn(self.rowInfo) do
+            local v = self.rowInfo[i]
 		    if type(v) == 'table' then
-			    for _, child in v.children do
+			    for j = 1, getn(v.children) do
+                    local child = v.children[j]
 				    T.release(child)
 			    end
 			    T.release(v.children)
@@ -674,9 +676,11 @@ local methods = {
             end
         end
 
-	    for _, v in ipairs(self.rowInfo) do
+	    for i = 1, getn(self.rowInfo) do
+            local v = self.rowInfo[i]
             local totalAuctions, totalPlayerAuctions = 0, 0
-            for _, childInfo in v.children do
+            for j = 1, getn(v.children) do
+                local childInfo = v.children[j]
                 totalAuctions = totalAuctions + childInfo.count
                 if info.is_player(childInfo.record.owner) then
                     totalPlayerAuctions = totalPlayerAuctions + childInfo.count
@@ -745,7 +749,8 @@ local methods = {
                     record_b = b.record
                 end
 
-                for _, sort in self.sorts do
+                for i = 1, getn(self.sorts) do
+                    local sort = self.sorts[i]
                     local ordering = self.columns[sort.index].cmp and self.columns[sort.index].cmp(record_a, record_b, sort.descending) or sort_util.EQ
 
                     if ordering == sort_util.LT then
@@ -758,7 +763,8 @@ local methods = {
                 return tostring(a) < tostring(b)
             end
 
-            for _, v in ipairs(self.rowInfo) do
+            for i = 1, getn(self.rowInfo) do
+                local v = self.rowInfo[i]
                 sort(v.children, sort_helper)
             end
             sort(self.rowInfo, sort_helper)
@@ -769,9 +775,11 @@ local methods = {
 		    row:Hide()
 	    end
         local rowIndex = 1 - FauxScrollFrame_GetOffset(self.scrollFrame)
-        for _, v in ipairs(self.rowInfo) do
+        for i = 1, getn(self.rowInfo) do
+            local v = self.rowInfo[i]
             if self.expanded[v.expandKey] then
-                for j, childInfo in ipairs(v.children) do
+                for j = 1, getn(v.children) do
+                    local childInfo = v.children[j]
                     self:SetRowInfo(rowIndex, childInfo.record, childInfo.count, 0, j > 1, false, v.expandKey)
                     rowIndex = rowIndex + 1
                 end
@@ -876,10 +884,12 @@ local methods = {
 
     SetSort = T.vararg-function(arg)
 	    local self = tremove(arg, 1)
-        for _, v in ipairs(arg) do
-            for i, sort in self.sorts do
+        for i = 1, getn(arg) do
+            local v = arg[i]
+            for j = 1, getn(self.sorts) do
+                local sort = self.sorts[j]
                 if sort.index == abs(v) then
-                    tremove(self.sorts, i)
+                    tremove(self.sorts, j)
                     break
                 end
             end
@@ -897,8 +907,10 @@ local methods = {
     GetSelection = function(self)
         if not self.selected then return end
         local selectedData
-        for _, v in ipairs(self.rowInfo) do
-            for _, childInfo in v.children do
+        for i = 1, getn(self.rowInfo) do
+            local v = self.rowInfo[i]
+            for j = 1, getn(v.children) do
+                local childInfo = v.children[j]
                 if childInfo.record.search_signature == self.selected.search_signature then
                     selectedData = childInfo
                     break
@@ -951,7 +963,8 @@ function M.new(parent, rows, columns)
     })
 
     rt.headCells = {}
-    for i, column in ipairs(rt.columns) do
+    for i = 1, getn(rt.columns) do
+        local column = rt.columns[i]
         local cell = CreateFrame('Button', nil, rt.contentFrame)
         cell:SetHeight(HEAD_HEIGHT)
         if i == 1 then
@@ -1027,7 +1040,8 @@ function M.new(parent, rows, columns)
         row.highlight = highlight
 
         row.cells = {}
-        for j, column in ipairs(rt.columns) do
+        for j = 1, getn(rt.columns) do
+            local column = rt.columns[j]
             local cell = CreateFrame('Frame', nil, row)
             local text = cell:CreateFontString()
             cell.text = text

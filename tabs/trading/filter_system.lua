@@ -41,7 +41,8 @@ local function aplicar_filtros(oportunidades)
     
     local resultados = {}
     
-    for _, opp in ipairs(oportunidades) do
+    for j = 1, getn(oportunidades) do
+        local opp = oportunidades[j]
         local cumple = true
         
         -- Filtro de profit
@@ -82,7 +83,8 @@ local function aplicar_filtros(oportunidades)
         if next(filtros_activos.estrategias) then
             local tiene_estrategia = false
             if opp.estrategias then
-                for _, estrategia in ipairs(opp.estrategias) do
+                for j = 1, getn(opp.estrategias) do
+                    local estrategia = opp.estrategias[j]
                     if filtros_activos.estrategias[estrategia] then
                         tiene_estrategia = true
                         break
@@ -116,7 +118,7 @@ local function aplicar_filtros(oportunidades)
         end
         
         if cumple then
-            table.insert(resultados, opp)
+            tinsert(resultados, opp)
         end
     end
     
@@ -253,7 +255,7 @@ end
 local function obtener_filtros_guardados()
     local lista = {}
     for nombre, _ in pairs(filtros_guardados) do
-        table.insert(lista, nombre)
+        tinsert(lista, nombre)
     end
     return lista
 end
@@ -407,7 +409,8 @@ local function crear_filter_ui(parent)
         {id = "inversion_grande", label = "Inversión Grande (>10g)"}
     }
     
-    for i, pred in ipairs(predefinidos) do
+    for i = 1, getn(predefinidos) do
+        local pred = predefinidos[i]
         local btn = CreateFrame("Button", nil, content, "UIPanelButtonTemplate")
         btn:SetSize(260, 25)
         if math.mod(i, 2) == 1 then
@@ -426,7 +429,7 @@ local function crear_filter_ui(parent)
         end
     end
     
-    if math.mod(table.getn(predefinidos), 2) == 1 then
+    if math.mod(getn(predefinidos), 2) == 1 then
         y_offset = y_offset - 30
     end
     
@@ -492,7 +495,8 @@ local function crear_filter_ui(parent)
     y_offset = y_offset - 25
     
     local categorias = {"Armas", "Armadura", "Consumibles", "Materiales", "Recetas", "Otro"}
-    for i, cat in ipairs(categorias) do
+    for i = 1, getn(categorias) do
+        local cat = categorias[i]
         local cb = crear_checkbox(content, cat, 10 + math.mod(i-1, 3) * 180, y_offset - math.floor((i-1) / 3) * 30, function(checked)
             filtros_activos.categorias[cat] = checked or nil
         end)
@@ -510,7 +514,8 @@ local function crear_filter_ui(parent)
     y_offset = y_offset - 25
     
     local rarezas = {"Común", "Poco común", "Raro", "Épico", "Legendario"}
-    for i, rar in ipairs(rarezas) do
+    for i = 1, getn(rarezas) do
+        local rar = rarezas[i]
         local cb = crear_checkbox(content, rar, 10 + math.mod(i-1, 3) * 180, y_offset - math.floor((i-1) / 3) * 30, function(checked)
             filtros_activos.rarezas[rar] = checked or nil
         end)
@@ -528,7 +533,8 @@ local function crear_filter_ui(parent)
     y_offset = y_offset - 25
     
     local estrategias = {"Flipping", "Sniping", "Market Reset", "Arbitraje"}
-    for i, est in ipairs(estrategias) do
+    for i = 1, getn(estrategias) do
+        local est = estrategias[i]
         local cb = crear_checkbox(content, est, 10 + math.mod(i-1, 2) * 270, y_offset - math.floor((i-1) / 2) * 30, function(checked)
             filtros_activos.estrategias[est] = checked or nil
         end)
@@ -571,7 +577,7 @@ local function crear_filter_ui(parent)
     apply_btn:SetScript("OnClick", function()
         if aux.trading and aux.trading.oportunidades then
             local filtradas = aplicar_filtros(aux.trading.oportunidades)
-            print(string.format("Filtros aplicados: %d oportunidades encontradas", table.getn(filtradas)))
+            print(string.format("Filtros aplicados: %d oportunidades encontradas", getn(filtradas)))
             -- Actualizar lista de oportunidades
             if aux.trading.actualizar_lista_oportunidades then
                 aux.trading.actualizar_lista_oportunidades(filtradas)
@@ -604,11 +610,12 @@ local function crear_filter_ui(parent)
     load_btn:SetScript("OnClick", function()
         -- Mostrar lista de filtros guardados
         local filtros = obtener_filtros_guardados()
-        if table.getn(filtros) == 0 then
+        if getn(filtros) == 0 then
             print("No hay filtros guardados")
         else
             print("Filtros guardados:")
-            for i, nombre in ipairs(filtros) do
+            for i = 1, getn(filtros) do
+                local nombre = filtros[i]
                 print(string.format("%d. %s", i, nombre))
             end
         end

@@ -435,7 +435,7 @@ function M.scan_for_opportunities(config, on_progress, on_complete)
         end,
         function(all_results)
             -- Ordenar oportunidades por score
-            table.sort(opportunities, function(a, b)
+            sort(opportunities, function(a, b)
                 return (a.score or 0) > (b.score or 0)
             end)
             

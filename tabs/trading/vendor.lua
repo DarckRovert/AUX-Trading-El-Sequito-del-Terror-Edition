@@ -58,11 +58,12 @@ function M.start_vendor_search()
     vendor_state.scanning = true
     M.clear_vendor_data()
     
-    aux.print('Iniciando búsqueda de Vendor Shuffle...')
+    aux.print(L['Starting Vendor Shuffle search...'])
     
     -- Construir queries para el scanner de AUX
     local queries = {}
-    for _, q in ipairs(SCAN_QUERIES) do
+    for i = 1, getn(SCAN_QUERIES) do
+        local q = SCAN_QUERIES[i]
         tinsert(queries, {
             blizzard_query = {
                 name = "", -- Buscar todo
@@ -106,12 +107,12 @@ function M.start_vendor_search()
         end,
         on_complete = function()
             vendor_state.scanning = false
-            aux.print('Búsqueda vendor finalizada. Encontrados: ' .. getn(vendor_state.found_items))
+            aux.print(L['Vendor search finished. Found: '] .. getn(vendor_state.found_items))
             if M.refresh_vendor_ui then M.refresh_vendor_ui() end
         end,
         on_abort = function()
             vendor_state.scanning = false
-            aux.print('Búsqueda vendor cancelada.')
+            aux.print(L['Vendor search canceled.'])
         end
     }
 end
@@ -120,7 +121,7 @@ end
 function M.buy_candidate(entry)
     if not entry or not entry.auction_record then return end
     
-    aux.print("Intentando comprar: " .. entry.name)
+    aux.print(L["Attempting to buy: "] .. entry.name)
     
     -- Create dummy status_bar for scan_util.find (it requires update_status and set_text methods)
     local dummy_status_bar = {
@@ -131,10 +132,11 @@ function M.buy_candidate(entry)
     scan_util.find(
         entry.auction_record,
         dummy_status_bar,
-        function() aux.print("Compra cancelada.") end,
+        function() aux.print(L["Purchase canceled."]) end,
         function() 
-            aux.print("Item perdido: " .. entry.name) 
-             for i, v in ipairs(vendor_state.found_items) do
+            aux.print(L["Item lost: "] .. entry.name) 
+             for i = 1, getn(vendor_state.found_items) do
+                local v = vendor_state.found_items[i]
                 if v == entry then tremove(vendor_state.found_items, i) break end
             end
             if M.refresh_vendor_ui then M.refresh_vendor_ui() end
@@ -143,12 +145,13 @@ function M.buy_candidate(entry)
             -- Use buyout_price from auction_record (not unit price)
             local bid_amount = entry.auction_record.buyout_price
             if not bid_amount or bid_amount == 0 then
-                aux.print("|cFFFF0000Error: No hay precio de buyout|r")
+                aux.print(L["Error: No buyout price"])
                 return
             end
             aux.place_bid('list', index, bid_amount, function()
-                aux.print("|cFF00FF00Comprado:|r " .. entry.name)
-                 for i, v in ipairs(vendor_state.found_items) do
+                aux.print(L["Purchased: "] .. entry.name)
+                  for i = 1, getn(vendor_state.found_items) do
+                    local v = vendor_state.found_items[i]
                     if v == entry then tremove(vendor_state.found_items, i) break end
                 end
                 if M.refresh_vendor_ui then M.refresh_vendor_ui() end
@@ -164,12 +167,12 @@ end
 function M.buy_all_candidates()
     if vendor_state.buying then return end
     if getn(vendor_state.found_items) == 0 then
-        aux.print("No hay items para comprar.")
+        aux.print(L["No items to buy."])
         return
     end
 
     vendor_state.buying = true
-    aux.print("Iniciando Compra Automatica...")
+    aux.print(L["Starting Auto-Buy..."])
     
     local function process_next()
         if not vendor_state.buying then return end
@@ -178,13 +181,13 @@ function M.buy_all_candidates()
         
         if not entry then
             vendor_state.buying = false
-            aux.print("Compra automatica finalizada.")
+            aux.print(L["Auto-buy finished."])
             return
         end
         
         -- Validate auction_record before proceeding
         if not entry.auction_record then
-            aux.print("Item sin auction_record, saltando: " .. (entry.name or "Unknown"))
+            aux.print(L["Item without auction_record, skipping: "] .. (entry.name or L["Unknown"]))
             tremove(vendor_state.found_items, 1)
             if M.refresh_vendor_ui then M.refresh_vendor_ui() end
             return process_next()
@@ -192,7 +195,7 @@ function M.buy_all_candidates()
         
         -- Check if scan_util is available
         if not scan_util or not scan_util.find then
-            aux.print("|cFFFF0000Error: scan_util no disponible|r")
+            aux.print(L["Error: scan_util not available"])
             vendor_state.buying = false
             return
         end
@@ -207,10 +210,10 @@ function M.buy_all_candidates()
             dummy_status_bar,
             function() 
                 vendor_state.buying = false
-                aux.print("Compra detenida.")
+                aux.print(L["Purchase stopped."])
             end,
             function() 
-                aux.print("Saltando item perdido...")
+                aux.print(L["Skipping lost item..."])
                 tremove(vendor_state.found_items, 1)
                 if M.refresh_vendor_ui then M.refresh_vendor_ui() end
                 process_next()
@@ -219,12 +222,12 @@ function M.buy_all_candidates()
                 -- Use buyout_price from auction_record (not unit price)
                 local bid_amount = entry.auction_record.buyout_price
                 if not bid_amount or bid_amount == 0 then
-                    aux.print("|cFFFF0000Error: No hay precio de buyout|r")
+                    aux.print(L["Error: No buyout price"])
                     tremove(vendor_state.found_items, 1)
                     return process_next()
                 end
                 aux.place_bid('list', index, bid_amount, function()
-                    aux.print("|cFF00FF00Comprado:|r " .. entry.name)
+                    aux.print(L["Purchased: "] .. entry.name)
                     tremove(vendor_state.found_items, 1)
                     if M.refresh_vendor_ui then M.refresh_vendor_ui() end
                     process_next()

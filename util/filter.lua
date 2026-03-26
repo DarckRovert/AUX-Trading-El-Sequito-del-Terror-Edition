@@ -273,7 +273,9 @@ do
 			local number = tonumber(aux.select(3, strfind(str, '^(%d+)$')))
 			if number then
 				if number >= 1 and number <= 60 then
-					for _, key in ipairs(T.temp-T.list('min_level', 'max_level')) do
+					local list = T.temp-T.list('min_level', 'max_level')
+					for i = 1, getn(list) do
+						local key = list[i]
 						if not self[key] then
 							self[key] = T.list(str, number)
 							return T.list('blizzard', key, str, number)
@@ -380,7 +382,8 @@ function M.query(filter_string)
     end
 
     local polish_notation_counter = 0
-    for _, component in ipairs(filter.post) do
+    for i = 1, getn(filter.post) do
+        local component = filter.post[i]
         if component[1] == 'operator' then
             polish_notation_counter = max(polish_notation_counter, 1)
             polish_notation_counter = polish_notation_counter + (tonumber(component[2]) or 1) - 1
@@ -410,7 +413,8 @@ end
 function M.queries(filter_string)
     local parts = aux.split(filter_string, ';')
     local queries = T.acquire()
-    for _, str in ipairs(parts) do
+    for i = 1, getn(parts) do
+        local str = parts[i]
         local query, _, error = query(str)
         if not query then
 	        return nil, error
@@ -432,19 +436,27 @@ function suggestions(filter)
 
     -- classes
     if not filter.blizzard.class then
-        for _, class in ipairs(T.temp-T.list(GetAuctionItemClasses())) do tinsert(suggestions, class) end
+        local list = T.temp-T.list(GetAuctionItemClasses())
+        for i = 1, getn(list) do
+            local class = list[i]
+            tinsert(suggestions, class) 
+        end
     end
 
     -- subclasses
     if not filter.blizzard.subclass then
-        for _, subclass in ipairs(T.temp-T.list(GetAuctionItemSubClasses(aux.index(filter.blizzard.class, 2) or 0))) do
+        local list = T.temp-T.list(GetAuctionItemSubClasses(aux.index(filter.blizzard.class, 2) or 0))
+        for i = 1, getn(list) do
+            local subclass = list[i]
             tinsert(suggestions, subclass)
         end
     end
 
     -- slots
     if not filter.blizzard.slot then
-        for _, invtype in ipairs(T.temp-T.list(GetAuctionInvTypes(aux.index(filter.blizzard.class, 2) == 2 and 2 or 0, aux.index(filter.blizzard.subclass, 2) or 0))) do
+        local list = T.temp-T.list(GetAuctionInvTypes(aux.index(filter.blizzard.class, 2) == 2 and 2 or 0, aux.index(filter.blizzard.subclass, 2) or 0))
+        for i = 1, getn(list) do
+            local invtype = list[i]
             tinsert(suggestions, _G[invtype])
         end
     end
@@ -459,7 +471,8 @@ function suggestions(filter)
 
     -- item names
     if getn(filter.components) == 0 then
-	    for _, name in ipairs(aux.account_data.auctionable_items) do
+        for i = 1, getn(aux.account_data.auctionable_items) do
+            local name = aux.account_data.auctionable_items[i]
             tinsert(suggestions, name .. '/exact')
         end
     end
@@ -469,7 +482,8 @@ end
 
 function M.filter_string(components)
     local query_builder = query_builder()
-    for _, component in ipairs(components) do
+    for i = 1, getn(components) do
+        local component = components[i]
 	    if component[1] == 'blizzard' then
 		    query_builder.append(component[4] or component[3])
         elseif component[1] == 'operator' then
@@ -490,7 +504,8 @@ end
 
 function prettified_filter_string(filter)
     local prettified = query_builder()
-    for i, component in ipairs(filter.components) do
+    for i = 1, getn(filter.components) do
+        local component = filter.components[i]
 	    if component[1] == 'blizzard' then
 		    if component[2] == 'name' then
 			    if filter.blizzard.exact then

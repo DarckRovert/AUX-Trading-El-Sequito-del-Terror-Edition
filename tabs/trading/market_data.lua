@@ -44,11 +44,12 @@ end
 
 -- Calcular promedio de una lista
 function M.calcular_promedio(datos)
-    if not datos or table.getn(datos) == 0 then return 0 end
+    if not datos or getn(datos) == 0 then return 0 end
     
     local total = 0
     local num = 0
-    for _, valor in ipairs(datos) do
+    for i = 1, getn(datos) do
+        local valor = datos[i]
         if valor and valor > 0 then
             total = total + valor
             num = num + 1
@@ -61,12 +62,13 @@ end
 
 -- Calcular desviación estándar
 function M.calcular_desviacion(datos, media)
-    if not datos or table.getn(datos) < 2 then return 0 end
+    if not datos or getn(datos) < 2 then return 0 end
     
     local suma_cuadrados = 0
     local num = 0
     
-    for _, valor in ipairs(datos) do
+    for i = 1, getn(datos) do
+        local valor = datos[i]
         if valor and valor > 0 then
             suma_cuadrados = suma_cuadrados + (valor - media) * (valor - media)
             num = num + 1
@@ -112,10 +114,10 @@ end
 
 -- Calcular precio de mercado inteligente (con estadísticas como TSM)
 function M.calcular_precio_inteligente(records, cantidad_total)
-    if not records or table.getn(records) == 0 then return 0 end
+    if not records or getn(records) == 0 then return 0 end
     
     -- Ordenar por precio (menor a mayor)
-    table.sort(records, function(a, b)
+    sort(records, function(a, b)
         return (a.buyout or 0) < (b.buyout or 0)
     end)
     
@@ -124,7 +126,7 @@ function M.calcular_precio_inteligente(records, cantidad_total)
     local total_buyout = 0
     local precios_filtrados = {}
     
-    for i = 1, table.getn(records) do
+    for i = 1, getn(records) do
         local record = records[i]
         local count = record.count or 1
         
@@ -140,7 +142,7 @@ function M.calcular_precio_inteligente(records, cantidad_total)
             
             total_buyout = total_buyout + record.buyout
             total_num = total_num + 1
-            table.insert(precios_filtrados, record.buyout)
+            tinsert(precios_filtrados, record.buyout)
         end
     end
     
@@ -156,7 +158,8 @@ function M.calcular_precio_inteligente(records, cantidad_total)
     local total_corregido = media_sin_corregir  -- Empezar con la media
     local num_corregido = 1
     
-    for _, precio in ipairs(precios_filtrados) do
+    for i = 1, getn(precios_filtrados) do
+        local precio = precios_filtrados[i]
         if math.abs(media_sin_corregir - precio) < 1.5 * desviacion then
             total_corregido = total_corregido + precio
             num_corregido = num_corregido + 1
@@ -184,7 +187,7 @@ function M.procesar_scan(scan_data)
             item_data.scans[dia] = {item_data.scans[dia]}
         end
         item_data.scans[dia] = item_data.scans[dia] or {}
-        table.insert(item_data.scans[dia], market_value)
+        tinsert(item_data.scans[dia], market_value)
         
         -- Actualizar estadísticas
         item_data.seen = (item_data.seen or 0) + (data.cantidad or 1)
@@ -290,4 +293,4 @@ end
 M.modules = M.modules or {}
 M.modules.market_data = M
 
-aux.print('|cFFFFD700[Trading]|r Sistema de datos de mercado cargado')
+aux.print(L['[Trading]|r Sistema de datos de mercado cargado'])

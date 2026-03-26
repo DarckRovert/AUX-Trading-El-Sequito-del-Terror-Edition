@@ -13,6 +13,9 @@
 
  **AUX Trading System** ha sido reescrito y optimizado para ser la herramienta definitiva de economía en Turtle WoW. No solo permite escanear subastas, sino que incluye algoritmos avanzados para detectar **Monopolios** y realizar **Sniping** de alta velocidad sin afectar el rendimiento del juego.
 
+### 🌐 Séquito Ecosystem Compatible (Market Intelligence)
+Este addon es ahora la **Inteligencia de Mercado** de la Hermandad. Comparte datos de precios y oportunidades de trading con la red Séquito, permitiendo que el clan domine la economía de Turtle WoW.
+
 ### ✨ Nuevas Características (v4.1)
 
 - **🎩 Módulo de Monopolio 2.0**:

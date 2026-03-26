@@ -126,16 +126,16 @@ function M.process_vendor_scan_result(auction_info)
     
     local opportunity = M.evaluate_vendor_opportunity(auction_info)
     if opportunity then
-        table.insert(vendor_opportunities, opportunity)
+        tinsert(vendor_opportunities, opportunity)
         
         -- Ordenar por ganancia (mayor primero)
-        table.sort(vendor_opportunities, function(a, b)
+        sort(vendor_opportunities, function(a, b)
             return (a.profit or 0) > (b.profit or 0)
         end)
         
         -- Limitar a 100 mejores oportunidades
-        while table.getn(vendor_opportunities) > 100 do
-            table.remove(vendor_opportunities)
+        while getn(vendor_opportunities) > 100 do
+            tremove(vendor_opportunities)
         end
     end
 end
@@ -181,14 +181,14 @@ function M.vendor_scan_auctions()
             
             local opp = M.evaluate_vendor_opportunity(auction_info)
             if opp then
-                table.insert(vendor_opportunities, opp)
+                tinsert(vendor_opportunities, opp)
                 found = found + 1
             end
         end
     end
     
     -- Ordenar por ganancia
-    table.sort(vendor_opportunities, function(a, b)
+    sort(vendor_opportunities, function(a, b)
         return (a.profit or 0) > (b.profit or 0)
     end)
     

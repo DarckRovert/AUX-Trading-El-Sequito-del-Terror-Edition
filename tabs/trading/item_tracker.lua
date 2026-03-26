@@ -10,7 +10,7 @@ local M = getfenv()
     Rastrea inventario de todos los alts y facilita envío de items por correo.
 ]]
 
-aux.print('[ITEM_TRACKER] Módulo de tracking y correo cargado')
+aux.print(L['[ITEM_TRACKER] Módulo de tracking y correo cargado'])
 
 -- ============================================================================
 -- Variables Globales
@@ -102,7 +102,7 @@ function M.escanear_inventario()
     -- Guardar en SavedVariables
     M.guardar_character_data()
     
-    aux.print(string.format('|cFF00FF00Inventario escaneado: %d items únicos|r', M.contar_items_unicos(char)))
+    aux.print(string.format(L['Inventory scanned: %d unique items'], M.contar_items_unicos(char)))
     
     return char
 end
@@ -121,7 +121,7 @@ function M.agregar_item_a_inventario(char, item_id, item_name, count, bag, slot)
     
     char.items[item_key].total_count = char.items[item_key].total_count + count
     
-    table.insert(char.items[item_key].locations, {
+    tinsert(char.items[item_key].locations, {
         bag = bag,
         slot = slot,
         count = count,
@@ -136,7 +136,7 @@ end
 
 function M.is_bank_open()
     -- Verificar si el banco está abierto
-    return false  -- TODO: Implementar detección
+    return BankFrame and BankFrame:IsVisible()
 end
 
 function M.contar_items_unicos(char)
@@ -161,7 +161,7 @@ function M.buscar_item_en_alts(item_id)
     for char_key, char in pairs(character_data) do
         local item_key = tostring(item_id)
         if char.items[item_key] then
-            table.insert(resultados, {
+            tinsert(resultados, {
                 character = char.name,
                 realm = char.realm,
                 count = char.items[item_key].total_count,
@@ -197,7 +197,7 @@ function M.obtener_inventario_completo()
             
             inventario[item_key].total_count = inventario[item_key].total_count + item_data.total_count
             
-            table.insert(inventario[item_key].characters, {
+            tinsert(inventario[item_key].characters, {
                 name = char.name,
                 count = item_data.total_count,
             })
@@ -213,14 +213,14 @@ end
 
 function M.enviar_item(recipient, bag, slot, count)
     if not recipient or recipient == "" then
-        aux.print('|cFFFF0000Destinatario inválido|r')
+        aux.print(L['Invalid recipient'])
         return false
     end
     
     -- Verificar que el item existe
     local itemLink = GetContainerItemLink(bag, slot)
     if not itemLink then
-        aux.print('|cFFFF0000Item no encontrado|r')
+        aux.print(L['Item not found'])
         return false
     end
     
@@ -238,37 +238,37 @@ function M.enviar_item(recipient, bag, slot, count)
     -- Send
     SendMail(recipient, "Items", "")
     
-    aux.print(string.format('|cFF00FF00Enviando %s a %s|r', itemName, recipient))
+    aux.print(string.format(L['Sending %s to %s'], itemName, recipient))
     
     return true
 end
 
 function M.agregar_a_queue_mailing(recipient, item_id, count)
-    table.insert(mailing_queue, {
+    tinsert(mailing_queue, {
         recipient = recipient,
         item_id = item_id,
         count = count,
         sent = 0,
     })
     
-    aux.print(string.format('|cFF00FF00%dx item agregado a queue de correo|r', count))
+    aux.print(string.format(L['%dx item added to mail queue'], count))
 end
 
 function M.procesar_queue_mailing()
-    if table.getn(mailing_queue) == 0 then
-        aux.print('|cFFFFAA00Queue de correo vacía|r')
+    if getn(mailing_queue) == 0 then
+        aux.print(L['Mail queue empty'])
         return
     end
     
-    aux.print(string.format('|cFF00FF00Procesando %d items en queue...|r', table.getn(mailing_queue)))
+    aux.print(string.format(L['Processing %d items in queue...'], getn(mailing_queue)))
     
-    for i = 1, table.getn(mailing_queue) do
+    for i = 1, getn(mailing_queue) do
         local mail_item = mailing_queue[i]
         M.enviar_items_por_id(mail_item.recipient, mail_item.item_id, mail_item.count)
     end
     
     mailing_queue = {}
-    aux.print('|cFF00FF00Envío completado|r')
+    aux.print(L['Sent completed'])
 end
 
 function M.enviar_items_por_id(recipient, item_id, count)
@@ -277,7 +277,7 @@ function M.enviar_items_por_id(recipient, item_id, count)
     local char = character_data[char_key]
     
     if not char then
-        aux.print('|cFFFF0000Datos de personaje no encontrados|r')
+        aux.print(L['Character data not found'])
         return false
     end
     
@@ -285,13 +285,13 @@ function M.enviar_items_por_id(recipient, item_id, count)
     local item_data = char.items[item_key]
     
     if not item_data then
-        aux.print('|cFFFF0000Item no encontrado en inventario|r')
+        aux.print(L['Item not found in inventory'])
         return false
     end
     
     local sent = 0
     
-    for i = 1, table.getn(item_data.locations) do
+    for i = 1, getn(item_data.locations) do
         local location = item_data.locations[i]
         local to_send = math.min(location.count, count - sent)
         
@@ -305,7 +305,7 @@ function M.enviar_items_por_id(recipient, item_id, count)
         end
     end
     
-    aux.print(string.format('|cFF00FF00%d items enviados|r', sent))
+    aux.print(string.format(L['%d items sent'], sent))
     return true
 end
 
@@ -317,9 +317,9 @@ function M.toggle_auto_loot()
     auto_loot_enabled = not auto_loot_enabled
     
     if auto_loot_enabled then
-        aux.print('|cFF00FF00Auto-loot de correo activado|r')
+        aux.print(L['Mail auto-loot enabled'])
     else
-        aux.print('|cFFFFAA00Auto-loot de correo desactivado|r')
+        aux.print(L['Mail auto-loot disabled'])
     end
     
     return auto_loot_enabled
@@ -331,11 +331,11 @@ function M.auto_loot_mail()
     local numItems, totalItems = GetInboxNumItems()
     
     if numItems == 0 then
-        aux.print('|cFFFFFFFFNo hay correo|r')
+        aux.print(L['No mail'])
         return
     end
     
-    aux.print(string.format('|cFF00FF00Recogiendo %d correos...|r', numItems))
+    aux.print(string.format(L['Collecting %d mails...'], numItems))
     
     for i = 1, numItems do
         -- Get mail info
@@ -357,7 +357,7 @@ function M.auto_loot_mail()
         DeleteInboxItem(i)
     end
     
-    aux.print('|cFF00FF00Correo recogido|r')
+    aux.print(L['Mail collected'])
 end
 
 -- ============================================================================
@@ -380,7 +380,7 @@ function M.enviar_todo(recipient)
     if count > 0 then
         M.procesar_queue_mailing()
     else
-        aux.print("No tienes items para enviar.")
+        aux.print(L["You have no items to send."])
     end
 end
 
@@ -419,19 +419,19 @@ function M.crear_grupo_mailing(nombre, recipient, items)
         items = items or {},
     }
     
-    aux.print(string.format('|cFF00FF00Grupo de correo creado: %s|r', nombre))
+    aux.print(string.format(L['Mail group created: %s'], nombre))
 end
 
 function M.enviar_grupo(nombre)
     local grupo = mailing_groups[nombre]
     if not grupo then
-        aux.print('|cFFFF0000Grupo no encontrado|r')
+        aux.print(L['Group not found'])
         return false
     end
     
-    aux.print(string.format('|cFF00FF00Enviando grupo: %s a %s|r', nombre, grupo.recipient))
+    aux.print(string.format(L['Sending group: %s to %s'], nombre, grupo.recipient))
     
-    for i = 1, table.getn(grupo.items) do
+    for i = 1, getn(grupo.items) do
         local item = grupo.items[i]
         M.agregar_a_queue_mailing(grupo.recipient, item.item_id, item.count)
     end
@@ -460,7 +460,7 @@ end
 function M.cargar_character_data()
     if aux.faction_data and aux.faction_data.item_tracker then
         character_data = aux.faction_data.item_tracker
-        aux.print(string.format('|cFF00FF00Datos de %d personajes cargados|r', M.contar_personajes()))
+        aux.print(string.format(L['Data of %d characters loaded'], M.contar_personajes()))
     end
 end
 
@@ -505,7 +505,7 @@ function M.inicializar_item_tracker()
     -- Escanear inventario actual
     M.escanear_inventario()
     
-    aux.print('|cFF00FF00Item Tracker + Mailing inicializado|r')
+    aux.print(L['Item Tracker + Mailing initialized'])
 end
 
 -- Registrar módulo
@@ -529,4 +529,4 @@ M.modules.item_tracker = {
     enviar_equipamiento = M.enviar_equipamiento,
 }
 
-aux.print('[ITEM_TRACKER] Módulo registrado correctamente')
+aux.print(L['[ITEM_TRACKER] Module registered successfully'])

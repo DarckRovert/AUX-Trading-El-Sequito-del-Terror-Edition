@@ -164,7 +164,8 @@ function M.set_scrollbar_style(scrollFrame, points)
     local scrollBar = _G[scrollFrame:GetName() .. 'ScrollBar']
 
     scrollBar:ClearAllPoints()
-    for _, pt in ipairs(points) do
+    for i = 1, getn(points) do
+        local pt = points[i]
         scrollBar:SetPoint(unpack(pt))
     end
     
@@ -285,7 +286,8 @@ function M.button(parent, text_height)
         if not is_blizzard() then
             self:GetFontString():SetTextColor(aux.color.text.enabled())
         else
-            for _, part in ipairs(buttonParts) do
+            for i = 1, getn(buttonParts) do
+                local part = buttonParts[i]
                 part.SetTexture = realSetTexture
                 part:SetTexture([[Interface\Buttons\UI-Panel-Button-Up]])
             end
@@ -298,7 +300,8 @@ function M.button(parent, text_height)
         if not is_blizzard() then
             self:GetFontString():SetTextColor(aux.color.text.disabled())
         else
-            for _, part in ipairs(buttonParts) do
+            for i = 1, getn(buttonParts) do
+                local part = buttonParts[i]
                 part:SetTexture([[Interface\Buttons\UI-Panel-Button-Disabled]])
                 part.SetTexture = textureLock
             end

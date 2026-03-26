@@ -12,7 +12,7 @@ local M = getfenv()
 -- Clan: El Séquito del Terror
 -- ============================================================================
 
-aux.print('|cFFFFD700[MONOPOLY]|r Sistema de monopolios cargado')
+aux.print(L["|cFFFFD700[MONOPOLY]|r Sistema de monopolios cargado"])
 
 -- ============================================================================
 -- Configuración
@@ -207,7 +207,7 @@ function M.analyze_monopoly_opportunity(item_key, auctions)
     
     -- Si no hay auctions, usar datos del snapshot
     if not auctions or getn(auctions) == 0 then
-        analysis.recommendation = 'Sin datos de subastas. Haz un scan primero.'
+        analysis.recommendation = L["Sin datos de subastas. Haz un scan primero."]
         return analysis
     end
     
@@ -370,16 +370,16 @@ function M.analyze_monopoly_opportunity(item_key, auctions)
     end
     
     if restock_rate <= MONOPOLY_CONFIG.restock_risk.low then
-        analysis.restock_risk = 'BAJO'
+        analysis.restock_risk = L["BAJO"]
         analysis.score_breakdown.low_restock = weights.low_restock
     elseif restock_rate <= MONOPOLY_CONFIG.restock_risk.medium then
-        analysis.restock_risk = 'MEDIO'
+        analysis.restock_risk = L["MEDIO"]
         analysis.score_breakdown.low_restock = weights.low_restock * 0.6
     elseif restock_rate <= MONOPOLY_CONFIG.restock_risk.high then
-        analysis.restock_risk = 'ALTO'
+        analysis.restock_risk = L["ALTO"]
         analysis.score_breakdown.low_restock = weights.low_restock * 0.3
     else
-        analysis.restock_risk = 'MUY ALTO'
+        analysis.restock_risk = L["MUY ALTO"]
         analysis.score_breakdown.low_restock = 0
     end
     total_score = total_score + analysis.score_breakdown.low_restock
@@ -393,30 +393,30 @@ function M.analyze_monopoly_opportunity(item_key, auctions)
     -- Determinar si es monopolizable
     if analysis.score >= 70 then
         analysis.is_monopolizable = true
-        analysis.recommendation = '|cFF00FF00EXCELENTE|r - Oportunidad de monopolio ideal'
+        analysis.recommendation = L["|cFF00FF00EXCELENTE|r - Oportunidad de monopolio ideal"]
     elseif analysis.score >= 50 then
         analysis.is_monopolizable = true
-        analysis.recommendation = '|cFF88FF00BUENO|r - Buena oportunidad, proceder con cuidado'
+        analysis.recommendation = L["|cFF88FF00BUENO|r - Buena oportunidad, proceder con cuidado"]
     elseif analysis.score >= 35 then
         analysis.is_monopolizable = false
-        analysis.recommendation = '|cFFFFFF00REGULAR|r - Riesgo moderado, evaluar bien'
+        analysis.recommendation = L["|cFFFFFF00REGULAR|r - Riesgo moderado, evaluar bien"]
     else
         analysis.is_monopolizable = false
-        analysis.recommendation = '|cFFFF4444NO RECOMENDADO|r - Alto riesgo o bajo potencial'
+        analysis.recommendation = L["|cFFFF4444NO RECOMENDADO|r - Alto riesgo o bajo potencial"]
     end
     
     -- Agregar warnings
     if analysis.unique_sellers > 5 then
-        tinsert(analysis.warnings, 'Muchos vendedores - difícil mantener monopolio')
+        tinsert(analysis.warnings, L["Muchos vendedores - difícil mantener monopolio"])
     end
     if analysis.total_stock > 50 then
-        tinsert(analysis.warnings, 'Stock alto - requiere mucha inversión')
+        tinsert(analysis.warnings, L["Stock alto - requiere mucha inversión"])
     end
     if analysis.restock_risk == 'ALTO' or analysis.restock_risk == 'MUY ALTO' then
-        tinsert(analysis.warnings, 'Alta reposición - monopolio difícil de mantener')
+        tinsert(analysis.warnings, L["Alta reposición - monopolio difícil de mantener"])
     end
     if analysis.profit_margin < 0.3 then
-        tinsert(analysis.warnings, 'Margen bajo - ganancia limitada')
+        tinsert(analysis.warnings, L["Margen bajo - ganancia limitada"])
     end
     
     return analysis
@@ -431,7 +431,7 @@ function M.find_monopoly_candidates(scan_results, min_score)
     local candidates = {}
     
     if not scan_results then
-        aux.print('|cFFFF0000[MONOPOLY]|r No hay resultados de scan. Haz un Full Scan primero.')
+        aux.print(L["|cFFFF0000[MONOPOLY]|r No hay resultados de scan. Haz un Full Scan primero."])
         return candidates
     end
     
@@ -445,7 +445,7 @@ function M.find_monopoly_candidates(scan_results, min_score)
             if not items[item_key] then
                 items[item_key] = {
                     auctions = {},
-                    name = auction.name or 'Unknown',
+                    name = auction.name or L["Desconocido"],
                     texture = auction.texture, -- Capturar textura
                 }
             end
@@ -458,7 +458,15 @@ function M.find_monopoly_candidates(scan_results, min_score)
     end
     
     -- Analizar cada item
-    for item_key, item_data in pairs(items) do
+    local items_to_clean = {}
+    for k, v in pairs(items) do
+        tinsert(items_to_clean, {item_key = k, item_data = v})
+    end
+
+    for j = 1, getn(items_to_clean) do
+        local item_entry = items_to_clean[j]
+        local item_key = item_entry.item_key
+        local item_data = item_entry.item_data
         local analysis = M.analyze_monopoly_opportunity(item_key, item_data.auctions)
         analysis.item_name = item_data.name
         analysis.texture = item_data.texture -- Pasar textura al análisis
@@ -469,11 +477,11 @@ function M.find_monopoly_candidates(scan_results, min_score)
     end
     
     -- Ordenar por score (mayor primero)
-    table.sort(candidates, function(a, b)
+    sort(candidates, function(a, b)
         return a.score > b.score
     end)
     
-    aux.print(string.format('|cFFFFD700[MONOPOLY]|r Encontrados %d candidatos con score >= %d', getn(candidates), min_score))
+    aux.print(string.format(L["|cFFFFD700[MONOPOLY]|r Encontrados %d candidatos con score >= %d"], getn(candidates), min_score))
     
     return candidates
 end
@@ -501,8 +509,8 @@ function M.start_monopoly(item_key, item_name, investment, quantity, target_pric
     
     active_monopolies[item_key] = monopoly
     
-    aux.print(string.format('|cFF00FF00[MONOPOLY]|r Iniciado monopolio de %s', item_name or item_key))
-    aux.print(string.format('  Inversión: %s | Cantidad: %d | Precio objetivo: %s', 
+    aux.print(string.format(L["|cFF00FF00[MONOPOLY]|r Iniciado monopolio de %s"], item_name or item_key))
+    aux.print(string.format(L["  Inversión: %s | Cantidad: %d | Precio objetivo: %s"], 
         M.format_gold(investment), quantity, M.format_gold(target_price)))
     
     return monopoly
@@ -514,7 +522,7 @@ function M.record_monopoly_sale(item_key, quantity, price)
     
     local monopoly = active_monopolies[item_key]
     if not monopoly then
-        aux.print('|cFFFF0000[MONOPOLY]|r No hay monopolio activo para este item')
+        aux.print(L["|cFFFF0000[MONOPOLY]|r No hay monopolio activo para este item"])
         return false
     end
     
@@ -556,9 +564,9 @@ function M.complete_monopoly(item_key, success)
     stats.total_profit = stats.total_profit + monopoly.profit
     stats.total_invested = stats.total_invested + monopoly.investment
     
-    local status_text = success and '|cFF00FF00COMPLETADO|r' or '|cFFFF4444FALLIDO|r'
-    aux.print(string.format('|cFFFFD700[MONOPOLY]|r %s - %s', monopoly.item_name, status_text))
-    aux.print(string.format('  Profit: %s | ROI: %.1f%%', M.format_gold(monopoly.profit), monopoly.roi * 100))
+    local status_text = success and L["|cFF00FF00COMPLETADO|r"] or L["|cFFFF4444FALLIDO|r"]
+    aux.print(string.format(L["|cFFFFD700[MONOPOLY]|r %s - %s"], monopoly.item_name, status_text))
+    aux.print(string.format(L["  Profit: %s | ROI: %.1f%%"], M.format_gold(monopoly.profit), monopoly.roi * 100))
     
     return true
 end
@@ -578,7 +586,7 @@ function M.add_to_watchlist(item_key, item_name, notes)
         last_analysis = nil,
     }
     
-    aux.print(string.format('|cFF00FF00[MONOPOLY]|r %s agregado a watchlist', item_name or item_key))
+    aux.print(string.format(L["|cFF00FF00[MONOPOLY]|r %s agregado a watchlist"], item_name or item_key))
     return true
 end
 
@@ -588,7 +596,7 @@ function M.remove_from_watchlist(item_key)
     if watchlist[item_key] then
         local name = watchlist[item_key].item_name
         watchlist[item_key] = nil
-        aux.print(string.format('|cFFFFAA00[MONOPOLY]|r %s removido de watchlist', name))
+        aux.print(string.format(L["|cFFFFAA00[MONOPOLY]|r %s removido de watchlist"], name))
         return true
     end
     return false
@@ -629,35 +637,35 @@ end
 function M.print_monopoly_analysis(analysis)
     if not analysis then return end
     
-    aux.print('|cFFFFD700========== ANÁLISIS DE MONOPOLIO ==========|r')
-    aux.print(string.format('Item: |cFFFFFFFF%s|r', analysis.item_name or analysis.item_key))
-    aux.print(string.format('Score: |cFFFFD700%d/100|r %s', analysis.score, 
+    aux.print(L["|cFFFFD700========== ANÁLISIS DE MONOPOLIO ==========|r"])
+    aux.print(string.format(L["Item: |cFFFFFFFF%s|r"], analysis.item_name or analysis.item_key))
+    aux.print(string.format(L["Score: |cFFFFD700%d/100|r %s"], analysis.score, 
         analysis.score >= 70 and '⭐⭐⭐⭐' or 
         analysis.score >= 50 and '⭐⭐⭐' or 
         analysis.score >= 35 and '⭐⭐' or '⭐'))
     aux.print('')
-    aux.print(string.format('Vendedores: |cFFFFFFFF%d|r', analysis.unique_sellers))
-    aux.print(string.format('Stock total: |cFFFFFFFF%d|r unidades', analysis.total_stock))
-    aux.print(string.format('Costo para comprar TODO: |cFFFFD700%s|r', M.format_gold(analysis.total_buyout_cost)))
-    aux.print(string.format('Precio promedio: |cFFFFFFFF%s|r', M.format_gold(analysis.avg_price)))
-    aux.print(string.format('Precio reventa sugerido: |cFF00FF00%s|r (+%.0f%%)', 
+    aux.print(string.format(L["Vendedores: |cFFFFFFFF%d|r"], analysis.unique_sellers))
+    aux.print(string.format(L["Stock total: |cFFFFFFFF%d|r unidades"], analysis.total_stock))
+    aux.print(string.format(L["Costo para comprar TODO: |cFFFFD700%s|r"], M.format_gold(analysis.total_buyout_cost)))
+    aux.print(string.format(L["Precio promedio: |cFFFFFFFF%s|r"], M.format_gold(analysis.avg_price)))
+    aux.print(string.format(L["Precio reventa sugerido: |cFF00FF00%s|r (+%.0f%%)"], 
         M.format_gold(analysis.suggested_resale_price), analysis.profit_margin * 100))
-    aux.print(string.format('Ganancia potencial: |cFF00FF00%s|r', M.format_gold(analysis.potential_profit)))
-    aux.print(string.format('Riesgo reposición: %s', 
-        analysis.restock_risk == 'BAJO' and '|cFF00FF00BAJO|r' or
-        analysis.restock_risk == 'MEDIO' and '|cFFFFFF00MEDIO|r' or
+    aux.print(string.format(L["Ganancia potencial: |cFF00FF00%s|r"], M.format_gold(analysis.potential_profit)))
+    aux.print(string.format(L["Riesgo reposición: %s"], 
+        analysis.restock_risk == L["BAJO"] and L["|cFF00FF00BAJO|r"] or
+        analysis.restock_risk == L["MEDIO"] and L["|cFFFFFF00MEDIO|r"] or
         '|cFFFF4444' .. analysis.restock_risk .. '|r'))
     aux.print('')
-    aux.print(string.format('Recomendación: %s', analysis.recommendation))
+    aux.print(string.format(L["Recomendación: %s"], analysis.recommendation))
     
     if getn(analysis.warnings) > 0 then
-        aux.print('|cFFFF4444Advertencias:|r')
+        aux.print(L["|cFFFF4444Advertencias:|r"])
         for i = 1, getn(analysis.warnings) do
             aux.print('  • ' .. analysis.warnings[i])
         end
     end
     
-    aux.print('|cFFFFD700=============================================|r')
+    aux.print(L["|cFFFFD700=============================================|r"])
 end
 
 -- ============================================================================
@@ -666,7 +674,7 @@ end
 
 aux.event_listener('LOAD2', function()
     init_monopoly_data()
-    aux.print('|cFF00FF00[MONOPOLY]|r Sistema de monopolios inicializado')
+    aux.print(L["|cFF00FF00[MONOPOLY]|r Sistema de monopolios inicializado"])
 end)
 
 -- ============================================================================
@@ -689,4 +697,4 @@ M.modules.monopoly = {
     print_analysis = M.print_monopoly_analysis,
 }
 
-aux.print('|cFFFFD700[MONOPOLY]|r Módulo registrado correctamente')
+aux.print(L["|cFFFFD700[MONOPOLY]|r Módulo registrado correctamente"])

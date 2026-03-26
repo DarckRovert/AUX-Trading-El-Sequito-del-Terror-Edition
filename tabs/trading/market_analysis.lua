@@ -7,7 +7,7 @@ local history = require 'aux.core.history'
 -- Market Analysis - Análisis Avanzado de Mercado
 -- ============================================================================
 
-aux.print('[MARKET_ANALYSIS] Módulo cargado')
+aux.print(L['[MARKET_ANALYSIS] Módulo cargado'])
 
 -- ============================================================================
 -- Price Trend Analysis
@@ -541,7 +541,7 @@ function check_exceptional_opportunity(item_key, buyout_price)
         tinsert(alerts, {
             type = 'exceptional_discount',
             severity = 'high',
-            message = string.format('Descuento excepcional: %.0f%%', advanced_score.base_score),
+            message = string.format(L['Exceptional discount: %.0f%%'], advanced_score.base_score),
         })
     end
     
@@ -551,7 +551,7 @@ function check_exceptional_opportunity(item_key, buyout_price)
         tinsert(alerts, {
             type = 'strong_uptrend',
             severity = 'medium',
-            message = string.format('Tendencia alcista fuerte: +%.1f%%', advanced_score.trend_data.change_percent),
+            message = string.format(L['Strong uptrend: +%.1f%%'], advanced_score.trend_data.change_percent),
         })
     end
     
@@ -561,7 +561,7 @@ function check_exceptional_opportunity(item_key, buyout_price)
         tinsert(alerts, {
             type = 'market_manipulation',
             severity = 'warning',
-            message = 'Posible manipulación de mercado detectada',
+            message = L['Possible market manipulation detected'],
         })
     end
     
@@ -571,7 +571,7 @@ function check_exceptional_opportunity(item_key, buyout_price)
         tinsert(alerts, {
             type = 'positive_prediction',
             severity = 'high',
-            message = string.format('Predicción: +%.1f%% en 3 días', advanced_score.prediction_data.expected_change_percent),
+            message = string.format(L['Prediction: +%.1f%% in 3 days'], advanced_score.prediction_data.expected_change_percent),
         })
     end
     
@@ -589,7 +589,7 @@ end
 aux.event_listener('LOAD2', function()
     init_price_history()
     init_volume_data()
-    aux.print('[MARKET_ANALYSIS] Sistema de análisis de mercado inicializado')
+    aux.print(L['[MARKET_ANALYSIS] Sistema de análisis de mercado inicializado'])
 end)
 
 function update_market_analysis_ui(market_frame)
@@ -611,28 +611,28 @@ function create_market_analysis_ui(market_frame)
     -- Título
     local title = market_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     title:SetPoint('TOPLEFT', 20, -20)
-    title:SetText('|cFFFFD700Análisis de Mercado|r')
+    title:SetText(L['Market Analysis Title'])
     
     -- Descripción
     local desc = market_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     desc:SetPoint('TOPLEFT', 20, -50)
     desc:SetPoint('TOPRIGHT', -20, -50)
     desc:SetJustifyH('LEFT')
-    desc:SetText('|cFF888888Análisis avanzado de tendencias de precios, volumen y manipulación de mercado.|r')
+    desc:SetText(L['Market Analysis Desc'])
     
     -- Información de estado
     local status = market_frame:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     status:SetPoint('TOPLEFT', 20, -100)
-    status:SetText('|cFFFFFF00Estado: |cFF00FF00Módulo cargado correctamente|r')
+    status:SetText(L['Status: Module loaded'])
     
     -- Botón de análisis
     local analyze_button = CreateFrame('Button', nil, market_frame, 'UIPanelButtonTemplate')
     analyze_button:SetPoint('TOPRIGHT', -20, -20)
     analyze_button:SetWidth(120)
     analyze_button:SetHeight(25)
-    analyze_button:SetText('Analizar Mercado')
+    analyze_button:SetText(L['Analyze Market'])
     analyze_button:SetScript('OnClick', function()
-        aux.print('[MARKET_ANALYSIS] Análisis de mercado solicitado')
+        aux.print(L['[MARKET_ANALYSIS] Análisis de mercado solicitado'])
     end)
 end
 
@@ -669,9 +669,9 @@ if M.modules then
         check_exceptional_opportunity = check_exceptional_opportunity,
         calculate_advanced_score = calculate_advanced_score,
     }
-    aux.print('[MARKET_ANALYSIS] Funciones registradas y exportadas')
+    aux.print(L['[MARKET_ANALYSIS] Sistema de análisis de mercado inicializado'])  -- Using same key or similar
 else
-    aux.print('[MARKET_ANALYSIS] ERROR: M.modules no existe')
+    aux.print(L['[MARKET_ANALYSIS] Error: M.modules does not exist'])
 end
 
 -- ============================================================================
@@ -697,8 +697,8 @@ M.predict_future_price = predict_future_price
 M.check_price_alerts = check_price_alerts
 
 -- Verificar exports
-aux.print('[MARKET_ANALYSIS] Verificando exports...')
-aux.print('[MARKET_ANALYSIS] - record_price: ' .. tostring(M.record_price ~= nil))
-aux.print('[MARKET_ANALYSIS] - get_average_daily_volume: ' .. tostring(M.get_average_daily_volume ~= nil))
-aux.print('[MARKET_ANALYSIS] - detect_market_manipulation: ' .. tostring(M.detect_market_manipulation ~= nil))
-aux.print('[MARKET_ANALYSIS] Funciones exportadas al módulo')
+aux.print(L['[MARKET_ANALYSIS] Verificando exports...'])
+aux.print(L['[MARKET_ANALYSIS] - record_price: '] .. tostring(M.record_price ~= nil))
+aux.print(L['[MARKET_ANALYSIS] - get_average_daily_volume: '] .. tostring(M.get_average_daily_volume ~= nil))
+aux.print(L['[MARKET_ANALYSIS] - detect_market_manipulation: '] .. tostring(M.detect_market_manipulation ~= nil))
+aux.print(L['[MARKET_ANALYSIS] Funciones exportadas al módulo'])

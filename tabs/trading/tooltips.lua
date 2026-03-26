@@ -306,7 +306,8 @@ function show_tooltip(frame, tooltip_key, anchor_point)
     GameTooltip:AddLine(tooltip_data.title, 1, 0.82, 0, 1)
     
     -- Líneas
-    for i, line in ipairs(tooltip_data.lines) do
+    for i = 1, getn(tooltip_data.lines) do
+        local line = tooltip_data.lines[i]
         GameTooltip:AddLine(line, 1, 1, 1, 1)
     end
     
@@ -396,7 +397,8 @@ function enhance_item_tooltip(item_key)
         local active_trades = M.modules.core.get_active_trades()
         local our_trades = {}
         
-        for i, trade in ipairs(active_trades) do
+        for i = 1, getn(active_trades) do
+            local trade = active_trades[i]
             if trade.item_key == item_key then
                 tinsert(our_trades, trade)
             end
@@ -406,7 +408,8 @@ function enhance_item_tooltip(item_key)
             GameTooltip:AddLine(' ')
             GameTooltip:AddLine('|cffffff00Your Active Trades|r')
             
-            for i, trade in ipairs(our_trades) do
+            for i = 1, getn(our_trades) do
+                local trade = our_trades[i]
                 if trade.status == 'posted' then
                     GameTooltip:AddDoubleLine('Posted at:', format_money(trade.sell_price), 1, 1, 1, 1, 1, 1)
                 elseif trade.status == 'active' then

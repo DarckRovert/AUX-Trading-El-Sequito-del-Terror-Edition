@@ -433,7 +433,7 @@ function cleanup_old_data()
         end
         
         -- Ordenar por fecha
-        table.sort(trades_array, function(a, b)
+        sort(trades_array, function(a, b)
             local a_time = a.trade.sold_at or a.trade.bought_at or 0
             local b_time = b.trade.sold_at or b.trade.bought_at or 0
             return a_time > b_time
@@ -496,7 +496,7 @@ function limit_cache_size()
             tinsert(entries, {key = item_key, timestamp = cached.timestamp})
         end
         
-        table.sort(entries, function(a, b)
+        sort(entries, function(a, b)
             return a.timestamp < b.timestamp
         end)
         
@@ -607,7 +607,7 @@ function compress_price_array(prices)
     end
     
     -- Ordenar por timestamp
-    table.sort(compressed, function(a, b)
+    sort(compressed, function(a, b)
         return a.timestamp < b.timestamp
     end)
     

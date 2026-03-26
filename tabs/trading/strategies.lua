@@ -7,7 +7,7 @@ local history = require 'aux.core.history'
 -- Trading Strategies - Estrategias de Trading Profesionales
 -- ============================================================================
 
-aux.print('[STRATEGIES] Módulo de estrategias cargado')
+aux.print(L['[STRATEGIES] Módulo de estrategias cargado'])
 
 -- ============================================================================
 -- Strategy: Flipping (Comprar barato, vender caro)
@@ -603,7 +603,7 @@ function select_best_strategy(auction_info)
     end
     
     -- Ordenar por score
-    table.sort(strategies, function(a, b)
+    sort(strategies, function(a, b)
         return a.score > b.score
     end)
     
@@ -626,15 +626,15 @@ function estimate_sell_time(item_key)
     local avg_volume = (M.get_average_daily_volume and M.get_average_daily_volume(item_key, 7)) or 0
     
     if avg_volume >= 10 then
-        return '< 1 día'
+        return L['< 1 día']
     elseif avg_volume >= 5 then
-        return '1-2 días'
+        return L['1-2 días']
     elseif avg_volume >= 2 then
-        return '2-5 días'
+        return L['2-5 días']
     elseif avg_volume >= 1 then
-        return '5-7 días'
+        return L['5-7 días']
     else
-        return '> 7 días'
+        return L['> 7 días']
     end
 end
 
@@ -783,17 +783,17 @@ function set_strategy_config(strategy_name, config)
         for key, value in pairs(config) do
             flipping_config[key] = value
         end
-        aux.print('[STRATEGIES] Configuración de Flipping actualizada')
+        aux.print(L['[STRATEGIES] Configuración de Flipping actualizada'])
     elseif strategy_name == 'sniping' then
         for key, value in pairs(config) do
             sniping_config[key] = value
         end
-        aux.print('[STRATEGIES] Configuración de Sniping actualizada')
+        aux.print(L['[STRATEGIES] Configuración de Sniping actualizada'])
     elseif strategy_name == 'reset' then
         for key, value in pairs(config) do
             reset_config[key] = value
         end
-        aux.print('[STRATEGIES] Configuración de Market Reset actualizada')
+        aux.print(L['[STRATEGIES] Configuración de Market Reset actualizada'])
     elseif strategy_name == 'arbitrage' then
         for key, value in pairs(config) do
             arbitrage_config[key] = value

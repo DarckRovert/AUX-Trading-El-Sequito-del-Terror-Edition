@@ -11,7 +11,7 @@ local M = getfenv()
     y ayuda a restock de materiales.
 ]]
 
-aux.print('[CRAFTING] Módulo de crafteo cargado')
+aux.print(L['[CRAFTING] Módulo de crafteo cargado'])
 
 -- ============================================================================
 -- Variables Globales
@@ -93,7 +93,7 @@ function M.escanear_recetas()
         end
     end
     
-    aux.print(string.format('|cFF00FF00%d recetas escaneadas|r', table.getn(crafting_recipes)))
+    aux.print(string.format(L['%d recipes scanned'], getn(crafting_recipes)))
     return crafting_recipes
 end
 
@@ -112,7 +112,7 @@ function M.escanear_recetas_profesion(profession_name, skill_index)
         if skillName and skillType ~= "header" then
             local recipe = M.obtener_info_receta(i, profession_name)
             if recipe then
-                table.insert(crafting_recipes, recipe)
+                tinsert(crafting_recipes, recipe)
             end
         end
     end
@@ -142,7 +142,7 @@ function M.obtener_info_receta(recipe_index, profession)
         local reagent_id = M.extraer_item_id(reagentLink)
         
         if reagent_id then
-            table.insert(reagents, {
+            tinsert(reagents, {
                 item_id = reagent_id,
                 name = reagentName,
                 count = reagentCount,
@@ -177,7 +177,7 @@ function M.calcular_costo_materiales(recipe)
     
     local total_cost = 0
     
-    for i = 1, table.getn(recipe.reagents) do
+    for i = 1, getn(recipe.reagents) do
         local reagent = recipe.reagents[i]
         local item_key = tostring(reagent.item_id) .. ':0'
         local market_value = get_market_value(item_key)
@@ -199,7 +199,7 @@ function M.calcular_profit_crafteo(recipe)
     -- Costo de materiales
     local material_cost = M.calcular_costo_materiales(recipe)
     if not material_cost then
-        return nil, "Sin datos de materiales"
+        return nil, L["No material data"]
     end
     
     -- Valor de venta del item crafteado
@@ -207,7 +207,7 @@ function M.calcular_profit_crafteo(recipe)
     local sell_value = get_market_value(item_key)
     
     if sell_value == 0 then
-        return nil, "Sin datos de venta"
+        return nil, L["No sales data"]
     end
     
     -- Considerar AH cut de 5%
@@ -233,20 +233,20 @@ function M.obtener_recetas_rentables(min_profit, min_profit_percent)
     
     local rentables = {}
     
-    for i = 1, table.getn(crafting_recipes) do
+    for i = 1, getn(crafting_recipes) do
         local recipe = crafting_recipes[i]
         local profit_info = M.calcular_profit_crafteo(recipe)
         
         if profit_info and profit_info.profitable then
             if profit_info.profit >= min_profit and profit_info.profit_percent >= min_profit_percent then
                 recipe.profit_info = profit_info
-                table.insert(rentables, recipe)
+                tinsert(rentables, recipe)
             end
         end
     end
     
     -- Ordenar por profit descendente
-    table.sort(rentables, function(a, b)
+    sort(rentables, function(a, b)
         return (a.profit_info.profit or 0) > (b.profit_info.profit or 0)
     end)
     
@@ -262,14 +262,14 @@ function M.agregar_a_queue_crafteo(recipe, cantidad)
     
     cantidad = cantidad or 1
     
-    table.insert(crafting_queue, {
+    tinsert(crafting_queue, {
         recipe = recipe,
         cantidad = cantidad,
         crafted = 0,
         added_time = time(),
     })
     
-    aux.print(string.format('|cFF00FF00%dx %s agregado a queue|r', cantidad, recipe.name))
+    aux.print(string.format(L['%dx %s added to queue'], cantidad, recipe.name))
     return true
 end
 
@@ -279,30 +279,30 @@ end
 
 function M.limpiar_queue_crafteo()
     crafting_queue = {}
-    aux.print('|cFF00FF00Queue de crafteo limpiada|r')
+    aux.print(L['Crafting queue cleared'])
 end
 
 function M.procesar_queue_crafteo()
     if crafting_in_progress then
-        aux.print('|cFFFFAA00Ya hay un crafteo en progreso|r')
+        aux.print(L['Crafting already in progress'])
         return
     end
     
-    if table.getn(crafting_queue) == 0 then
-        aux.print('|cFFFFAA00Queue de crafteo vacía|r')
+    if getn(crafting_queue) == 0 then
+        aux.print(L['Crafting queue empty'])
         return
     end
     
     crafting_in_progress = true
-    aux.print(string.format('|cFF00FF00Procesando %d items en queue...|r', table.getn(crafting_queue)))
+    aux.print(string.format(L['Processing %d items in queue...'], getn(crafting_queue)))
     
-    for i = 1, table.getn(crafting_queue) do
+    for i = 1, getn(crafting_queue) do
         local queue_item = crafting_queue[i]
         M.craftear_item(queue_item)
     end
     
     crafting_in_progress = false
-    aux.print('|cFF00FF00Crafteo completado|r')
+    aux.print(L['Crafting completed'])
 end
 
 function M.craftear_item(queue_item)
@@ -313,14 +313,14 @@ function M.craftear_item(queue_item)
     
     -- Verificar materiales
     if not M.verificar_materiales(recipe) then
-        aux.print(string.format('|cFFFF0000Materiales insuficientes para %s|r', recipe.name))
+        aux.print(string.format(L['Insufficient materials for %s'], recipe.name))
         return false
     end
     
     -- Craftear
-    -- DoTradeSkill(recipe.recipe_index, cantidad)
+    DoTradeSkill(recipe.recipe_index, cantidad)
     
-    aux.print(string.format('|cFF00FF00Crafteando %dx %s|r', cantidad, recipe.name))
+    aux.print(string.format(L['Crafting %dx %s'], cantidad, recipe.name))
     
     queue_item.crafted = queue_item.crafted + cantidad
     
@@ -330,7 +330,7 @@ end
 function M.verificar_materiales(recipe)
     if not recipe or not recipe.reagents then return false end
     
-    for i = 1, table.getn(recipe.reagents) do
+    for i = 1, getn(recipe.reagents) do
         local reagent = recipe.reagents[i]
         if reagent.have < reagent.count then
             return false
@@ -347,12 +347,12 @@ end
 function M.calcular_materiales_necesarios()
     local materiales = {}
     
-    for i = 1, table.getn(crafting_queue) do
+    for i = 1, getn(crafting_queue) do
         local queue_item = crafting_queue[i]
         local recipe = queue_item.recipe
         local cantidad_pendiente = queue_item.cantidad - queue_item.crafted
         
-        for j = 1, table.getn(recipe.reagents) do
+        for j = 1, getn(recipe.reagents) do
             local reagent = recipe.reagents[j]
             local needed = reagent.count * cantidad_pendiente
             local have = reagent.have
@@ -389,7 +389,7 @@ function M.generar_lista_compra()
             local market_value = get_market_value(item_key)
             local total_cost = market_value * material.to_buy
             
-            table.insert(lista, {
+            tinsert(lista, {
                 name = material.name,
                 item_id = material.item_id,
                 cantidad = material.to_buy,
@@ -400,7 +400,7 @@ function M.generar_lista_compra()
     end
     
     -- Ordenar por costo total descendente
-    table.sort(lista, function(a, b)
+    sort(lista, function(a, b)
         return (a.costo_total or 0) > (b.costo_total or 0)
     end)
     
@@ -410,15 +410,15 @@ end
 function M.mostrar_lista_compra()
     local lista = M.generar_lista_compra()
     
-    if table.getn(lista) == 0 then
-        aux.print('|cFF00FF00No se necesitan materiales|r')
+    if getn(lista) == 0 then
+        aux.print(L['No materials needed'])
         return
     end
     
-    aux.print('|cFFFFD700=== LISTA DE COMPRA ===|r')
+    aux.print(L['=== SHOPPING LIST ==='])
     
     local total = 0
-    for i = 1, table.getn(lista) do
+    for i = 1, getn(lista) do
         local item = lista[i]
         aux.print(string.format(
             '|cFFFFFFFF%dx %s - %s (%s c/u)|r',
@@ -430,7 +430,7 @@ function M.mostrar_lista_compra()
         total = total + item.costo_total
     end
     
-    aux.print(string.format('|cFFFFD700Total: %s|r', format_gold(total, nil, true)))
+    aux.print(string.format(L['Crafting Total: %s'], format_gold(total, nil, true)))
 end
 
 -- ============================================================================
@@ -438,14 +438,14 @@ end
 -- ============================================================================
 
 function M.obtener_stats_crafteo()
-    local total_recipes = table.getn(crafting_recipes)
+    local total_recipes = getn(crafting_recipes)
     local rentables = M.obtener_recetas_rentables(0, 0)
-    local total_rentables = table.getn(rentables)
+    local total_rentables = getn(rentables)
     
     local mejor_profit = 0
     local mejor_recipe = nil
     
-    for i = 1, table.getn(rentables) do
+    for i = 1, getn(rentables) do
         local recipe = rentables[i]
         if recipe.profit_info and recipe.profit_info.profit > mejor_profit then
             mejor_profit = recipe.profit_info.profit
@@ -458,7 +458,7 @@ function M.obtener_stats_crafteo()
         total_rentables = total_rentables,
         mejor_profit = mejor_profit,
         mejor_recipe = mejor_recipe,
-        queue_size = table.getn(crafting_queue),
+        queue_size = getn(crafting_queue),
     }
 end
 
@@ -470,7 +470,7 @@ function M.inicializar_crafting()
     -- Escanear recetas al iniciar
     -- M.escanear_recetas()
     
-    aux.print('|cFF00FF00Crafting Module inicializado|r')
+    aux.print(L['Crafting Module initialized'])
 end
 
 -- Registrar módulo
@@ -489,4 +489,4 @@ M.modules.crafting = {
     inicializar = M.inicializar_crafting,
 }
 
-aux.print('[CRAFTING] Módulo registrado correctamente')
+aux.print(L['[CRAFTING] Module registered successfully'])

@@ -72,7 +72,7 @@ local function on_auction(auction_info)
         
         -- Si hay ganancia de al menos 10% y 50 cobre
         if porcentaje >= 10 and ganancia >= 50 then
-            table.insert(scan_estado.oportunidades, {
+            tinsert(scan_estado.oportunidades, {
                 nombre = auction_info.name or '?',
                 item_key = item_key,
                 precio = buyout_unit,
@@ -90,11 +90,11 @@ local function on_auction(auction_info)
     if math.mod(scan_estado.auctions_procesados, 100) == 0 then
         local tiempo = time() - scan_estado.inicio
         local num_items = 0
-        for _ in scan_estado.items_unicos do num_items = num_items + 1 end
+        for _ in pairs(scan_estado.items_unicos) do num_items = num_items + 1 end
         
         if M.frame and M.frame.estado then
             M.frame.estado:SetText(string.format(
-                '|cFFFFFF00Escaneando: %d auctions, %d items (%s)|r',
+                L['Escaneando: %d auctions, %d items (%s)'],
                 scan_estado.auctions_procesados, num_items, formatear_tiempo(tiempo)
             ))
         end
@@ -104,7 +104,7 @@ end
 -- Callback cuando se completa una pagina
 local function on_page_scanned()
     local tiempo = time() - scan_estado.inicio
-    aux.print(string.format('|cFF888888Pagina escaneada... %d auctions en %s|r', 
+    aux.print(string.format(L['Pagina escaneada... %d auctions en %s'], 
         scan_estado.auctions_procesados, formatear_tiempo(tiempo)))
 end
 
@@ -114,16 +114,16 @@ local function on_complete()
     
     local tiempo = time() - scan_estado.inicio
     local num_items = 0
-    for _ in scan_estado.items_unicos do num_items = num_items + 1 end
+    for _ in pairs(scan_estado.items_unicos) do num_items = num_items + 1 end
     
-    aux.print('|cFF00FF00=== FULL SCAN COMPLETADO ===|r')
-    aux.print(string.format('|cFFFFFFFFTiempo: %s|r', formatear_tiempo(tiempo)))
-    aux.print(string.format('|cFFFFFFFFItems unicos: %d|r', num_items))
-    aux.print(string.format('|cFFFFFFFFAuctions procesados: %d|r', scan_estado.auctions_procesados))
-    aux.print(string.format('|cFF00FF00Oportunidades encontradas: %d|r', table.getn(scan_estado.oportunidades)))
+    aux.print(L['=== FULL SCAN COMPLETADO ==='])
+    aux.print(string.format(L['Tiempo: %s'], formatear_tiempo(tiempo)))
+    aux.print(string.format(L['Items unicos: %d'], num_items))
+    aux.print(string.format(L['Auctions procesados: %d'], scan_estado.auctions_procesados))
+    aux.print(string.format(L['Oportunidades encontradas: %d'], getn(scan_estado.oportunidades)))
     
     -- Ordenar oportunidades por ganancia
-    table.sort(scan_estado.oportunidades, function(a, b)
+    sort(scan_estado.oportunidades, function(a, b)
         return (a.ganancia or 0) > (b.ganancia or 0)
     end)
     
@@ -137,17 +137,17 @@ end
 -- Callback cuando se aborta el scan
 local function on_abort()
     scan_estado.activo = false
-    aux.print('|cFFFF0000Full Scan abortado|r')
+    aux.print(L['Full Scan abortado'])
     
     if M.frame and M.frame.estado then
-        M.frame.estado:SetText('|cFFFF0000Scan abortado|r')
+        M.frame.estado:SetText(L['Scan abortado'])
     end
 end
 
 -- Iniciar Full Scan usando el sistema de aux
 function M.iniciar_full_scan()
     if scan_estado.activo then
-        aux.print('|cFFFFFF00Ya hay un scan en progreso|r')
+        aux.print(L['Ya hay un scan en progreso'])
         return
     end
     
@@ -158,13 +158,13 @@ function M.iniciar_full_scan()
     scan_estado.items_unicos = {}
     scan_estado.oportunidades = {}
     
-    aux.print('|cFF00FF00=== INICIANDO FULL SCAN ===|r')
-    aux.print('|cFFFFFFFFEscaneando toda la casa de subastas...|r')
-    aux.print('|cFFFFFFFFEsto puede tomar varios minutos.|r')
+    aux.print(L['=== INICIANDO FULL SCAN ==='])
+    aux.print(L['Escaneando toda la casa de subastas...'])
+    aux.print(L['Esto puede tomar varios minutos.'])
     
     -- Actualizar UI
     if M.frame and M.frame.estado then
-        M.frame.estado:SetText('|cFFFFFF00Full Scan en progreso...|r')
+        M.frame.estado:SetText(L['Full Scan en progreso...'])
     end
     
     -- Usar el sistema de scan de aux-addon
@@ -180,7 +180,7 @@ function M.iniciar_full_scan()
             }
         },
         on_scan_start = function()
-            aux.print('|cFFFFFFFFScan iniciado...|r')
+            aux.print(L['Scan iniciado...'])
         end,
         on_page_scanned = on_page_scanned,
         on_auction = on_auction,
@@ -194,10 +194,10 @@ function M.detener_full_scan()
     if scan_estado.activo then
         scan.abort()
         scan_estado.activo = false
-        aux.print('|cFFFFFF00Full Scan detenido|r')
+        aux.print(L['Full Scan detenido'])
         
         if M.frame and M.frame.estado then
-            M.frame.estado:SetText('|cFFFF0000Scan detenido|r')
+            M.frame.estado:SetText(L['Scan detenido'])
         end
     end
 end
@@ -222,7 +222,7 @@ end
 M.modules = M.modules or {}
 M.modules.full_scan = M
 
-aux.print('|cFFFFD700[Trading]|r Full Scan system cargado')
+aux.print(L['[Trading]|r Full Scan system cargado'])
 
 --[[ CODIGO VIEJO COMENTADO
 function M.ejecutar_query_pagina_OLD(pagina)
@@ -300,7 +300,7 @@ function M.procesar_pagina_scan()
             if buyoutPrice and buyoutPrice > 0 then
                 local buyout_por_unidad = math.floor(buyoutPrice / (count or 1))
                 
-                table.insert(item_data.records, {
+                tinsert(item_data.records, {
                     buyout = buyout_por_unidad,
                     count = count or 1,
                     seller = owner
@@ -358,11 +358,11 @@ function M.finalizar_full_scan()
     aux.print(string.format('|cFFFFFFFFTiempo: %s|r', formatear_tiempo(tiempo_total)))
     aux.print(string.format('|cFFFFFFFFItems únicos: %d|r', items_procesados))
     aux.print(string.format('|cFFFFFFFFAuctions procesados: %d|r', scan_estado.items_encontrados))
-    aux.print(string.format('|cFF00FF00Oportunidades encontradas: %d|r', table.getn(oportunidades)))
+    aux.print(string.format('|cFF00FF00Oportunidades encontradas: %d|r', getn(oportunidades)))
     
     -- Actualizar UI
     if M.frame then
-        M.frame.estado:SetText(string.format('|cFF00FF00● Scan completo: %d oportunidades|r', table.getn(oportunidades)))
+        M.frame.estado:SetText(string.format('|cFF00FF00● Scan completo: %d oportunidades|r', getn(oportunidades)))
         M.frame.progreso:SetText('')
     end
     
@@ -388,12 +388,13 @@ function M.buscar_oportunidades_full_scan()
             end
             
             -- Si no hay valor de mercado, usar el promedio de los records
-            if market_value == 0 and table.getn(data.records) > 1 then
+            if market_value == 0 and getn(data.records) > 1 then
                 local total = 0
-                for _, r in ipairs(data.records) do
+                for j = 1, getn(data.records) do
+                    local r = data.records[j]
                     total = total + r.buyout
                 end
-                market_value = math.floor(total / table.getn(data.records))
+                market_value = math.floor(total / getn(data.records))
             end
             
             if market_value > 0 then
@@ -402,7 +403,7 @@ function M.buscar_oportunidades_full_scan()
                 
                 -- Solo si hay al menos 10% de ganancia
                 if porcentaje >= 10 and ganancia > 100 then
-                    table.insert(oportunidades, {
+                    tinsert(oportunidades, {
                         item_key = item_key,
                         nombre = data.nombre,
                         precio = data.minBuyout,
@@ -425,13 +426,13 @@ function M.buscar_oportunidades_full_scan()
     end
     
     -- Ordenar por ganancia
-    table.sort(oportunidades, function(a, b)
+    sort(oportunidades, function(a, b)
         return (a.ganancia or 0) > (b.ganancia or 0)
     end)
     
     -- Limitar a 100
-    while table.getn(oportunidades) > 100 do
-        table.remove(oportunidades)
+    while getn(oportunidades) > 100 do
+        tremove(oportunidades)
     end
     
     return oportunidades
@@ -481,4 +482,4 @@ CODIGO VIEJO FIN --]]
 M.modules = M.modules or {}
 M.modules.full_scan = M
 
-aux.print('|cFFFFD700[Trading]|r Sistema Full Scan cargado')
+aux.print(L['[Trading]|r Sistema Full Scan cargado'])

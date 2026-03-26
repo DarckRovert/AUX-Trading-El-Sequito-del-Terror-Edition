@@ -53,15 +53,15 @@ end
 function M.create_list(name)
     init_saved_vars()
     if not name or name == "" then
-        aux.print("|cFFFF0000Error: Nombre de lista inválido|r")
+        aux.print(L["Error: Nombre de lista inválido"])
         return false
     end
     if aux_trading_dealfinding[name] then
-        aux.print("|cFFFF0000Error: La lista '" .. name .. "' ya existe|r")
+        aux.print(string.format(L["Error: La lista '%s' ya existe"], name))
         return false
     end
     aux_trading_dealfinding[name] = {}
-    aux.print("|cFF00FF00Lista '" .. name .. "' creada exitosamente|r")
+    aux.print(string.format(L["Lista '%s' creada exitosamente"], name))
     return true
 end
 
@@ -69,15 +69,15 @@ end
 function M.delete_list(name)
     init_saved_vars()
     if not aux_trading_dealfinding[name] then
-        aux.print("|cFFFF0000Error: La lista '" .. name .. "' no existe|r")
+        aux.print(string.format(L["Error: La lista '%s' no existe"], name))
         return false
     end
     if name == "Default" then
-        aux.print("|cFFFF0000Error: No puedes eliminar la lista Default|r")
+        aux.print(L["Error: No puedes eliminar la lista Default"])
         return false
     end
     aux_trading_dealfinding[name] = nil
-    aux.print("|cFF00FF00Lista '" .. name .. "' eliminada|r")
+    aux.print(string.format(L["Lista '%s' eliminada"], name))
     return true
 end
 
@@ -88,19 +88,19 @@ function M.add_item_to_list(list_name, item_id, max_price, item_name)
     list_name = list_name or "Default"
     
     if not aux_trading_dealfinding[list_name] then
-        aux.print("|cFFFF0000Error: La lista '" .. list_name .. "' no existe|r")
+        aux.print(string.format(L["Error: La lista '%s' no existe"], list_name))
         return false
     end
     
     if not item_id or not max_price then
-        aux.print("|cFFFF0000Error: item_id y max_price son requeridos|r")
+        aux.print(L["Error: item_id y max_price son requeridos"])
         return false
     end
     
     -- Obtener nombre del item si no se proporcionó
     if not item_name then
         local item_info = info.item(item_id)
-        item_name = item_info and item_info.name or "Item #" .. item_id
+        item_name = item_info and item_info.name or L["Item #"] .. item_id
     end
     
     aux_trading_dealfinding[list_name][item_id] = {
@@ -112,7 +112,7 @@ function M.add_item_to_list(list_name, item_id, max_price, item_name)
     
     local gold = math.floor(max_price / 10000)
     local silver = math.floor(math.mod(max_price, 10000) / 100)
-    aux.print(string.format("|cFF00FF00Agregado '%s' a lista '%s' con precio máximo: %dg %ds|r", 
+    aux.print(string.format(L["Agregado '%s' a lista '%s' con precio máximo: %dg %ds"], 
         item_name, list_name, gold, silver))
     return true
 end
@@ -124,18 +124,18 @@ function M.remove_item_from_list(list_name, item_id)
     list_name = list_name or "Default"
     
     if not aux_trading_dealfinding[list_name] then
-        aux.print("|cFFFF0000Error: La lista '" .. list_name .. "' no existe|r")
+        aux.print(string.format(L["Error: La lista '%s' no existe"], list_name))
         return false
     end
     
     if not aux_trading_dealfinding[list_name][item_id] then
-        aux.print("|cFFFF0000Error: Item no encontrado en la lista|r")
+        aux.print(L["Error: Item no encontrado en the list"])
         return false
     end
     
     local item_name = aux_trading_dealfinding[list_name][item_id].name
     aux_trading_dealfinding[list_name][item_id] = nil
-    aux.print("|cFF00FF00Removido '" .. item_name .. "' de lista '" .. list_name .. "'|r")
+    aux.print(string.format(L["Removido '%s' de lista '%s'"], item_name, list_name))
     return true
 end
 
@@ -153,7 +153,7 @@ function M.update_max_price(list_name, item_id, new_max_price)
     list_name = list_name or "Default"
     
     if not aux_trading_dealfinding[list_name] or not aux_trading_dealfinding[list_name][item_id] then
-        aux.print("|cFFFF0000Error: Item no encontrado|r")
+        aux.print(L["Error: Item no encontrado"])
         return false
     end
     
@@ -162,7 +162,7 @@ function M.update_max_price(list_name, item_id, new_max_price)
     
     local gold = math.floor(new_max_price / 10000)
     local silver = math.floor(math.mod(new_max_price, 10000) / 100)
-    aux.print(string.format("|cFF00FF00Precio actualizado a: %dg %ds|r", gold, silver))
+    aux.print(string.format(L["Precio actualizado a: %dg %ds"], gold, silver))
     return true
 end
 
@@ -216,7 +216,7 @@ function M.scan_dealfinding_lists(callback)
     -- Recopilar todos los items de todas las listas
     for list_name, items in pairs(aux_trading_dealfinding) do
         for item_id, item_data in pairs(items) do
-            table.insert(items_to_scan, {
+            tinsert(items_to_scan, {
                 item_id = item_id,
                 list_name = list_name,
                 item_data = item_data
@@ -224,13 +224,13 @@ function M.scan_dealfinding_lists(callback)
         end
     end
     
-    if table.getn(items_to_scan) == 0 then
-        aux.print("|cFFFFFF00No hay items en las listas de dealfinding|r")
+    if getn(items_to_scan) == 0 then
+        aux.print(L["No hay items en las listas de dealfinding"])
         if callback then callback({}) end
         return
     end
     
-    aux.print(string.format("|cFF00FF00Escaneando %d items de dealfinding...|r", table.getn(items_to_scan)))
+    aux.print(string.format(L["Escaneando %d items de dealfinding..."], getn(items_to_scan)))
     
     -- Por ahora retornamos la lista de items a escanear
     -- La integración con el scanner de aux se hará en scan_integration.lua
@@ -267,24 +267,24 @@ function M.handle_slash_command(args)
     elseif cmd == "help" then
         M.print_help()
     else
-        aux.print("|cFFFF0000Comando desconocido: " .. cmd .. "|r")
+        aux.print(string.format(L["Comando desconocido: %s"], cmd))
         M.print_help()
     end
 end
 
 function M.print_help()
-    aux.print("|cFFFFD700=== Aux Trading - Dealfinding Commands ===")
-    aux.print("|cFFFFFFFF/aux dealfind list|r - Mostrar todas las listas")
-    aux.print("|cFFFFFFFF/aux dealfind add <itemlink> <maxprice>|r - Agregar item")
-    aux.print("|cFFFFFFFF/aux dealfind remove <itemID>|r - Remover item")
-    aux.print("|cFFFFFFFF/aux dealfind create <listname>|r - Crear nueva lista")
-    aux.print("|cFFFFFFFF/aux dealfind scan|r - Escanear items de dealfinding")
+    aux.print(L["=== Aux Trading - Dealfinding Commands ==="])
+    aux.print(L["/aux dealfind list - Mostrar todas las listas"])
+    aux.print(L["/aux dealfind add <itemlink> <maxprice> - Agregar item"])
+    aux.print(L["/aux dealfind remove <itemID> - Remover item"])
+    aux.print(L["/aux dealfind create <listname> - Crear nueva lista"])
+    aux.print(L["/aux dealfind scan - Escanear items de dealfinding"])
 end
 
 function M.print_lists()
     init_saved_vars()
     
-    aux.print("|cFFFFD700=== Listas de Dealfinding ===")
+    aux.print(L["=== Listas de Dealfinding ==="])
     
     local total_items = 0
     for list_name, items in pairs(aux_trading_dealfinding) do
@@ -292,17 +292,17 @@ function M.print_lists()
         for _ in pairs(items) do count = count + 1 end
         total_items = total_items + count
         
-        aux.print(string.format("|cFF00FF00%s|r: %d items", list_name, count))
+        aux.print(string.format(L["%s: %d items"], list_name, count))
         
         for item_id, item_data in pairs(items) do
             local gold = math.floor(item_data.maxPrice / 10000)
             local silver = math.floor(math.mod(item_data.maxPrice, 10000) / 100)
-            aux.print(string.format("  |cFFFFFFFF- %s|r (ID: %d) - Max: %dg %ds", 
+            aux.print(string.format(L["  - %s (ID: %d) - Max: %dg %ds"], 
                 item_data.name, item_id, gold, silver))
         end
     end
     
-    aux.print(string.format("|cFFFFD700Total: %d items en dealfinding|r", total_items))
+    aux.print(string.format(L["Total: %d items en dealfinding"], total_items))
 end
 
 function M.handle_add_command(args)
@@ -320,7 +320,7 @@ function M.handle_add_command(args)
     end
     
     if not item_id then
-        aux.print("|cFFFF0000Error: No se pudo obtener el item. Usa shift+click en un item.|r")
+        aux.print(L["Error: No se pudo obtener el item. Usa shift+click en un item."])
         return
     end
     
@@ -329,7 +329,7 @@ function M.handle_add_command(args)
     local price = tonumber(price_str)
     
     if not price then
-        aux.print("|cFFFF0000Error: Especifica un precio máximo (en gold)|r")
+        aux.print(L["Error: Especifica un precio máximo (en gold)"])
         return
     end
     
@@ -345,7 +345,7 @@ end
 function M.handle_remove_command(args)
     local item_id = tonumber(args)
     if not item_id then
-        aux.print("|cFFFF0000Error: Especifica el ID del item a remover|r")
+        aux.print(L["Error: Especifica el ID del item a remover"])
         return
     end
     
@@ -357,11 +357,11 @@ function M.handle_remove_command(args)
         end
     end
     
-    aux.print("|cFFFF0000Error: Item no encontrado en ninguna lista|r")
+    aux.print(L["Error: Item no encontrado en ninguna lista"])
 end
 
 -- Registrar en el módulo
 M.modules = M.modules or {}
 M.modules.dealfinding = M
 
-aux.print('[TRADING] Módulo Dealfinding cargado')
+aux.print(L['[TRADING] Módulo Dealfinding cargado'])

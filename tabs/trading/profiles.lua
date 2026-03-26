@@ -9,11 +9,11 @@ local aux = require 'aux'
 local profiles_db = {}
 
 function init_database()
-    aux.print('[PROFILES] Inicializando base de datos...')
+    aux.print(L['[PROFILES] Inicializando base de datos...'])
     
     -- Initialize faction-specific data
     if not aux.faction_data then
-        aux.print('[PROFILES ERROR] aux.faction_data no existe')
+        aux.print(L['[PROFILES ERROR] aux.faction_data no existe'])
         return
     end
     
@@ -22,13 +22,13 @@ function init_database()
             profiles = {},
             version = 1,
         }
-        aux.print('[PROFILES] Base de datos creada')
+        aux.print(L['[PROFILES] Base de datos creada'])
     end
     
     profiles_db = aux.faction_data.trading.profiles
     local count = 0
     for _ in pairs(profiles_db) do count = count + 1 end
-    aux.print('[PROFILES] Base de datos cargada. Items: ' .. tostring(count))
+    aux.print(L['[PROFILES] Base de datos cargada. Items: '] .. tostring(count))
 end
 
 function get_profile(item_key)
@@ -113,7 +113,7 @@ end
 
 function save_trade(trade)
     if not aux.faction_data or not aux.faction_data.trading then
-        aux.print('[PROFILES ERROR] No se puede guardar trade - base de datos no inicializada')
+        aux.print(L['[PROFILES ERROR] No se puede guardar trade - base de datos no inicializada'])
         return
     end
     
@@ -122,7 +122,7 @@ function save_trade(trade)
     end
     
     aux.faction_data.trading.trades[trade.id] = trade
-    aux.print('[PROFILES] Trade guardado: ' .. trade.item_name .. ' x' .. trade.count)
+    aux.print(L['[PROFILES] Trade guardado: '] .. trade.item_name .. ' x' .. trade.count)
 end
 
 function get_trade(trade_id)
@@ -187,7 +187,7 @@ end
 
 function save_config(config)
     if not aux.account_data then
-        aux.print('[PROFILES ERROR] No se puede guardar configuración')
+        aux.print(L['[PROFILES ERROR] No se puede guardar configuración'])
         return
     end
     
@@ -196,7 +196,7 @@ function save_config(config)
     end
     
     aux.account_data.trading.config = config
-    aux.print('[PROFILES] Configuración guardada')
+    aux.print(L['[PROFILES] Configuración guardada'])
 end
 
 -- ============================================================================

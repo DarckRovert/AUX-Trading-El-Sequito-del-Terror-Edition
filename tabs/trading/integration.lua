@@ -163,7 +163,7 @@ function AUX_TRADING_API.RegisterCallback(event, callback)
         callbacks[event] = {}
     end
     
-    local id = table.getn(callbacks[event]) + 1
+    local id = getn(callbacks[event]) + 1
     callbacks[event][id] = callback
     return id
 end
@@ -217,13 +217,13 @@ function AUX_TRADING_API.GetTooltipInfo(item_key)
     end
     
     if trend == "up" then
-        result.trend_icon = "|cFF00FF00↑|r"
+        result.trend_icon = L["↑"]
     elseif trend == "down" then
-        result.trend_icon = "|cFFFF0000↓|r"
+        result.trend_icon = L["↓"]
     elseif trend == "stable" then
-        result.trend_icon = "|cFFFFFF00→|r"
+        result.trend_icon = L["→"]
     else
-        result.trend_icon = "|cFF888888?|r"
+        result.trend_icon = L["?"]
     end
     
     if price_data then
@@ -275,7 +275,7 @@ end
 -- ============================================================================
 
 function aux.handle.LOAD()
-    aux.print("|cFF888888[Integration] AUX_TRADING_API loaded - Version " .. AUX_TRADING_API.GetVersion() .. "|r")
+    aux.print(L["[Integration] AUX_TRADING_API loaded - Version "] .. AUX_TRADING_API.GetVersion())
 end
 
 -- Export to module

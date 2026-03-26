@@ -38,7 +38,8 @@ M.join = table.concat
 
 M.index = T.vararg-function(arg)
 	local t = tremove(arg, 1)
-	for _, v in ipairs(arg) do
+	for i = 1, getn(arg) do
+		local v = arg[i]
 		t = t and t[v]
 	end
 	return t

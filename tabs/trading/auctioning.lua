@@ -11,7 +11,7 @@ local M = getfenv()
     hacer undercut de competencia, y cancel/repost de subastas.
 ]]
 
-aux.print('[AUCTIONING] Módulo de subastas cargado')
+aux.print(L["[AUCTIONING] Módulo de subastas cargado"])
 
 -- ============================================================================
 -- Variables Globales
@@ -90,24 +90,24 @@ function M.crear_grupo_auctioning(nombre, config)
         }
     }
     
-    aux.print(string.format('|cFF00FF00Grupo creado: %s|r', nombre))
+    aux.print(string.format(L["|cFF00FF00Grupo creado: %s|r"], nombre))
     return true
 end
 
 function M.agregar_item_a_grupo(grupo_nombre, item_id, item_name)
     local grupo = auctioning_groups[grupo_nombre]
     if not grupo then
-        aux.print('|cFFFF0000Grupo no encontrado|r')
+        aux.print(L["|cFFFF0000Grupo no encontrado|r"])
         return false
     end
     
-    table.insert(grupo.items, {
+    tinsert(grupo.items, {
         item_id = item_id,
         item_name = item_name,
         added_time = time(),
     })
     
-    aux.print(string.format('|cFF00FF00%s agregado a %s|r', item_name, grupo_nombre))
+    aux.print(string.format(L["|cFF00FF00%s agregado a %s|r"], item_name, grupo_nombre))
     return true
 end
 
@@ -122,7 +122,7 @@ end
 local function calcular_precio_optimo(item_key, config)
     local market_value = get_market_value(item_key)
     if market_value == 0 then
-        return nil, "Sin datos de mercado"
+        return nil, L["Sin datos de mercado"]
     end
     
     -- Obtener precio más bajo actual en AH
@@ -186,26 +186,26 @@ end
 -- ============================================================================
 
 function M.agregar_a_queue_posteo(item_info)
-    table.insert(posting_queue, item_info)
-    aux.print(string.format('|cFFFFFF00%s agregado a queue de posteo|r', item_info.name))
+    tinsert(posting_queue, item_info)
+    aux.print(string.format(L["|cFFFFFF00%s agregado a queue de posteo|r"], item_info.name))
 end
 
 function M.procesar_queue_posteo()
     if posting_in_progress then
-        aux.print('|cFFFFAA00Ya hay un posteo en progreso|r')
+        aux.print(L["|cFFFFAA00Ya hay un posteo en progreso|r"])
         return
     end
     
-    if table.getn(posting_queue) == 0 then
-        aux.print('|cFFFFAA00Queue de posteo vacía|r')
+    if getn(posting_queue) == 0 then
+        aux.print(L["|cFFFFAA00Queue de posteo vacía|r"])
         return
     end
     
     posting_in_progress = true
-    aux.print(string.format('|cFF00FF00Procesando %d items...|r', table.getn(posting_queue)))
+    aux.print(string.format(L["|cFF00FF00Procesando %d items...|r"], getn(posting_queue)))
     
     -- Procesar cada item en la queue
-    for i = 1, table.getn(posting_queue) do
+    for i = 1, getn(posting_queue) do
         local item = posting_queue[i]
         M.postear_item(item)
     end
@@ -214,14 +214,14 @@ function M.procesar_queue_posteo()
     posting_queue = {}
     posting_in_progress = false
     
-    aux.print('|cFF00FF00Posteo completado|r')
+    aux.print(L["|cFF00FF00Posteo completado|r"])
 end
 
 function M.postear_item(item_info)
     if not item_info then return false end
     
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Debes estar en la Casa de Subastas|r')
+        aux.print(L["|cFFFF0000Debes estar en la Casa de Subastas|r"])
         return false
     end
     
@@ -232,7 +232,7 @@ function M.postear_item(item_info)
     local precio, msg = calcular_precio_optimo(item_key, config)
     
     if not precio then
-        aux.print(string.format('|cFFFF0000No se puede postear %s: %s|r', item_info.name, msg))
+        aux.print(string.format(L["|cFFFF0000No se puede postear %s: %s|r"], item_info.name, msg))
         return false
     end
     
@@ -253,7 +253,7 @@ function M.postear_item(item_info)
     end
     
     if not bag or not slot then
-        aux.print(string.format('|cFFFF0000%s no encontrado en inventario|r', item_info.name))
+        aux.print(string.format(L["|cFFFF0000%s no encontrado en inventario|r"], item_info.name))
         return false
     end
     
@@ -267,7 +267,7 @@ function M.postear_item(item_info)
     StartAuction(bid, precio, duration)
     
     aux.print(string.format(
-        '|cFF00FF00Posteando %s por %s|r',
+        L["|cFF00FF00Posteando %s por %s|r"],
         item_info.name,
         format_gold(precio)
     ))
@@ -327,12 +327,12 @@ function M.detectar_undercuts()
     local undercuts = {}
     local mis_subastas = M.escanear_mis_subastas()
     
-    for i = 1, table.getn(mis_subastas) do
+    for i = 1, getn(mis_subastas) do
         local subasta = mis_subastas[i]
         local precio_mas_bajo = M.obtener_precio_mas_bajo(subasta.item_key)
         
         if precio_mas_bajo and precio_mas_bajo < subasta.buyout then
-            table.insert(undercuts, subasta)
+            tinsert(undercuts, subasta)
         end
     end
     
@@ -341,13 +341,13 @@ end
 
 function M.cancelar_subasta(auction_index)
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Debes estar en la Casa de Subastas|r')
+        aux.print(L["|cFFFF0000Debes estar en la Casa de Subastas|r"])
         return false
     end
     
     -- Cancelar la subasta usando WoW API
     CancelAuction(auction_index)
-    aux.print('|cFF00FF00Subasta cancelada|r')
+    aux.print(L["|cFF00FF00Subasta cancelada|r"])
     
     return true
 end
@@ -355,14 +355,14 @@ end
 function M.auto_cancel_repost()
     local undercuts = M.detectar_undercuts()
     
-    if table.getn(undercuts) == 0 then
-        aux.print('|cFF00FF00No hay undercuts detectados|r')
+    if getn(undercuts) == 0 then
+        aux.print(L["|cFF00FF00No hay undercuts detectados|r"])
         return
     end
     
-    aux.print(string.format('|cFFFFAA00%d undercuts detectados|r', table.getn(undercuts)))
+    aux.print(string.format(L["|cFFFFAA00%d undercuts detectados|r"], getn(undercuts)))
     
-    for i = 1, table.getn(undercuts) do
+    for i = 1, getn(undercuts) do
         local subasta = undercuts[i]
         
         -- Cancelar
@@ -388,19 +388,19 @@ end
 function M.postear_grupo(grupo_nombre)
     local grupo = auctioning_groups[grupo_nombre]
     if not grupo then
-        aux.print('|cFFFF0000Grupo no encontrado|r')
+        aux.print(L["|cFFFF0000Grupo no encontrado|r"])
         return false
     end
     
     if not grupo.activo then
-        aux.print('|cFFFFAA00Grupo desactivado|r')
+        aux.print(L["|cFFFFAA00Grupo desactivado|r"])
         return false
     end
     
-    aux.print(string.format('|cFF00FF00Posteando grupo: %s|r', grupo_nombre))
+    aux.print(string.format(L["|cFF00FF00Posteando grupo: %s|r"], grupo_nombre))
     
     -- Agregar todos los items del grupo a la queue
-    for i = 1, table.getn(grupo.items) do
+    for i = 1, getn(grupo.items) do
         local item = grupo.items[i]
         
         -- Verificar si tenemos el item en inventario
@@ -430,7 +430,7 @@ function M.postear_todos_los_grupos()
         end
     end
     
-    aux.print(string.format('|cFF00FF00%d grupos posteados|r', count))
+    aux.print(string.format(L["|cFF00FF00%d grupos posteados|r"], count))
 end
 
 -- ============================================================================
@@ -504,7 +504,7 @@ function M.crear_grupos_predefinidos()
         post_cap = 1,
     })
     
-    aux.print('|cFF00FF00Grupos predefinidos creados|r')
+    aux.print(L["|cFF00FF00Grupos predefinidos creados|r"])
 end
 
 -- ============================================================================
@@ -513,11 +513,11 @@ end
 
 function M.inicializar_auctioning()
     -- Crear grupos predefinidos si no existen
-    if not auctioning_groups or table.getn(auctioning_groups) == 0 then
+    if not auctioning_groups or getn(auctioning_groups) == 0 then
         M.crear_grupos_predefinidos()
     end
     
-    aux.print('|cFF00FF00Auctioning Module inicializado|r')
+    aux.print(L["|cFF00FF00Auctioning Module inicializado|r"])
 end
 
 -- ============================================================================
@@ -527,19 +527,19 @@ end
 function M.post_all_items()
     -- Postear todos los items de todos los grupos activos
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Debes estar en la Casa de Subastas|r')
+        aux.print(L["|cFFFF0000Debes estar en la Casa de Subastas|r"])
         return false
     end
     
-    aux.print('|cFF00FF00[AUCTIONING] Iniciando posteo masivo...|r')
+    aux.print(L["|cFF00FF00[AUCTIONING] Iniciando posteo masivo...|r"])
     
     local total_posted = 0
     
     for nombre, grupo in pairs(auctioning_groups) do
         if grupo.activo then
-            aux.print(string.format('|cFFFFFF00Procesando grupo: %s|r', nombre))
+            aux.print(string.format(L["|cFFFFFF00Procesando grupo: %s|r"], nombre))
             
-            for i = 1, table.getn(grupo.items) do
+            for i = 1, getn(grupo.items) do
                 local item = grupo.items[i]
                 local item_key = tostring(item.item_id) .. ':0'
                 
@@ -557,31 +557,31 @@ function M.post_all_items()
         end
     end
     
-    aux.print(string.format('|cFF00FF00[AUCTIONING] Posteo completado: %d items posteados|r', total_posted))
+    aux.print(string.format(L["|cFF00FF00[AUCTIONING] Posteo completado: %d items posteados|r"], total_posted))
     return true
 end
 
 function M.cancel_undercut_auctions()
     -- Cancelar subastas que han sido undercut y repostearlas
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Debes estar en la Casa de Subastas|r')
+        aux.print(L["|cFFFF0000Debes estar en la Casa de Subastas|r"])
         return false
     end
     
-    aux.print('|cFF00FF00[AUCTIONING] Escaneando undercuts...|r')
+    aux.print(L["|cFF00FF00[AUCTIONING] Escaneando undercuts...|r"])
     
     local undercuts = M.detectar_undercuts()
     
-    if table.getn(undercuts) == 0 then
-        aux.print('|cFF00FF00No hay undercuts detectados|r')
+    if getn(undercuts) == 0 then
+        aux.print(L["|cFF00FF00No hay undercuts detectados|r"])
         return true
     end
     
-    aux.print(string.format('|cFFFFAA00%d undercuts detectados, cancelando...|r', table.getn(undercuts)))
+    aux.print(string.format(L["|cFFFFAA00%d undercuts detectados, cancelando...|r"], getn(undercuts)))
     
     local cancelled = 0
     
-    for i = 1, table.getn(undercuts) do
+    for i = 1, getn(undercuts) do
         local subasta = undercuts[i]
         
         if M.cancelar_subasta(subasta.index) then
@@ -596,11 +596,11 @@ function M.cancel_undercut_auctions()
         end
     end
     
-    aux.print(string.format('|cFF00FF00%d subastas canceladas|r', cancelled))
+    aux.print(string.format(L["|cFF00FF00%d subastas canceladas|r"], cancelled))
     
     -- Repostear
-    if table.getn(posting_queue) > 0 then
-        aux.print('|cFFFFFF00Reposteando items...|r')
+    if getn(posting_queue) > 0 then
+        aux.print(L["|cFFFFFF00Reposteando items...|r"])
         M.procesar_queue_posteo()
     end
     
@@ -610,18 +610,18 @@ end
 function M.scan_prices()
     -- Escanear precios actuales del mercado para todos los items en grupos
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Debes estar en la Casa de Subastas|r')
+        aux.print(L["|cFFFF0000Debes estar en la Casa de Subastas|r"])
         return false
     end
     
-    aux.print('|cFF00FF00[AUCTIONING] Escaneando precios del mercado...|r')
+    aux.print(L["|cFF00FF00[AUCTIONING] Escaneando precios del mercado...|r"])
     
     local items_to_scan = {}
     
     -- Recopilar todos los items de todos los grupos
     for nombre, grupo in pairs(auctioning_groups) do
         if grupo.activo then
-            for i = 1, table.getn(grupo.items) do
+            for i = 1, getn(grupo.items) do
                 local item = grupo.items[i]
                 local item_key = tostring(item.item_id) .. ':0'
                 items_to_scan[item_key] = item.item_name
@@ -637,18 +637,18 @@ function M.scan_prices()
         
         if lowest_price then
             aux.print(string.format(
-                '|cFFFFFF00%s:|r Precio más bajo: %s | Market: %s',
+                L["|cFFFFFF00%s:|r Precio más bajo: %s | Market: %s"],
                 item_name,
                 format_gold(lowest_price),
                 format_gold(market_value)
             ))
             scanned = scanned + 1
         else
-            aux.print(string.format('|cFFFFAA00%s: Sin competencia|r', item_name))
+            aux.print(string.format(L["|cFFFFAA00%s: Sin competencia|r"], item_name))
         end
     end
     
-    aux.print(string.format('|cFF00FF00[AUCTIONING] Scan completado: %d items escaneados|r', scanned))
+    aux.print(string.format(L["|cFF00FF00[AUCTIONING] Scan completado: %d items escaneados|r"], scanned))
     return true
 end
 
@@ -673,4 +673,4 @@ M.post_all_items = M.post_all_items
 M.cancel_undercut_auctions = M.cancel_undercut_auctions
 M.scan_prices = M.scan_prices
 
-aux.print('[AUCTIONING] Módulo registrado correctamente')
+aux.print(L["[AUCTIONING] Módulo registrado correctamente"])

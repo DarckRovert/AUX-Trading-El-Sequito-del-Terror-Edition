@@ -18,13 +18,14 @@ local export_frame = nil
 -- ============================================================================
 
 local function exportar_a_csv(datos, nombre_archivo)
-    if not datos or table.getn(datos) == 0 then
+    if not datos or getn(datos) == 0 then
         return false, "No hay datos para exportar"
     end
     
     local csv_content = "Item,Precio Compra,Precio Venta,Profit,ROI,Estrategia,Fecha\n"
     
-    for _, item in ipairs(datos) do
+    for j = 1, getn(datos) do
+        local item = datos[j]
         local linea = string.format("%s,%d,%d,%d,%.2f,%s,%s\n",
             item.item_name or "Unknown",
             item.precio_compra or 0,
@@ -50,7 +51,7 @@ local function exportar_a_csv(datos, nombre_archivo)
 end
 
 local function exportar_a_txt(datos, nombre_archivo)
-    if not datos or table.getn(datos) == 0 then
+    if not datos or getn(datos) == 0 then
         return false, "No hay datos para exportar"
     end
     
@@ -60,9 +61,10 @@ local function exportar_a_txt(datos, nombre_archivo)
     txt_content = txt_content .. "=" .. string.rep("=", 70) .. "\n\n"
     
     local total_profit = 0
-    local total_trades = table.getn(datos)
+    local total_trades = getn(datos)
     
-    for i, item in ipairs(datos) do
+    for i = 1, getn(datos) do
+        local item = datos[i]
         txt_content = txt_content .. string.format("%d. %s\n", i, item.item_name or "Unknown")
         txt_content = txt_content .. string.format("   Precio Compra: %s\n", money.to_string(item.precio_compra or 0, true))
         txt_content = txt_content .. string.format("   Precio Venta:  %s\n", money.to_string(item.precio_venta or 0, true))
@@ -94,7 +96,7 @@ local function exportar_a_txt(datos, nombre_archivo)
 end
 
 local function exportar_a_html(datos, nombre_archivo)
-    if not datos or table.getn(datos) == 0 then
+    if not datos or getn(datos) == 0 then
         return false, "No hay datos para exportar"
     end
     
@@ -137,7 +139,8 @@ local function exportar_a_html(datos, nombre_archivo)
     
     local total_profit = 0
     
-    for i, item in ipairs(datos) do
+    for i = 1, getn(datos) do
+        local item = datos[i]
         local profit_class = (item.profit or 0) > 0 and "profit-positive" or "profit-negative"
         html_content = html_content .. string.format([[            <tr>
                 <td>%d</td>
@@ -167,9 +170,9 @@ local function exportar_a_html(datos, nombre_archivo)
     
     <div class="summary">
         <h2>Resumen</h2>
-        <p><strong>Total Trades:</strong> ]] .. table.getn(datos) .. [[</p>
+        <p><strong>Total Trades:</strong> ]] .. getn(datos) .. [[</p>
         <p><strong>Total Profit:</strong> <span class="]] .. (total_profit > 0 and "profit-positive" or "profit-negative") .. [[">]] .. money.to_string(total_profit, true) .. [[</span></p>
-        <p><strong>Avg Profit:</strong> ]] .. money.to_string(total_profit / table.getn(datos), true) .. [[</p>
+        <p><strong>Avg Profit:</strong> ]] .. money.to_string(total_profit / getn(datos), true) .. [[</p>
     </div>
 </body>
 </html>

@@ -64,18 +64,18 @@ function M.record_price(item_key, unit_price)
     local ts = get_timestamp()
     
     -- Add to price samples
-    table.insert(entry.prices, {
+    tinsert(entry.prices, {
         price = unit_price,
         time = ts,
     })
     
     -- Trim old samples if too many
-    while table.getn(entry.prices) > CONFIG.max_samples do
-        table.remove(entry.prices, 1)
+    while getn(entry.prices) > CONFIG.max_samples do
+        tremove(entry.prices, 1)
     end
     
     -- Update statistics
-    entry.sample_count = table.getn(entry.prices)
+    entry.sample_count = getn(entry.prices)
     entry.last_seen = ts
     
     -- Update min/max
@@ -102,7 +102,8 @@ function M.recalculate_market_value(item_key)
     local weight_sum = 0
     local now = get_timestamp()
     
-    for i, sample in ipairs(entry.prices) do
+    for i = 1, getn(entry.prices) do
+        local sample = entry.prices[i]
         -- Weight: more recent = higher weight
         local age_hours = (now - sample.time) / 3600
         local weight = math.max(0.1, 1 - (age_hours / (CONFIG.stale_days * 24)))
@@ -126,7 +127,7 @@ function M.calculate_trend(item_key)
     
     -- Compare recent vs older prices
     local prices = entry.prices
-    local count = table.getn(prices)
+    local count = getn(prices)
     local lookback = math.min(CONFIG.trend_lookback, math.floor(count / 2))
     
     if lookback < 2 then
@@ -194,13 +195,13 @@ end
 function M.get_trend_icon(item_key)
     local trend = M.get_trend(item_key)
     if trend == "up" then
-        return "|cFF00FF00↑|r"
+        return L["↑"]
     elseif trend == "down" then
-        return "|cFFFF0000↓|r"
+        return L["↓"]
     elseif trend == "stable" then
-        return "|cFFFFFF00→|r"
+        return L["→"]
     else
-        return "|cFF888888?|r"
+        return L["?"]
     end
 end
 
@@ -220,13 +221,15 @@ function M.cleanup_price_history()
         else
             -- Clean old price samples
             local new_prices = {}
-            for _, sample in ipairs(entry.prices or {}) do
+            local prices = entry.prices or {}
+            for j = 1, getn(prices) do
+                local sample = prices[j]
                 if sample.time >= stale_threshold then
-                    table.insert(new_prices, sample)
+                    tinsert(new_prices, sample)
                 end
             end
             entry.prices = new_prices
-            entry.sample_count = table.getn(new_prices)
+            entry.sample_count = getn(new_prices)
             
             -- Recalculate if we removed samples
             if entry.sample_count > 0 then
@@ -238,7 +241,7 @@ function M.cleanup_price_history()
     AuxPriceHistory.last_cleanup = now
     
     if removed > 0 then
-        aux.print(string.format("|cFF888888[Price History] Cleaned up %d stale entries|r", removed))
+        aux.print(string.format(L["[Price History] Cleaned up %d stale entries"], removed))
     end
 end
 
@@ -266,7 +269,8 @@ function M.bulk_record_prices(records)
     if not records then return end
     
     local count = 0
-    for _, record in ipairs(records) do
+    for j = 1, getn(records) do
+        local record = records[j]
         if record.item_key and record.unit_buyout_price and record.unit_buyout_price > 0 then
             M.record_price(record.item_key, record.unit_buyout_price)
             count = count + 1
@@ -304,6 +308,6 @@ function aux.handle.LOAD()
     
     local stats = M.get_price_history_stats()
     if stats.items > 0 then
-        aux.print(string.format("|cFF888888[Price History] Loaded %d items with %d samples|r", stats.items, stats.samples))
+        aux.print(string.format(L["[Price History] Loaded %d items with %d samples"], stats.items, stats.samples))
     end
 end

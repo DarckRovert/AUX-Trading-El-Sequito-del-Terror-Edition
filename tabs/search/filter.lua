@@ -153,7 +153,8 @@ end
 
 function set_form(filter)
 	clear_form()
-	for _, component in ipairs(filter.components) do
+	for i = 1, getn(filter.components) do
+		local component = filter.components[i]
 		if component[1] == 'blizzard' then
 			blizzard_query[component[2]] = component[4]
 		else
@@ -199,7 +200,7 @@ function formatted_post_filter(components)
 	local stack = T.temp-T.acquire()
 	local str = ''
 
-	for i, component in ipairs(components) do
+	for i = 1, getn(components) do
 		local component = components[i]
 		if no_line_break then
 			str = str .. ' '
@@ -323,7 +324,9 @@ function set_filter_display_offset(x_offset, y_offset)
 end
 
 function initialize_filter_dropdown()
-	for _, filter in ipairs(T.temp-T.list('and', 'or', 'not', 'price', 'profit', 'vendor-profit', 'disenchant-profit', 'percent', 'disenchant-percent', 'bid-price', 'bid-profit', 'bid-vendor-profit', 'bid-disenchant-profit', 'bid-percent', 'bid-disenchant-percent', 'item', 'tooltip', 'min-level', 'max-level', 'rarity', 'left', 'utilizable', 'seller', 'isgear', 'stack')) do
+	local filters = T.temp-T.list('and', 'or', 'not', 'price', 'profit', 'vendor-profit', 'disenchant-profit', 'percent', 'disenchant-percent', 'bid-price', 'bid-profit', 'bid-vendor-profit', 'bid-disenchant-profit', 'bid-percent', 'bid-disenchant-percent', 'item', 'tooltip', 'min-level', 'max-level', 'rarity', 'left', 'utilizable', 'seller', 'isgear', 'stack')
+	for i = 1, getn(filters) do
+		local filter = filters[i]
 		UIDropDownMenu_AddButton(T.map(
 			'text', filter,
 			'value', filter,
@@ -354,7 +357,9 @@ function initialize_class_dropdown()
 		end
 	end
 	UIDropDownMenu_AddButton(T.map('text', ALL, 'value', 0, 'func', on_click))
-	for i, class in ipairs(T.temp-T.list(GetAuctionItemClasses())) do
+	local classes = T.temp-T.list(GetAuctionItemClasses())
+	for i = 1, getn(classes) do
+		local class = classes[i]
 		UIDropDownMenu_AddButton(T.map('text', class, 'value', i, 'func', on_click))
 	end
 end
@@ -367,7 +372,9 @@ function initialize_subclass_dropdown()
 		end
 	end
 	UIDropDownMenu_AddButton(T.map('text', ALL, 'value', 0, 'func', on_click))
-	for i, subclass in ipairs(T.temp-T.list(GetAuctionItemSubClasses(blizzard_query.class or 0))) do
+	local subclasses = T.temp-T.list(GetAuctionItemSubClasses(blizzard_query.class or 0))
+	for i = 1, getn(subclasses) do
+		local subclass = subclasses[i]
 		UIDropDownMenu_AddButton(T.map('text', subclass, 'value', i, 'func', on_click))
 	end
 end
@@ -378,7 +385,9 @@ function initialize_slot_dropdown()
 		update_form()
 	end
 	UIDropDownMenu_AddButton(T.map('text', ALL, 'value', 0, 'func', on_click))
-	for i, slot in ipairs(T.temp-T.list(GetAuctionInvTypes(blizzard_query.class == 2 and 2 or 0, blizzard_query.subclass or 0))) do
+	local slots = T.temp-T.list(GetAuctionInvTypes(blizzard_query.class == 2 and 2 or 0, blizzard_query.subclass or 0))
+	for i = 1, getn(slots) do
+		local slot = slots[i]
 		UIDropDownMenu_AddButton(T.map('text', _G[slot], 'value', i, 'func', on_click))
 	end
 end

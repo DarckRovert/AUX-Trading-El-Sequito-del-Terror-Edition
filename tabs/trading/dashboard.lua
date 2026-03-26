@@ -7,7 +7,7 @@ local M = getfenv()
 -- Professional Dashboard - Dashboard Profesional con Analytics
 -- ============================================================================
 
-aux.print('[DASHBOARD] Módulo de dashboard cargado')
+aux.print(L["[DASHBOARD] Módulo de dashboard cargado"])
 
 -- ============================================================================
 -- Statistics Tracking
@@ -64,7 +64,8 @@ local function get_legacy_data()
     -- Process sales
     if AuxTradingAccounting.sales then
         for item_key, records in pairs(AuxTradingAccounting.sales) do
-            for _, record in ipairs(records) do
+            for j = 1, getn(records) do
+                local record = records[j]
                 local amount = (record.price or 0) * (record.quantity or 1)
                 legacy_stats.revenue = legacy_stats.revenue + amount
                 legacy_stats.profit = legacy_stats.profit + amount
@@ -76,7 +77,8 @@ local function get_legacy_data()
     -- Process purchases
     if AuxTradingAccounting.purchases then
         for item_key, records in pairs(AuxTradingAccounting.purchases) do
-            for _, record in ipairs(records) do
+            for j = 1, getn(records) do
+                local record = records[j]
                 local amount = (record.price or 0) * (record.quantity or 1)
                 legacy_stats.expenses = legacy_stats.expenses + amount
                 legacy_stats.profit = legacy_stats.profit - amount
@@ -377,13 +379,13 @@ function get_top_items_by_profit(limit)
     end
     
     -- Ordenar por profit total
-    table.sort(items_array, function(a, b)
+    sort(items_array, function(a, b)
         return a.total_profit > b.total_profit
     end)
     
     -- Retornar top N
     local result = {}
-    for i = 1, math.min(limit, table.getn(items_array)) do
+    for i = 1, math.min(limit, getn(items_array)) do
         tinsert(result, items_array[i])
     end
     
@@ -426,13 +428,13 @@ function get_top_items_by_volume(limit)
     end
     
     -- Ordenar por cantidad de trades
-    table.sort(items_array, function(a, b)
+    sort(items_array, function(a, b)
         return a.total_trades > b.total_trades
     end)
     
     -- Retornar top N
     local result = {}
-    for i = 1, math.min(limit, table.getn(items_array)) do
+    for i = 1, math.min(limit, getn(items_array)) do
         tinsert(result, items_array[i])
     end
     
@@ -485,7 +487,7 @@ function get_trade_history(filters)
     end
     
     -- Ordenar por fecha (más reciente primero)
-    table.sort(history, function(a, b)
+    sort(history, function(a, b)
         return (a.sold_at or a.bought_at or 0) > (b.sold_at or b.bought_at or 0)
     end)
     
@@ -536,7 +538,7 @@ end
 function calculate_max_drawdown()
     local chart_data = get_profit_chart_data(90)  -- Últimos 90 días
     
-    if table.getn(chart_data) == 0 then
+    if getn(chart_data) == 0 then
         return 0
     end
     
@@ -544,7 +546,7 @@ function calculate_max_drawdown()
     local max_drawdown = 0
     local cumulative = 0
     
-    for i = 1, table.getn(chart_data) do
+    for i = 1, getn(chart_data) do
         cumulative = cumulative + chart_data[i].net
         
         if cumulative > peak then
@@ -563,25 +565,25 @@ end
 function calculate_profit_volatility()
     local chart_data = get_profit_chart_data(30)  -- Últimos 30 días
     
-    if table.getn(chart_data) < 2 then
+    if getn(chart_data) < 2 then
         return 0
     end
     
     -- Calcular promedio
     local sum = 0
-    for i = 1, table.getn(chart_data) do
+    for i = 1, getn(chart_data) do
         sum = sum + chart_data[i].net
     end
-    local avg = sum / table.getn(chart_data)
+    local avg = sum / getn(chart_data)
     
     -- Calcular desviación estándar
     local variance_sum = 0
-    for i = 1, table.getn(chart_data) do
+    for i = 1, getn(chart_data) do
         local diff = chart_data[i].net - avg
         variance_sum = variance_sum + (diff * diff)
     end
     
-    local std_dev = math.sqrt(variance_sum / table.getn(chart_data))
+    local std_dev = math.sqrt(variance_sum / getn(chart_data))
     
     -- Coeficiente de variación
     if avg ~= 0 then
@@ -594,14 +596,14 @@ end
 function calculate_trades_per_day()
     local chart_data = get_profit_chart_data(30)
     
-    if table.getn(chart_data) == 0 then
+    if getn(chart_data) == 0 then
         return 0
     end
     
     local total_trades = 0
     local days_with_trades = 0
     
-    for i = 1, table.getn(chart_data) do
+    for i = 1, getn(chart_data) do
         if chart_data[i].trades > 0 then
             total_trades = total_trades + chart_data[i].trades
             days_with_trades = days_with_trades + 1
@@ -666,53 +668,53 @@ function generate_text_report(period)
     local report = {}
     
     tinsert(report, '=========================================')
-    tinsert(report, '   REPORTE DE TRADING - AUX ADDON')
+    tinsert(report, L["   REPORTE DE TRADING - AUX ADDON"])
     tinsert(report, '=========================================')
     tinsert(report, '')
-    tinsert(report, 'Fecha: ' .. date('%Y-%m-%d %H:%M:%S', time()))
+    tinsert(report, string.format(L["Fecha: %s"], date('%Y-%m-%d %H:%M:%S', time())))
     tinsert(report, '')
     
     -- Estadísticas generales
-    tinsert(report, '--- ESTADÍSTICAS GENERALES ---')
+    tinsert(report, L["--- ESTADÍSTICAS GENERALES ---"])
     local all_time = dashboard_data.all_time
-    tinsert(report, string.format('Total Trades: %d', all_time.total_trades))
-    tinsert(report, string.format('Trades Exitosos: %d (%.1f%%)', all_time.successful_trades, all_time.success_rate))
-    tinsert(report, string.format('Trades Fallidos: %d', all_time.failed_trades))
+    tinsert(report, string.format(L["Total Trades: %d"], all_time.total_trades))
+    tinsert(report, string.format(L["Trades Exitosos: %d (%.1f%%)"], all_time.successful_trades, all_time.success_rate))
+    tinsert(report, string.format(L["Trades Fallidos: %d"], all_time.failed_trades))
     tinsert(report, '')
     
     -- Profit/Loss
-    tinsert(report, '--- PROFIT/LOSS ---')
-    tinsert(report, string.format('Profit Total: %s', format_money(all_time.total_profit)))
-    tinsert(report, string.format('Loss Total: %s', format_money(all_time.total_loss)))
-    tinsert(report, string.format('Net Profit: %s', format_money(all_time.net_profit)))
-    tinsert(report, string.format('ROI: %.2f%%', all_time.roi))
-    tinsert(report, string.format('Profit por Trade: %s', format_money(all_time.avg_profit_per_trade)))
+    tinsert(report, L["--- PROFIT/LOSS ---"])
+    tinsert(report, string.format(L["Profit Total: %s"], format_money(all_time.total_profit)))
+    tinsert(report, string.format(L["Loss Total: %s"], format_money(all_time.total_loss)))
+    tinsert(report, string.format(L["Net Profit: %s"], format_money(all_time.net_profit)))
+    tinsert(report, string.format(L["ROI: %.2f%%"], all_time.roi))
+    tinsert(report, string.format(L["Profit por Trade: %s"], format_money(all_time.avg_profit_per_trade)))
     tinsert(report, '')
     
     -- Métricas de performance
-    tinsert(report, '--- MÉTRICAS DE PERFORMANCE ---')
-    tinsert(report, string.format('Profit Factor: %.2f', metrics.profit_factor))
-    tinsert(report, string.format('Max Drawdown: %s', format_money(metrics.max_drawdown)))
-    tinsert(report, string.format('Volatilidad: %.2f', metrics.volatility))
-    tinsert(report, string.format('Trades por Día: %.1f', metrics.trades_per_day))
+    tinsert(report, L["--- MÉTRICAS DE PERFORMANCE ---"])
+    tinsert(report, string.format(L["Profit Factor: %.2f"], metrics.profit_factor))
+    tinsert(report, string.format(L["Max Drawdown: %s"], format_money(metrics.max_drawdown)))
+    tinsert(report, string.format(L["Volatilidad: %.2f"], metrics.volatility))
+    tinsert(report, string.format(L["Trades por Día: %.1f"], metrics.trades_per_day))
     tinsert(report, '')
     
     -- Mejores trades
     if all_time.best_trade then
-        tinsert(report, '--- MEJOR TRADE ---')
-        tinsert(report, string.format('Item: %s', all_time.best_trade.item_name or 'Unknown'))
-        tinsert(report, string.format('Profit: %s', format_money(all_time.best_trade.profit)))
+        tinsert(report, L["--- MEJOR TRADE ---"])
+        tinsert(report, string.format(L["Item: %s"], all_time.best_trade.item_name or L["Unknown"]))
+        tinsert(report, string.format(L["Profit: %s"], format_money(all_time.best_trade.profit)))
         tinsert(report, '')
     end
     
     -- Top items
-    tinsert(report, '--- TOP 5 ITEMS POR PROFIT ---')
+    tinsert(report, L["--- TOP 5 ITEMS POR PROFIT ---"])
     local top_items = get_top_items_by_profit(5)
-    for i = 1, table.getn(top_items) do
+    for i = 1, getn(top_items) do
         local item = top_items[i]
-        tinsert(report, string.format('%d. %s - %s (%d trades)', 
+        tinsert(report, string.format(L["%d. %s - %s (%d trades)"], 
             i, 
-            item.item_name or 'Unknown',
+            item.item_name or L["Unknown"],
             format_money(item.total_profit),
             item.total_trades
         ))
@@ -721,7 +723,7 @@ function generate_text_report(period)
     
     tinsert(report, '=========================================')
     
-    return table.concat(report, '\n')
+    return aux_join(report, "\n")
 end
 
 function export_report_to_chat()
@@ -733,7 +735,7 @@ function export_report_to_chat()
         tinsert(lines, line)
     end
     
-    for i = 1, table.getn(lines) do
+    for i = 1, getn(lines) do
         aux.print(lines[i])
     end
 end
@@ -798,7 +800,8 @@ function M.get_real_profit_data(days)
     -- Process AuxTradingAccounting sales
     if AuxTradingAccounting and AuxTradingAccounting.sales then
         for item_key, records in pairs(AuxTradingAccounting.sales) do
-            for _, record in ipairs(records) do
+            for j = 1, getn(records) do
+                local record = records[j]
                 local ts = record.time or 0
                 local day_key = get_day_key(ts)
                 
@@ -815,7 +818,8 @@ function M.get_real_profit_data(days)
     -- Process AuxTradingAccounting purchases
     if AuxTradingAccounting and AuxTradingAccounting.purchases then
         for item_key, records in pairs(AuxTradingAccounting.purchases) do
-            for _, record in ipairs(records) do
+            for k = 1, getn(records) do
+                local record = records[k]
                 local ts = record.time or 0
                 local day_key = get_day_key(ts)
                 
@@ -831,7 +835,7 @@ function M.get_real_profit_data(days)
     -- Convert to array sorted by date
     local result = {}
     for day_key, values in pairs(data) do
-        table.insert(result, {
+        tinsert(result, {
             date = day_key,
             sales = values.sales,
             purchases = values.purchases,
@@ -840,7 +844,7 @@ function M.get_real_profit_data(days)
         })
     end
     
-    table.sort(result, function(a, b) return a.date < b.date end)
+    sort(result, function(a, b) return a.date < b.date end)
     
     return result
 end
@@ -857,14 +861,15 @@ function M.get_top_profitable_items(limit)
             local total_quantity = 0
             local item_name = nil
             
-            for _, record in ipairs(records) do
+            for k = 1, getn(records) do
+                local record = records[k]
                 total_revenue = total_revenue + ((record.price or 0) * (record.quantity or 1))
                 total_quantity = total_quantity + (record.quantity or 1)
                 item_name = item_name or record.name or item_key
             end
             
             if total_revenue > 0 then
-                table.insert(items, {
+                tinsert(items, {
                     item_key = item_key,
                     name = item_name,
                     revenue = total_revenue,
@@ -876,12 +881,12 @@ function M.get_top_profitable_items(limit)
     end
     
     -- Sort by revenue
-    table.sort(items, function(a, b) return a.revenue > b.revenue end)
+    sort(items, function(a, b) return a.revenue > b.revenue end)
     
     -- Return top N
     local result = {}
-    for i = 1, math.min(limit, table.getn(items)) do
-        table.insert(result, items[i])
+    for i = 1, math.min(limit, getn(items)) do
+        tinsert(result, items[i])
     end
     
     return result
@@ -901,18 +906,20 @@ function M.get_graph_bars(days)
     local max_val = 0
     
     -- Find max for normalization
-    for _, entry in ipairs(data) do
+    for j = 1, getn(data) do
+        local entry = data[j]
         local abs_profit = math.abs(entry.profit)
         if abs_profit > max_val then max_val = abs_profit end
     end
     
     local bars = {}
-    for _, entry in ipairs(data) do
+    for j = 1, getn(data) do
+        local entry = data[j]
         local height = 0
         if max_val > 0 then
             height = math.floor((math.abs(entry.profit) / max_val) * 100)
         end
-        table.insert(bars, {
+        tinsert(bars, {
             date = entry.date,
             height = height,
             profit = entry.profit,

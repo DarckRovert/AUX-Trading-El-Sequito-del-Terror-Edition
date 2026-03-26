@@ -237,10 +237,11 @@ function M.actualizar_lista_recetas()
     -- Apply filter if Solo Rentables is active
     local rentables = {}
     if filter_only_profitable then
-        for _, recipe in ipairs(all_rentables) do
+        for j = 1, getn(all_rentables) do
+            local recipe = all_rentables[j]
             -- Only show recipes with positive profit
             if recipe.profit_info and recipe.profit_info.profit and recipe.profit_info.profit > 0 then
-                table.insert(rentables, recipe)
+                tinsert(rentables, recipe)
             end
         end
     else
@@ -249,11 +250,11 @@ function M.actualizar_lista_recetas()
     
     local lista = crafting_panel.recetas_panel.lista
     if not lista then return end -- Guard against nil lista
-    local num_rows = table.getn(lista) -- 12 buttons
+    local num_rows = getn(lista) -- 12 buttons
     if not num_rows or num_rows == 0 then return end -- Guard against nil/zero
     local BUTTON_HEIGHT = 24
     
-    FauxScrollFrame_Update(AuxCraftingRecipeScroll, table.getn(rentables) or 0, num_rows, BUTTON_HEIGHT)
+    FauxScrollFrame_Update(AuxCraftingRecipeScroll, getn(rentables) or 0, num_rows, BUTTON_HEIGHT)
     
     local offset = FauxScrollFrame_GetOffset(AuxCraftingRecipeScroll)
     
@@ -261,7 +262,7 @@ function M.actualizar_lista_recetas()
         local btn = lista[i]
         local index = offset + i
         
-        if index <= table.getn(rentables) then
+        if index <= getn(rentables) then
             local recipe = rentables[index]
             local profit_info = recipe.profit_info
             
@@ -304,7 +305,8 @@ function M.seleccionar_receta(recipe)
      -- Materiales
      local mat_str = ""
      if recipe.reagents then
-        for _, r in ipairs(recipe.reagents) do
+        for j = 1, getn(recipe.reagents) do
+            local r = recipe.reagents[j]
             mat_str = mat_str .. string.format("- %dx %s\n", r.count, r.name)
         end
      end
@@ -377,13 +379,13 @@ function M.actualizar_queue_display()
     
     local queue = M.modules.crafting and M.modules.crafting.obtener_queue() or {}
     
-    if table.getn(queue) == 0 then
+    if getn(queue) == 0 then
         crafting_panel.queue_panel.queue_text:SetText('Vacía')
         return
     end
     
     local queue_str = ''
-    for i = 1, table.getn(queue) do
+    for i = 1, getn(queue) do
         local item = queue[i]
         queue_str = queue_str .. string.format(
             '%dx %s (%d/%d) | ',

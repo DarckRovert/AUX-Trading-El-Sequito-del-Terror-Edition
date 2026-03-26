@@ -9,7 +9,7 @@ local M = getfenv()
 -- Clan: El Séquito del Terror
 -- ============================================================================
 
-aux.print('|cFFFFD700[MONOPOLY_UI]|r Interfaz de monopolios cargada')
+aux.print(L['[MONOPOLY_UI] Interfaz de monopolios cargada'])
 
 -- ============================================================================
 -- Variables
@@ -124,7 +124,7 @@ function M.build_monopoly_panel(parent)
     create_backdrop(nav_bar, COLORS.bg_medium, COLORS.border, 1)
     
     -- Botones de navegación
-    local btn_candidates = create_button(nav_bar, "Candidatos", 90, 25, {0.2, 0.5, 0.3, 0.9})
+    local btn_candidates = create_button(nav_bar, L["Candidates"], 90, 25, {0.2, 0.5, 0.3, 0.9})
     btn_candidates:SetPoint("LEFT", 5, 0)
     btn_candidates:SetScript("OnClick", function()
         current_view = 'candidates'
@@ -132,7 +132,7 @@ function M.build_monopoly_panel(parent)
     end)
     panel.btn_candidates = btn_candidates
     
-    local btn_active = create_button(nav_bar, "Activos", 70, 25, {0.3, 0.4, 0.5, 0.9})
+    local btn_active = create_button(nav_bar, L["Active"], 70, 25, {0.3, 0.4, 0.5, 0.9})
     btn_active:SetPoint("LEFT", btn_candidates, "RIGHT", 5, 0)
     btn_active:SetScript("OnClick", function()
         current_view = 'active'
@@ -140,7 +140,7 @@ function M.build_monopoly_panel(parent)
     end)
     panel.btn_active = btn_active
     
-    local btn_watchlist = create_button(nav_bar, "Watchlist", 80, 25, {0.3, 0.4, 0.5, 0.9})
+    local btn_watchlist = create_button(nav_bar, L["Watchlist"], 80, 25, {0.3, 0.4, 0.5, 0.9})
     btn_watchlist:SetPoint("LEFT", btn_active, "RIGHT", 5, 0)
     btn_watchlist:SetScript("OnClick", function()
         current_view = 'watchlist'
@@ -148,7 +148,7 @@ function M.build_monopoly_panel(parent)
     end)
     panel.btn_watchlist = btn_watchlist
     
-    local btn_history = create_button(nav_bar, "Historial", 70, 25, {0.3, 0.4, 0.5, 0.9})
+    local btn_history = create_button(nav_bar, L["History"], 70, 25, {0.3, 0.4, 0.5, 0.9})
     btn_history:SetPoint("LEFT", btn_watchlist, "RIGHT", 5, 0)
     btn_history:SetScript("OnClick", function()
         current_view = 'history'
@@ -157,7 +157,7 @@ function M.build_monopoly_panel(parent)
     panel.btn_history = btn_history
     
     -- Botón de escanear
-    local btn_scan = create_button(nav_bar, "Buscar Oportunidades", 130, 25, {0.6, 0.4, 0.1, 0.9})
+    local btn_scan = create_button(nav_bar, L["Search for Opportunities"], 130, 25, {0.6, 0.4, 0.1, 0.9})
     btn_scan:SetPoint("RIGHT", -5, 0)
     btn_scan:SetScript("OnClick", function()
         M.scan_for_monopoly_candidates()
@@ -171,12 +171,12 @@ function M.build_monopoly_panel(parent)
     stats_panel:SetHeight(100)
     create_backdrop(stats_panel, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(stats_panel, "|cFFFFD700Estadísticas|r", 11, nil, "TOP", stats_panel, "TOP", 0, -8)
+    create_text(stats_panel, L["Statistics"], 11, nil, "TOP", stats_panel, "TOP", 0, -8)
     
-    panel.stats_total = create_text(stats_panel, "Monopolios: 0", 10, COLORS.white, "TOPLEFT", stats_panel, "TOPLEFT", 10, -28)
-    panel.stats_success = create_text(stats_panel, "Exitosos: 0", 10, COLORS.green, "TOPLEFT", stats_panel, "TOPLEFT", 10, -43)
-    panel.stats_profit = create_text(stats_panel, "Profit Total: 0g", 10, COLORS.gold, "TOPLEFT", stats_panel, "TOPLEFT", 10, -58)
-    panel.stats_roi = create_text(stats_panel, "ROI Promedio: 0%", 10, COLORS.yellow, "TOPLEFT", stats_panel, "TOPLEFT", 10, -73)
+    panel.stats_total = create_text(stats_panel, string.format(L["Monopolies: %d"], 0), 10, COLORS.white, "TOPLEFT", stats_panel, "TOPLEFT", 10, -28)
+    panel.stats_success = create_text(stats_panel, string.format(L["Successful: %d"], 0), 10, COLORS.green, "TOPLEFT", stats_panel, "TOPLEFT", 10, -43)
+    panel.stats_profit = create_text(stats_panel, string.format(L["Total Profit: %s"], "0g"), 10, COLORS.gold, "TOPLEFT", stats_panel, "TOPLEFT", 10, -58)
+    panel.stats_roi = create_text(stats_panel, string.format(L["Average ROI: %.1f%%"], 0), 10, COLORS.yellow, "TOPLEFT", stats_panel, "TOPLEFT", 10, -73)
     
     panel.stats_panel = stats_panel
     
@@ -187,20 +187,20 @@ function M.build_monopoly_panel(parent)
     detail_panel:SetHeight(100)
     create_backdrop(detail_panel, COLORS.bg_medium, COLORS.border, 1)
     
-    panel.detail_title = create_text(detail_panel, "|cFFFFD700Selecciona un item|r", 11, nil, "TOP", detail_panel, "TOP", 0, -8)
+    panel.detail_title = create_text(detail_panel, L["Select an item"], 11, nil, "TOP", detail_panel, "TOP", 0, -8)
     panel.detail_score = create_text(detail_panel, "", 10, COLORS.white, "TOPLEFT", detail_panel, "TOPLEFT", 10, -28)
     panel.detail_sellers = create_text(detail_panel, "", 10, COLORS.white, "TOPLEFT", detail_panel, "TOPLEFT", 10, -43)
     panel.detail_cost = create_text(detail_panel, "", 10, COLORS.white, "TOPLEFT", detail_panel, "TOPLEFT", 10, -58)
     panel.detail_profit = create_text(detail_panel, "", 10, COLORS.white, "TOPLEFT", detail_panel, "TOPLEFT", 10, -73)
     
     -- Botones de acción en detalle
-    local btn_start = create_button(detail_panel, "Iniciar Monopolio", 110, 22, {0.2, 0.6, 0.2, 0.9})
+    local btn_start = create_button(detail_panel, L["Start Monopoly"], 110, 22, {0.2, 0.6, 0.2, 0.9})
     btn_start:SetPoint("TOPRIGHT", detail_panel, "TOPRIGHT", -10, -28)
     btn_start:SetScript("OnClick", function()
         if selected_candidate then
             M.start_monopoly_from_ui(selected_candidate)
         else
-            aux.print("|cFFFF0000[MONOPOLY]|r Selecciona un candidato primero")
+            aux.print(L["[MONOPOLY] Select a candidate first"])
         end
     end)
     panel.btn_start = btn_start
@@ -224,12 +224,12 @@ function M.build_monopoly_panel(parent)
     list_header:SetHeight(22)
     create_backdrop(list_header, {0.12, 0.12, 0.15, 1}, COLORS.border, 1)
     
-    create_text(list_header, "Item", 10, COLORS.gray, "LEFT", list_header, "LEFT", 10, 0)
-    create_text(list_header, "Score", 10, COLORS.gray, "LEFT", list_header, "LEFT", 180, 0)
-    create_text(list_header, "Sellers", 10, COLORS.gray, "LEFT", list_header, "LEFT", 240, 0)
-    create_text(list_header, "Stock", 10, COLORS.gray, "LEFT", list_header, "LEFT", 300, 0)
-    create_text(list_header, "Costo Total", 10, COLORS.gray, "LEFT", list_header, "LEFT", 360, 0)
-    create_text(list_header, "Profit Est.", 10, COLORS.gray, "LEFT", list_header, "LEFT", 450, 0)
+    create_text(list_header, L["Item"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 10, 0)
+    create_text(list_header, L["Score"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 180, 0)
+    create_text(list_header, L["Sellers"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 240, 0)
+    create_text(list_header, L["Stock"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 300, 0)
+    create_text(list_header, L["Total Cost"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 360, 0)
+    create_text(list_header, L["Est. Profit"], 10, COLORS.gray, "LEFT", list_header, "LEFT", 450, 0)
     
     -- Container de lista con scroll
     local list_container = CreateFrame("Frame", nil, panel)
@@ -310,7 +310,7 @@ function M.build_monopoly_panel(parent)
         panel.rows[i] = row
     end
     
-    panel.no_items = create_text(list_container, "Haz clic en 'Buscar Oportunidades' después de un Full Scan", 11, COLORS.gray, "CENTER")
+    panel.no_items = create_text(list_container, L["Click 'Search for Opportunities' after a Full Scan"], 11, COLORS.gray, "CENTER")
     
     monopoly_frame = panel
     return panel
@@ -328,12 +328,12 @@ function M.select_candidate(candidate)
     -- Actualizar panel de detalle
     if monopoly_frame then
         monopoly_frame.detail_title:SetText("|cFFFFD700" .. (candidate.item_name or candidate.item_key) .. "|r")
-        monopoly_frame.detail_score:SetText(string.format("Score: %s%d|r %s", 
+        monopoly_frame.detail_score:SetText(string.format(L["Score: %s%d|r %s"], 
             get_score_color(candidate.score), candidate.score, get_score_stars(candidate.score)))
-        monopoly_frame.detail_sellers:SetText(string.format("Vendedores: |cFFFFFFFF%d|r | Stock: |cFFFFFFFF%d|r", 
+        monopoly_frame.detail_sellers:SetText(string.format(L["Sellers: |cFFFFFFFF%d|r | Stock: |cFFFFFFFF%d|r"], 
             candidate.unique_sellers, candidate.total_stock))
-        monopoly_frame.detail_cost:SetText(string.format("Costo total: %s", format_gold(candidate.total_buyout_cost)))
-        monopoly_frame.detail_profit:SetText(string.format("Profit potencial: %s (+%.0f%%)", 
+        monopoly_frame.detail_cost:SetText(string.format(L["Total cost: %s"], format_gold(candidate.total_buyout_cost)))
+        monopoly_frame.detail_profit:SetText(string.format(L["Potential profit: %s (+%.0f%%)"], 
             format_gold(candidate.potential_profit), candidate.profit_margin * 100))
     end
     
@@ -363,7 +363,7 @@ function M.scan_for_monopoly_candidates()
     end
     
     if not scan_results or getn(scan_results) == 0 then
-        aux.print("|cFFFF0000[MONOPOLY]|r No hay resultados de scan. Haz un Full Scan primero.")
+        aux.print(L["[MONOPOLY] No scan results. Perform a Full Scan first."])
         return
     end
     
@@ -372,7 +372,7 @@ function M.scan_for_monopoly_candidates()
         monopoly_candidates = M.find_monopoly_candidates(scan_results, 30)
         M.refresh_monopoly_ui()
     else
-        aux.print("|cFFFF0000[MONOPOLY]|r Función find_monopoly_candidates no disponible")
+        aux.print(L["[MONOPOLY] find_monopoly_candidates function not available"])
     end
 end
 
@@ -392,10 +392,10 @@ function M.start_monopoly_from_ui(candidate)
             candidate.suggested_resale_price
         )
         
-        aux.print("|cFF00FF00[MONOPOLY]|r ¡Monopolio iniciado!")
+        aux.print(L["Monopoly started!"])
         aux.print(string.format("  Item: %s", candidate.item_name or candidate.item_key))
-        aux.print(string.format("  Inversión: %s", format_gold(candidate.total_buyout_cost)))
-        aux.print(string.format("  Precio objetivo: %s", format_gold(candidate.suggested_resale_price)))
+        aux.print(string.format(L["Investment: %s"], format_gold(candidate.total_buyout_cost)))
+        aux.print(string.format(L["Target price: %s"], format_gold(candidate.suggested_resale_price)))
         
         M.refresh_monopoly_ui()
     end
@@ -410,15 +410,15 @@ function M.refresh_monopoly_ui()
     
     -- Actualizar estadísticas
     local stats = M.get_monopoly_stats and M.get_monopoly_stats() or {}
-    monopoly_frame.stats_total:SetText(string.format("Monopolios: |cFFFFFFFF%d|r", stats.total_monopolies or 0))
-    monopoly_frame.stats_success:SetText(string.format("Exitosos: |cFF00FF00%d|r", stats.successful or 0))
-    monopoly_frame.stats_profit:SetText(string.format("Profit Total: %s", format_gold(stats.total_profit or 0)))
+    monopoly_frame.stats_total:SetText(string.format(L["Monopolies: %d"], stats.total_monopolies or 0))
+    monopoly_frame.stats_success:SetText(string.format(L["Successful: %d"], stats.successful or 0))
+    monopoly_frame.stats_profit:SetText(string.format(L["Total Profit: %s"], format_gold(stats.total_profit or 0)))
     
     local avg_roi = 0
     if stats.total_invested and stats.total_invested > 0 then
         avg_roi = ((stats.total_profit or 0) / stats.total_invested) * 100
     end
-    monopoly_frame.stats_roi:SetText(string.format("ROI Promedio: |cFFFFFF00%.1f%%|r", avg_roi))
+    monopoly_frame.stats_roi:SetText(string.format(L["Average ROI: %.1f%%"], avg_roi))
     
     -- Actualizar lista según vista actual
     local items = {}
@@ -442,7 +442,16 @@ function M.refresh_monopoly_ui()
         end
     elseif current_view == 'watchlist' then
         local watchlist = M.get_watchlist and M.get_watchlist() or {}
-        for item_key, item in pairs(watchlist) do
+        -- Convert watchlist (dictionary) to an array for manual iteration
+        local watchlist_array = {}
+        for key, value in pairs(watchlist) do
+            tinsert(watchlist_array, {item_key = key, item_data = value})
+        end
+
+        for i = 1, getn(watchlist_array) do
+            local entry = watchlist_array[i]
+            local item_key = entry.item_key
+            local item = entry.item_data
             tinsert(items, {
                 item_key = item_key,
                 item_name = item.item_name,
@@ -519,7 +528,7 @@ function M.refresh_monopoly_ui()
             else
                 row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
             end
-            row.name:SetText(item.item_name or item.item_key or "Unknown")
+            row.name:SetText(item.item_name or item.item_key or L["Desconocido"])
             row.score:SetText(string.format("%s%d|r", get_score_color(item.score or 0), item.score or 0))
             row.sellers:SetText(tostring(item.unique_sellers or 0))
             row.stock:SetText(tostring(item.total_stock or 0))
@@ -552,4 +561,4 @@ M.modules.monopoly_ui = {
     select = M.select_candidate,
 }
 
-aux.print('|cFF00FF00[MONOPOLY_UI]|r Interfaz registrada correctamente')
+aux.print(L['[MONOPOLY_UI] Interface registered successfully'])

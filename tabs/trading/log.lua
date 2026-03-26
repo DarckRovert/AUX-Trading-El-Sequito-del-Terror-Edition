@@ -9,6 +9,8 @@ module 'aux.tabs.trading.log'
 local aux = require 'aux'
 
 local M = getfenv()
+local L = require('aux.tabs.trading').L
+local aux_join = require('aux.tabs.trading').aux_join
 
 -- ============================================
 -- COLORES
@@ -30,50 +32,50 @@ M.colors = {
 M.reasons = {
     -- Razones de escaneo
     scan = {
-        started = {"Escaneo iniciado", M.colors.CYAN},
-        completed = {"Escaneo completado", M.colors.GREEN},
-        stopped = {"Escaneo detenido", M.colors.ORANGE},
-        error = {"Error en escaneo", M.colors.RED},
-        no_results = {"Sin resultados", M.colors.ORANGE},
-        found_opportunity = {"Oportunidad encontrada!", M.colors.GREEN}
+        started = {L["Escaneo iniciado"], M.colors.CYAN},
+        completed = {L["Escaneo completado"], M.colors.GREEN},
+        stopped = {L["Escaneo detenido"], M.colors.ORANGE},
+        error = {L["Error en escaneo"], M.colors.RED},
+        no_results = {L["Sin resultados"], M.colors.ORANGE},
+        found_opportunity = {L["Oportunidad encontrada!"], M.colors.GREEN}
     },
     
     -- Razones de evaluacion
     evaluate = {
-        no_market_data = {"Sin datos de mercado", M.colors.ORANGE},
-        low_profit_margin = {"Margen de ganancia bajo", M.colors.ORANGE},
-        invalid_price = {"Precio invalido", M.colors.RED},
-        below_threshold = {"Bajo el umbral minimo", M.colors.ORANGE},
-        good_deal = {"Buena oportunidad!", M.colors.GREEN},
-        excellent_deal = {"Excelente oportunidad!", M.colors.GOLD},
-        vendor_profit = {"Ganancia por vendor", M.colors.CYAN}
+        no_market_data = {L["Sin datos de mercado"], M.colors.ORANGE},
+        low_profit_margin = {L["Margen de ganancia bajo"], M.colors.ORANGE},
+        invalid_price = {L["Precio invalido"], M.colors.RED},
+        below_threshold = {L["Bajo el umbral minimo"], M.colors.ORANGE},
+        good_deal = {L["Buena oportunidad!"], M.colors.GREEN},
+        excellent_deal = {L["Excelente oportunidad!"], M.colors.GOLD},
+        vendor_profit = {L["Ganancia por vendor"], M.colors.CYAN}
     },
     
     -- Razones de compra
     buy = {
-        success = {"Compra exitosa", M.colors.GREEN},
-        failed = {"Compra fallida", M.colors.RED},
-        not_enough_gold = {"Oro insuficiente", M.colors.RED},
-        auction_gone = {"Subasta ya no existe", M.colors.ORANGE},
-        outbid = {"Superado por otra oferta", M.colors.ORANGE}
+        success = {L["Compra exitosa"], M.colors.GREEN},
+        failed = {L["Compra fallida"], M.colors.RED},
+        not_enough_gold = {L["Oro insuficiente"], M.colors.RED},
+        auction_gone = {L["Subasta ya no existe"], M.colors.ORANGE},
+        outbid = {L["Superado por otra oferta"], M.colors.ORANGE}
     },
     
     -- Razones de post
     post = {
-        success = {"Posteado exitosamente", M.colors.GREEN},
-        failed = {"Error al postear", M.colors.RED},
-        not_enough_items = {"Items insuficientes", M.colors.ORANGE},
-        below_threshold = {"Precio bajo umbral", M.colors.ORANGE},
-        undercut = {"Haciendo undercut", M.colors.CYAN},
-        at_market = {"A precio de mercado", M.colors.GREEN}
+        success = {L["Posteado exitosamente"], M.colors.GREEN},
+        failed = {L["Error al postear"], M.colors.RED},
+        not_enough_items = {L["Items insuficientes"], M.colors.ORANGE},
+        below_threshold = {L["Precio bajo umbral"], M.colors.ORANGE},
+        undercut = {L["Haciendo undercut"], M.colors.CYAN},
+        at_market = {L["A precio de mercado"], M.colors.GREEN}
     },
     
     -- Razones de cancel
     cancel = {
-        undercut = {"Te han hecho undercut", M.colors.RED},
-        repost_higher = {"Cancelando para repostear mas alto", M.colors.CYAN},
-        has_bid = {"Tiene oferta activa", M.colors.ORANGE},
-        expired = {"Subasta expirada", M.colors.GRAY}
+        undercut = {L["Te han hecho undercut"], M.colors.RED},
+        repost_higher = {L["Cancelando para repostear mas alto"], M.colors.CYAN},
+        has_bid = {L["Tiene oferta activa"], M.colors.ORANGE},
+        expired = {L["Subasta expirada"], M.colors.GRAY}
     }
 }
 
@@ -104,11 +106,11 @@ function M.add(category, reason, item_key, extra_data)
         data = extra_data
     }
     
-    table.insert(log_records, 1, record)  -- Insertar al inicio
+    tinsert(log_records, 1, record)  -- Insertar al inicio
     
     -- Limitar cantidad de registros
-    while table.getn(log_records) > MAX_RECORDS do
-        table.remove(log_records)
+    while getn(log_records) > MAX_RECORDS do
+        tremove(log_records)
     end
     
     return record
@@ -149,10 +151,11 @@ function M.get_filtered(category, limit)
     limit = limit or 50
     local filtered = {}
     
-    for _, record in ipairs(log_records) do
+    for j = 1, getn(log_records) do
+        local record = log_records[j]
         if not category or record.category == category then
-            table.insert(filtered, record)
-            if table.getn(filtered) >= limit then
+            tinsert(filtered, record)
+            if getn(filtered) >= limit then
                 break
             end
         end
@@ -166,10 +169,11 @@ function M.get_for_item(item_key, limit)
     limit = limit or 20
     local filtered = {}
     
-    for _, record in ipairs(log_records) do
+    for j = 1, getn(log_records) do
+        local record = log_records[j]
         if record.item_key == item_key then
-            table.insert(filtered, record)
-            if table.getn(filtered) >= limit then
+            tinsert(filtered, record)
+            if getn(filtered) >= limit then
                 break
             end
         end
@@ -192,7 +196,8 @@ end
 -- Contar registros por categoria
 function M.count_by_category()
     local counts = {}
-    for _, record in ipairs(log_records) do
+    for j = 1, getn(log_records) do
+        local record = log_records[j]
         counts[record.category] = (counts[record.category] or 0) + 1
     end
     return counts
@@ -269,7 +274,8 @@ function M.export_to_string(limit)
     limit = limit or 100
     local lines = {}
     
-    for i, record in ipairs(log_records) do
+    for i = 1, getn(log_records) do
+        local record = log_records[i]
         if i > limit then break end
         
         local line = string.format("%s | %s | %s | %s",
@@ -277,10 +283,10 @@ function M.export_to_string(limit)
             record.category,
             record.message,
             record.item_key or "")
-        table.insert(lines, line)
+        tinsert(lines, line)
     end
     
-    return table.concat(lines, "\n")
+    return aux_join(lines, "\n")
 end
 
 -- ============================================
@@ -322,4 +328,4 @@ function M.buy_failed(item_key, reason)
     return M.add_and_print("buy", reason or "failed", item_key)
 end
 
-aux.print('[TRADING] Modulo Log cargado')
+aux.print(L['[TRADING] Modulo Log cargado'])

@@ -36,10 +36,11 @@ local function buscar_items(query)
     
     -- Buscar en oportunidades actuales
     if aux.trading and aux.trading.oportunidades then
-        for _, opp in ipairs(aux.trading.oportunidades) do
+        for j = 1, getn(aux.trading.oportunidades) do
+            local opp = aux.trading.oportunidades[j]
             local item_name = string.lower(opp.item_name or "")
             if string.find(item_name, query, 1, true) then
-                table.insert(resultados, {
+                tinsert(resultados, {
                     type = "oportunidad",
                     item_name = opp.item_name,
                     item_key = opp.item_key,
@@ -54,11 +55,13 @@ local function buscar_items(query)
     
     -- Buscar en historial de trades
     if aux.trading and aux.trading.historial then
-        for _, trade in ipairs(aux.trading.historial) do
+        for j = 1, getn(aux.trading.historial) do
+            local trade = aux.trading.historial[j]
             local item_name = string.lower(trade.item_name or "")
             if string.find(item_name, query, 1, true) then
                 local found = false
-                for _, r in ipairs(resultados) do
+                for k = 1, getn(resultados) do
+                    local r = resultados[k]
                     if r.item_key == trade.item_key then
                         found = true
                         break
@@ -66,7 +69,7 @@ local function buscar_items(query)
                 end
                 
                 if not found then
-                    table.insert(resultados, {
+                    tinsert(resultados, {
                         type = "historial",
                         item_name = trade.item_name,
                         item_key = trade.item_key,
@@ -81,10 +84,10 @@ local function buscar_items(query)
     
     -- Limitar resultados
     local max_results = 50
-    if table.getn(resultados) > max_results then
+    if getn(resultados) > max_results then
         local temp = {}
         for i = 1, max_results do
-            table.insert(temp, resultados[i])
+            tinsert(temp, resultados[i])
         end
         resultados = temp
     end
@@ -97,9 +100,10 @@ local function buscar_por_categoria(categoria)
     local resultados = {}
     
     if aux.trading and aux.trading.oportunidades then
-        for _, opp in ipairs(aux.trading.oportunidades) do
+        for j = 1, getn(aux.trading.oportunidades) do
+            local opp = aux.trading.oportunidades[j]
             if opp.categoria == categoria then
-                table.insert(resultados, {
+                tinsert(resultados, {
                     type = "oportunidad",
                     item_name = opp.item_name,
                     item_key = opp.item_key,
@@ -120,10 +124,11 @@ local function buscar_por_precio(min_precio, max_precio)
     local resultados = {}
     
     if aux.trading and aux.trading.oportunidades then
-        for _, opp in ipairs(aux.trading.oportunidades) do
+        for j = 1, getn(aux.trading.oportunidades) do
+            local opp = aux.trading.oportunidades[j]
             local precio = opp.precio_compra or 0
             if precio >= min_precio and precio <= max_precio then
-                table.insert(resultados, {
+                tinsert(resultados, {
                     type = "oportunidad",
                     item_name = opp.item_name,
                     item_key = opp.item_key,
@@ -144,10 +149,11 @@ local function buscar_por_profit(min_profit)
     local resultados = {}
     
     if aux.trading and aux.trading.oportunidades then
-        for _, opp in ipairs(aux.trading.oportunidades) do
+        for j = 1, getn(aux.trading.oportunidades) do
+            local opp = aux.trading.oportunidades[j]
             local profit = opp.profit_estimado or 0
             if profit >= min_profit then
-                table.insert(resultados, {
+                tinsert(resultados, {
                     type = "oportunidad",
                     item_name = opp.item_name,
                     item_key = opp.item_key,
@@ -178,12 +184,13 @@ local function obtener_sugerencias(query)
     
     -- Obtener items únicos
     if aux.trading and aux.trading.oportunidades then
-        for _, opp in ipairs(aux.trading.oportunidades) do
+        for j = 1, getn(aux.trading.oportunidades) do
+            local opp = aux.trading.oportunidades[j]
             local item_name = opp.item_name or ""
             local item_lower = string.lower(item_name)
             
             if string.find(item_lower, query, 1, true) and not items_vistos[item_name] then
-                table.insert(sugerencias, item_name)
+                tinsert(sugerencias, item_name)
                 items_vistos[item_name] = true
             end
         end
@@ -191,10 +198,10 @@ local function obtener_sugerencias(query)
     
     -- Limitar sugerencias
     local max_sugerencias = 10
-    if table.getn(sugerencias) > max_sugerencias then
+    if getn(sugerencias) > max_sugerencias then
         local temp = {}
         for i = 1, max_sugerencias do
-            table.insert(temp, sugerencias[i])
+            tinsert(temp, sugerencias[i])
         end
         sugerencias = temp
     end
@@ -209,7 +216,8 @@ local function mostrar_autocompletado(sugerencias)
     
     -- Limpiar sugerencias anteriores
     if autocomplete_items then
-        for _, item in ipairs(autocomplete_items) do
+        for j = 1, getn(autocomplete_items) do
+            local item = autocomplete_items[j]
             if item.frame then
                 item.frame:Hide()
             end
@@ -217,7 +225,7 @@ local function mostrar_autocompletado(sugerencias)
     end
     autocomplete_items = {}
     
-    if table.getn(sugerencias) == 0 then
+    if getn(sugerencias) == 0 then
         autocomplete_frame:Hide()
         return
     end
@@ -227,7 +235,8 @@ local function mostrar_autocompletado(sugerencias)
     
     -- Crear items de sugerencia
     local y_offset = -5
-    for i, sugerencia in ipairs(sugerencias) do
+    for j = 1, getn(sugerencias) do
+        local sugerencia = sugerencias[j]
         local item_frame = CreateFrame("Button", nil, autocomplete_frame)
         item_frame:SetSize(280, 20)
         item_frame:SetPoint("TOPLEFT", 5, y_offset)
@@ -262,12 +271,12 @@ local function mostrar_autocompletado(sugerencias)
             autocomplete_frame:Hide()
         end)
         
-        table.insert(autocomplete_items, {frame = item_frame, text = sugerencia})
+        tinsert(autocomplete_items, {frame = item_frame, text = sugerencia})
         y_offset = y_offset - 22
     end
     
     -- Ajustar tamaño del frame
-    local height = math.min(table.getn(sugerencias) * 22 + 10, 200)
+    local height = math.min(getn(sugerencias) * 22 + 10, 200)
     autocomplete_frame:SetHeight(height)
 end
 
@@ -281,19 +290,20 @@ local function agregar_a_historial(query)
     end
     
     -- Evitar duplicados
-    for i, item in ipairs(search_history) do
+    for j = 1, getn(search_history) do
+        local item = search_history[j]
         if item == query then
-            table.remove(search_history, i)
+            tremove(search_history, j)
             break
         end
     end
     
     -- Agregar al inicio
-    table.insert(search_history, 1, query)
+    tinsert(search_history, 1, query)
     
     -- Limitar tamaño
-    if table.getn(search_history) > max_history then
-        table.remove(search_history, table.getn(search_history))
+    if getn(search_history) > max_history then
+        tremove(search_history, getn(search_history))
     end
 end
 
@@ -318,7 +328,8 @@ local function mostrar_resultados(resultados)
     
     -- Limpiar resultados anteriores
     if search_results_frame.items then
-        for _, item in ipairs(search_results_frame.items) do
+        for j = 1, getn(search_results_frame.items) do
+            local item = search_results_frame.items[j]
             if item.frame then
                 item.frame:Hide()
             end
@@ -326,7 +337,7 @@ local function mostrar_resultados(resultados)
     end
     search_results_frame.items = {}
     
-    if table.getn(resultados) == 0 then
+    if getn(resultados) == 0 then
         -- Mostrar mensaje de no resultados
         local no_results = search_results_frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
         no_results:SetPoint("CENTER", 0, 0)
@@ -343,7 +354,8 @@ local function mostrar_resultados(resultados)
     
     -- Crear items de resultado
     local y_offset = -10
-    for i, resultado in ipairs(resultados) do
+    for j = 1, getn(resultados) do
+        local resultado = resultados[j]
         local item_frame = CreateFrame("Button", nil, search_results_frame)
         item_frame:SetSize(560, 40)
         item_frame:SetPoint("TOPLEFT", 10, y_offset)
@@ -351,7 +363,7 @@ local function mostrar_resultados(resultados)
         -- Fondo
         local bg = item_frame:CreateTexture(nil, "BACKGROUND")
         bg:SetAllPoints()
-        if math.mod(i, 2) == 0 then
+        if math.mod(j, 2) == 0 then
             bg:SetColorTexture(0.15, 0.15, 0.15, 0.8)
         else
             bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
@@ -413,7 +425,7 @@ local function mostrar_resultados(resultados)
         end)
         
         item_frame:SetScript("OnLeave", function(self)
-            if math.mod(i, 2) == 0 then
+            if math.mod(j, 2) == 0 then
                 self.bg:SetColorTexture(0.15, 0.15, 0.15, 0.8)
             else
                 self.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
@@ -429,7 +441,7 @@ local function mostrar_resultados(resultados)
             end
         end)
         
-        table.insert(search_results_frame.items, {frame = item_frame, data = resultado})
+        tinsert(search_results_frame.items, {frame = item_frame, data = resultado})
         y_offset = y_offset - 42
     end
 end
@@ -600,7 +612,7 @@ end
 local function actualizar_search()
     -- Actualizar estadísticas
     if search_frame and search_frame.stats_text then
-        local count = table.getn(search_results)
+        local count = getn(search_results)
         if count == 0 then
             search_frame.stats_text:SetText("0 resultados encontrados")
         elseif count == 1 then

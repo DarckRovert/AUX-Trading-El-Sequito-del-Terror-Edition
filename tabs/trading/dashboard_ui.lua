@@ -7,7 +7,7 @@ local M = getfenv()
 -- Dashboard UI - Interfaz Visual Profesional para Estadísticas
 -- ============================================================================
 
-aux.print('[DASHBOARD_UI] Módulo de interfaz de dashboard cargado')
+aux.print(L["[DASHBOARD_UI] Módulo de interfaz de dashboard cargado"])
 
 -- ============================================================================
 -- Variables
@@ -194,7 +194,7 @@ function M.crear_dashboard_ui(parent)
     
     local titulo_hoy = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo_hoy:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_hoy:SetText('|cFFFFD700📊 ESTADÍSTICAS DE HOY|r')
+    titulo_hoy:SetText(L["|cFFFFD700📊 ESTADÍSTICAS DE HOY|r"])
     y_offset = y_offset - 30
     
     -- Panel de estadísticas principales
@@ -211,7 +211,7 @@ function M.crear_dashboard_ui(parent)
     local col1_x = 15
     stats_panel.profit_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.profit_label:SetPoint('TOPLEFT', stats_panel, 'TOPLEFT', col1_x, -10)
-    stats_panel.profit_label:SetText('|cFF00FF00Profit:|r')
+    stats_panel.profit_label:SetText(L["|cFF00FF00Profit:|r"])
     
     stats_panel.profit_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     stats_panel.profit_value:SetPoint('TOPLEFT', stats_panel.profit_label, 'BOTTOMLEFT', 0, -5)
@@ -219,7 +219,7 @@ function M.crear_dashboard_ui(parent)
     
     stats_panel.loss_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.loss_label:SetPoint('TOPLEFT', stats_panel.profit_value, 'BOTTOMLEFT', 0, -5)
-    stats_panel.loss_label:SetText('|cFFFF4444Loss:|r')
+    stats_panel.loss_label:SetText(L["|cFFFF4444Loss:|r"])
     
     stats_panel.loss_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.loss_value:SetPoint('LEFT', stats_panel.loss_label, 'RIGHT', 5, 0)
@@ -229,7 +229,7 @@ function M.crear_dashboard_ui(parent)
     local col2_x = 180
     stats_panel.trades_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.trades_label:SetPoint('TOPLEFT', stats_panel, 'TOPLEFT', col2_x, -10)
-    stats_panel.trades_label:SetText('|cFFFFFFFFTrades:|r')
+    stats_panel.trades_label:SetText(L["|cFFFFFFFFTrades:|r"])
     
     stats_panel.trades_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     stats_panel.trades_value:SetPoint('TOPLEFT', stats_panel.trades_label, 'BOTTOMLEFT', 0, -5)
@@ -237,7 +237,7 @@ function M.crear_dashboard_ui(parent)
     
     stats_panel.roi_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.roi_label:SetPoint('TOPLEFT', stats_panel.trades_value, 'BOTTOMLEFT', 0, -5)
-    stats_panel.roi_label:SetText('|cFFFFAA00ROI:|r')
+    stats_panel.roi_label:SetText(L["|cFFFFAA00ROI:|r"])
     
     stats_panel.roi_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.roi_value:SetPoint('LEFT', stats_panel.roi_label, 'RIGHT', 5, 0)
@@ -247,7 +247,7 @@ function M.crear_dashboard_ui(parent)
     local col3_x = 340
     stats_panel.winrate_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.winrate_label:SetPoint('TOPLEFT', stats_panel, 'TOPLEFT', col3_x, -10)
-    stats_panel.winrate_label:SetText('|cFF88FF00Win Rate:|r')
+    stats_panel.winrate_label:SetText(L["|cFF88FF00Win Rate:|r"])
     
     stats_panel.winrate_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     stats_panel.winrate_value:SetPoint('TOPLEFT', stats_panel.winrate_label, 'BOTTOMLEFT', 0, -5)
@@ -255,7 +255,7 @@ function M.crear_dashboard_ui(parent)
     
     stats_panel.avg_label = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.avg_label:SetPoint('TOPLEFT', stats_panel.winrate_value, 'BOTTOMLEFT', 0, -5)
-    stats_panel.avg_label:SetText('|cFFAAAAFFAvg:|r')
+    stats_panel.avg_label:SetText(L["|cFFAAAAFFAvg:|r"])
     
     stats_panel.avg_value = stats_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     stats_panel.avg_value:SetPoint('LEFT', stats_panel.avg_label, 'RIGHT', 5, 0)
@@ -270,7 +270,7 @@ function M.crear_dashboard_ui(parent)
     
     local titulo_grafico = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo_grafico:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_grafico:SetText('|cFFFFD700📈 PROFIT/LOSS (Últimos 7 días)|r')
+    titulo_grafico:SetText(L["|cFFFFD700📈 PROFIT/LOSS (Últimos 7 días)|r"])
     y_offset = y_offset - 30
     
     local grafico_panel = CreateFrame('Frame', nil, content)
@@ -289,7 +289,7 @@ function M.crear_dashboard_ui(parent)
         local barra = grafico_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
         barra:SetPoint('TOPLEFT', grafico_panel, 'TOPLEFT', 10, -10 - ((i-1) * 24))
         barra:SetJustifyH('LEFT')
-        barra:SetText(dias[i] .. ': 0g')
+        barra:SetText(dias[i] .. L[": 0g"])
         grafico_panel.barras[i] = barra
     end
     
@@ -302,7 +302,7 @@ function M.crear_dashboard_ui(parent)
     
     local titulo_top = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo_top:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_top:SetText('|cFFFFD700🏆 TOP 5 ITEMS MÁS RENTABLES|r')
+    titulo_top:SetText(L["|cFFFFD700🏆 TOP 5 ITEMS MÁS RENTABLES|r"])
     y_offset = y_offset - 30
     
     local top_panel = CreateFrame('Frame', nil, content)
@@ -319,7 +319,7 @@ function M.crear_dashboard_ui(parent)
         local item_text = top_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
         item_text:SetPoint('TOPLEFT', top_panel, 'TOPLEFT', 10, -10 - ((i-1) * 25))
         item_text:SetJustifyH('LEFT')
-        item_text:SetText(i .. '. Sin datos')
+        item_text:SetText(i .. ". " .. L["Sin datos"])
         top_panel.items[i] = item_text
     end
     
@@ -332,7 +332,7 @@ function M.crear_dashboard_ui(parent)
     
     local titulo_perf = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo_perf:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_perf:SetText('|cFFFFD700📊 MÉTRICAS DE PERFORMANCE|r')
+    titulo_perf:SetText(L["|cFFFFD700📊 MÉTRICAS DE PERFORMANCE|r"])
     y_offset = y_offset - 30
     
     local perf_panel = CreateFrame('Frame', nil, content)
@@ -347,27 +347,27 @@ function M.crear_dashboard_ui(parent)
     perf_panel.roi = perf_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     perf_panel.roi:SetPoint('TOPLEFT', perf_panel, 'TOPLEFT', 10, -10)
     perf_panel.roi:SetJustifyH('LEFT')
-    perf_panel.roi:SetText('ROI: 0%')
+    perf_panel.roi:SetText(L["ROI: 0%"])
     
     perf_panel.profit_factor = perf_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     perf_panel.profit_factor:SetPoint('TOPLEFT', perf_panel.roi, 'BOTTOMLEFT', 0, -5)
     perf_panel.profit_factor:SetJustifyH('LEFT')
-    perf_panel.profit_factor:SetText('Profit Factor: 0.00')
+    perf_panel.profit_factor:SetText(L["Profit Factor: 0.00"])
     
     perf_panel.max_drawdown = perf_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     perf_panel.max_drawdown:SetPoint('TOPLEFT', perf_panel.profit_factor, 'BOTTOMLEFT', 0, -5)
     perf_panel.max_drawdown:SetJustifyH('LEFT')
-    perf_panel.max_drawdown:SetText('Max Drawdown: 0g')
+    perf_panel.max_drawdown:SetText(L["Max Drawdown: 0g"])
     
     perf_panel.volatility = perf_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     perf_panel.volatility:SetPoint('TOPLEFT', perf_panel.max_drawdown, 'BOTTOMLEFT', 0, -5)
     perf_panel.volatility:SetJustifyH('LEFT')
-    perf_panel.volatility:SetText('Volatilidad: 0g')
+    perf_panel.volatility:SetText(L["Volatilidad: 0g"])
     
     perf_panel.trades_per_day = perf_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     perf_panel.trades_per_day:SetPoint('TOPLEFT', perf_panel.volatility, 'BOTTOMLEFT', 0, -5)
     perf_panel.trades_per_day:SetJustifyH('LEFT')
-    perf_panel.trades_per_day:SetText('Trades por día: 0.0')
+    perf_panel.trades_per_day:SetText(L["Trades por día: 0.0"])
     
     f.perf_panel = perf_panel
     y_offset = y_offset - 130
@@ -378,7 +378,7 @@ function M.crear_dashboard_ui(parent)
     
     local titulo_rec = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo_rec:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_rec:SetText('|cFFFFD700💡 RECOMENDACIONES|r')
+    titulo_rec:SetText(L["|cFFFFD700💡 RECOMENDACIONES|r"])
     y_offset = y_offset - 30
     
     local rec_panel = CreateFrame('Frame', nil, content)
@@ -395,7 +395,7 @@ function M.crear_dashboard_ui(parent)
     rec_panel.text:SetPoint('BOTTOMRIGHT', rec_panel, 'BOTTOMRIGHT', -10, 10)
     rec_panel.text:SetJustifyH('LEFT')
     rec_panel.text:SetJustifyV('TOP')
-    rec_panel.text:SetText('• Cargando recomendaciones...')
+    rec_panel.text:SetText(L["• Cargando recomendaciones..."])
     
     f.rec_panel = rec_panel
     
@@ -409,7 +409,7 @@ function M.crear_dashboard_ui(parent)
     btn_refresh:SetWidth(120)
     btn_refresh:SetHeight(24)
     btn_refresh:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    btn_refresh:SetText('Actualizar')
+    btn_refresh:SetText(L["Actualizar"])
     btn_refresh:SetScript('OnClick', function()
         M.actualizar_dashboard_ui()
     end)
@@ -418,14 +418,14 @@ function M.crear_dashboard_ui(parent)
     btn_export:SetWidth(120)
     btn_export:SetHeight(24)
     btn_export:SetPoint('LEFT', btn_refresh, 'RIGHT', 5, 0)
-    btn_export:SetText('Exportar Reporte')
+    btn_export:SetText(L["Exportar Reporte"])
     btn_export:SetScript('OnClick', function()
         local dashboard_module = M.modules and M.modules.dashboard
         if dashboard_module and dashboard_module.export_report_to_chat then
             dashboard_module.export_report_to_chat()
-            aux.print('|cFF00FF00Reporte exportado al chat|r')
+            aux.print(L["|cFF00FF00Reporte exportado al chat|r"])
         else
-            aux.print('|cFFFF0000Función de exportar no disponible|r')
+            aux.print(L["|cFFFF0000Función de exportar no disponible|r"])
         end
     end)
     
@@ -474,9 +474,10 @@ function M.actualizar_dashboard_ui()
             graph_bars = M.modules.dashboard.get_graph_bars(7)
         end
         
-        if graph_bars and table.getn(graph_bars) > 0 then
+        if graph_bars and getn(graph_bars) > 0 then
             local max_profit = 1
-            for _, bar in ipairs(graph_bars) do
+            for j = 1, getn(graph_bars) do
+                local bar = graph_bars[j]
                 if math.abs(bar.profit) > max_profit then
                     max_profit = math.abs(bar.profit)
                 end
@@ -491,14 +492,16 @@ function M.actualizar_dashboard_ui()
                     local texto = string.format('%s: %s%s %s|r', day_label, color, barra, format_gold(bar_data.profit))
                     f.grafico_panel.barras[i]:SetText(texto)
                 else
-                    f.grafico_panel.barras[i]:SetText('--: Sin datos')
+                    f.grafico_panel.barras[i]:SetText(L["--: Sin datos"])
                 end
             end
         else
             -- Fallback to week data if new functions not available
             local dias = {'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'}
             local max_profit = 1
-            for _, profit in ipairs(datos.week.daily_profits or {}) do
+            local daily_profits = datos.week.daily_profits or {}
+            for j = 1, getn(daily_profits) do
+                local profit = daily_profits[j]
                 if math.abs(profit) > max_profit then
                     max_profit = math.abs(profit)
                 end
@@ -522,20 +525,20 @@ function M.actualizar_dashboard_ui()
             real_top_items = M.modules.dashboard.get_top_profitable_items(5)
         end
         
-        if real_top_items and table.getn(real_top_items) > 0 then
+        if real_top_items and getn(real_top_items) > 0 then
             for i = 1, 5 do
                 local item = real_top_items[i]
                 if item then
                     local texto = string.format('%d. |cFFFFFFFF%s|r - %s%s|r (%d sold)',
                         i,
-                        item.name or 'Unknown',
+                        item.name or L["Unknown"],
                         color_profit(item.revenue),
                         format_gold(item.revenue),
                         item.quantity or 0
                     )
                     f.top_panel.items[i]:SetText(texto)
                 else
-                    f.top_panel.items[i]:SetText(i .. '. Sin datos')
+                    f.top_panel.items[i]:SetText(i .. ". " .. L["Sin datos"])
                 end
             end
         else
@@ -545,14 +548,14 @@ function M.actualizar_dashboard_ui()
                 if item then
                     local texto = string.format('%d. |cFFFFFFFF%s|r - %s%s|r (%d trades)',
                         i,
-                        item.item_name or 'Unknown',
+                        item.item_name or L["Unknown"],
                         color_profit(item.total_profit),
                         format_gold(item.total_profit),
                         item.trade_count or 0
                     )
                     f.top_panel.items[i]:SetText(texto)
                 else
-                    f.top_panel.items[i]:SetText(i .. '. Sin datos')
+                    f.top_panel.items[i]:SetText(i .. ". " .. L["Sin datos"])
                 end
             end
         end
@@ -563,13 +566,13 @@ function M.actualizar_dashboard_ui()
         local pp = f.perf_panel
         local perf = datos.performance
         
-        pp.roi:SetText(string.format('ROI: %s%.1f%%|r', color_percentage((perf.roi or 0) * 100), (perf.roi or 0) * 100))
-        pp.profit_factor:SetText(string.format('Profit Factor: %s%.2f|r', 
+        pp.roi:SetText(string.format(L["ROI: %s%.1f%%|r"], color_percentage((perf.roi or 0) * 100), (perf.roi or 0) * 100))
+        pp.profit_factor:SetText(string.format(L["Profit Factor: %s%.2f|r"], 
             (perf.profit_factor or 0) >= 2 and '|cFF00FF00' or '|cFFFFAA00', 
             perf.profit_factor or 0))
-        pp.max_drawdown:SetText(string.format('Max Drawdown: |cFFFF4444%s|r', format_gold(perf.max_drawdown or 0)))
-        pp.volatility:SetText(string.format('Volatilidad: |cFFFFAA00%s|r', format_gold(perf.volatility or 0)))
-        pp.trades_per_day:SetText(string.format('Trades por día: |cFFFFFFFF%.1f|r', perf.trades_per_day or 0))
+        pp.max_drawdown:SetText(string.format(L["Max Drawdown: |cFFFF4444%s|r"], format_gold(perf.max_drawdown or 0)))
+        pp.volatility:SetText(string.format(L["Volatilidad: |cFFFFAA00%s|r"], format_gold(perf.volatility or 0)))
+        pp.trades_per_day:SetText(string.format(L["Trades por día: |cFFFFFFFF%.1f|r"], perf.trades_per_day or 0))
     end
     
     -- Actualizar recomendaciones
@@ -578,38 +581,38 @@ function M.actualizar_dashboard_ui()
         
         -- Recomendación basada en ROI
         if datos.today.roi and datos.today.roi > 0.25 then
-            table.insert(recomendaciones, '• |cFF00FF00Excelente día! ROI > 25%|r')
+            tinsert(recomendaciones, L["• |cFF00FF00Excelente día! ROI > 25%|r"])
         elseif datos.today.roi and datos.today.trades and datos.today.roi < 0.10 and datos.today.trades > 5 then
-            table.insert(recomendaciones, '• |cFFFFAA00ROI bajo. Considera ajustar estrategias|r')
+            tinsert(recomendaciones, L["• |cFFFFAA00ROI bajo. Considera ajustar estrategias|r"])
         end
         
         -- Recomendación basada en win rate
         if datos.today.win_rate and datos.today.trades and datos.today.win_rate < 0.60 and datos.today.trades > 10 then
-            table.insert(recomendaciones, '• |cFFFF4444Win rate bajo. Revisa tus criterios de compra|r')
+            tinsert(recomendaciones, L["• |cFFFF4444Win rate bajo. Revisa tus criterios de compra|r"])
         elseif datos.today.win_rate and datos.today.win_rate > 0.80 then
-            table.insert(recomendaciones, '• |cFF00FF00Excelente win rate! Mantén la estrategia|r')
+            tinsert(recomendaciones, L["• |cFF00FF00Excelente win rate! Mantén la estrategia|r"])
         end
         
         -- Recomendación basada en actividad
         if datos.today.trades and datos.today.trades == 0 then
-            table.insert(recomendaciones, '• |cFFFFFFFFInicia un scan para encontrar oportunidades|r')
+            tinsert(recomendaciones, L["• |cFFFFFFFFInicia un scan para encontrar oportunidades|r"])
         elseif datos.today.trades and datos.today.trades < 5 then
-            table.insert(recomendaciones, '• |cFFFFAA00Poca actividad hoy. Considera hacer más scans|r')
+            tinsert(recomendaciones, L["• |cFFFFAA00Poca actividad hoy. Considera hacer más scans|r"])
         end
         
         -- Recomendación de ML patterns
         local ml_module = M.modules and M.modules.ml_patterns
         if ml_module and ml_module.get_best_time_to_sell then
             -- Aquí podrías añadir recomendaciones basadas en ML
-            table.insert(recomendaciones, '• |cFF88FF00Mejor hora para vender: 18:00-22:00|r')
+            tinsert(recomendaciones, L["• |cFF88FF00Mejor hora para vender: 18:00-22:00|r"])
         end
         
-        if table.getn(recomendaciones) == 0 then
-            table.insert(recomendaciones, '• |cFFFFFFFFSigue escaneando para acumular datos|r')
+        if getn(recomendaciones) == 0 then
+            tinsert(recomendaciones, L["• |cFFFFFFFFSigue escaneando para acumular datos|r"])
         end
         
         if f.rec_panel and f.rec_panel.text then
-            f.rec_panel.text:SetText(table.concat(recomendaciones, '\n'))
+            f.rec_panel.text:SetText(aux_join(recomendaciones, "\n"))
         end
     end
     
@@ -622,7 +625,7 @@ end
 
 function M.mostrar_dashboard()
     if not dashboard_frame then
-        aux.print('|cFFFF0000Dashboard UI no inicializado|r')
+        aux.print(L["|cFFFF0000Dashboard UI no inicializado|r"])
         return
     end
     
@@ -661,4 +664,4 @@ M.modules.dashboard_ui.mostrar_dashboard = M.mostrar_dashboard
 M.modules.dashboard_ui.ocultar_dashboard = M.ocultar_dashboard
 M.modules.dashboard_ui.dashboard_ui_on_update = M.dashboard_ui_on_update
 
-aux.print('|cFF00FF00[DASHBOARD_UI]|r Interfaz de dashboard lista')
+aux.print(L["|cFF00FF00[DASHBOARD_UI]|r Interfaz de dashboard lista"])

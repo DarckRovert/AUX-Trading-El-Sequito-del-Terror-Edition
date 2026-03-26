@@ -8,7 +8,7 @@ local post = require 'aux.core.post'
 -- Advanced Automation - Automatización Avanzada de Trading
 -- ============================================================================
 
-aux.print('[AUTOMATION] Módulo de automatización cargado')
+aux.print(L['[AUTOMATION] Módulo de automatización cargado'])
 
 -- Obtener referencia al módulo para acceder a funciones de helpers
 local M = getfenv()
@@ -290,7 +290,7 @@ function add_to_repost_queue(auction)
         added_at = time(),
     })
     
-    aux.print(string.format('|cFFFFFF00[Auto-Repost]|r %s agregado a cola de repost', auction.item_name or 'Item'))
+    aux.print(string.format(L['[Auto-Repost] %s agregado a cola de repost'], auction.item_name or 'Item'))
 end
 
 function process_repost_queue()
@@ -305,7 +305,7 @@ function process_repost_queue()
     local pricing = calculate_optimal_price(repost_item.item_key, repost_item.count)
     
     if not pricing.success then
-        aux.print(string.format('|cFFFF0000[Auto-Repost]|r Error calculando precio para %s', repost_item.item_name or 'Item'))
+        aux.print(string.format(L['[Auto-Repost] Error calculando precio para %s'], repost_item.item_name or 'Item'))
         tremove(repost_queue, 1)
         return
     end
@@ -314,7 +314,7 @@ function process_repost_queue()
     local cancelled = cancel_auction(repost_item.auction_id)
     
     if not cancelled then
-        aux.print(string.format('|cFFFF0000[Auto-Repost]|r No se pudo cancelar subasta de %s', repost_item.item_name or 'Item'))
+        aux.print(string.format(L['[Auto-Repost] No se pudo cancelar subasta de %s'], repost_item.item_name or 'Item'))
         tremove(repost_queue, 1)
         return
     end
@@ -326,7 +326,7 @@ function process_repost_queue()
     repost_item.cancel_time = time()
     
     aux.print(string.format(
-        '|cFF00FF00[Auto-Repost]|r %s cancelado. Nuevo precio: %s (antes: %s)',
+        L['[Auto-Repost] %s cancelado. Nuevo precio: %s (antes: %s)'],
         repost_item.item_name or 'Item',
         format_money(pricing.suggested_price),
         format_money(repost_item.old_price)
@@ -335,8 +335,8 @@ function process_repost_queue()
     -- Notificar si está habilitado
     if M.modules and M.modules.notifications then
         M.modules.notifications.info(
-            'Auto-Repost',
-            string.format('%s will be reposted at %s', repost_item.item_name or 'Item', format_money(pricing.suggested_price)),
+            L['Auto-Repost'],
+            string.format(L['%s will be reposted at %s'], repost_item.item_name or 'Item', format_money(pricing.suggested_price)),
             5
         )
     end
@@ -395,7 +395,8 @@ function execute_auto_posting()
     local items_to_post = filter_items_for_posting(bag_items)
     
     -- Postear cada item
-    for i, item in ipairs(items_to_post) do
+    for i = 1, getn(items_to_post) do
+        local item = items_to_post[i]
         post_item_intelligently(item)
     end
 end
@@ -403,7 +404,8 @@ end
 function filter_items_for_posting(bag_items)
     local result = {}
     
-    for i, item in ipairs(bag_items) do
+    for i = 1, getn(bag_items) do
+        local item = bag_items[i]
         -- Verificar si el item es vendible
         if is_item_postable(item) then
             tinsert(result, item)
@@ -441,13 +443,13 @@ function post_item_intelligently(item)
     local pricing = calculate_optimal_price(item.item_key, item.count)
     
     if not pricing.success then
-        aux.print(string.format('|cFFFF8800[Auto-Post]|r No se pudo calcular precio para %s', item.name or item.item_key))
+        aux.print(string.format(L['[Auto-Post] No se pudo calcular precio para %s'], item.name or item.item_key))
         return false
     end
     
     -- Verificar margen de ganancia
     if pricing.profit_margin < auto_post_config.min_profit_margin then
-        aux.print(string.format('|cFFFF8800[Auto-Post]|r %s: Margen muy bajo (%.1f%%)', item.name or item.item_key, pricing.profit_margin * 100))
+        aux.print(string.format(L['[Auto-Post] %s: Margen muy bajo (%.1f%%)'], item.name or item.item_key, pricing.profit_margin * 100))
         return false
     end
     
@@ -459,11 +461,10 @@ function post_item_intelligently(item)
     
     if success then
         aux.print(string.format(
-            '|cFF00FF00[Auto-Post]|r %s x%d posted at %s (margin: %.1f%%)',
+            L['[AUTO-POST] Item posteado: %s x%d @ %s'],
             item.name or item.item_key,
             item.count,
-            format_money(pricing.suggested_price),
-            pricing.profit_margin * 100
+            format_money(pricing.suggested_price)
         ))
         
         -- Registrar en tracking
@@ -478,7 +479,7 @@ function post_item_intelligently(item)
         
         return true
     else
-        aux.print(string.format('|cFFFF0000[Auto-Post]|r Error posting %s', item.name or item.item_key))
+        aux.print(string.format(L['|cFFFF0000[Auto-Post]|r Error posting %s'], item.name or item.item_key))
         return false
     end
 end
@@ -515,13 +516,13 @@ function post_item_to_ah(item, price, duration)
     
     -- Verificar que estamos en el AH
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('[AUTO-POST] Error: No estás en la Casa de Subastas')
+        aux.print(L['[AUTO-POST] Error: No estás en la Casa de Subastas'])
         return false
     end
     
     -- Verificar que el item existe en el bag
     if not item.bag or not item.slot then
-        aux.print('[AUTO-POST] Error: Item no tiene bag/slot válido')
+        aux.print(L['[AUTO-POST] Error: Item no tiene bag/slot válido'])
         return false
     end
     
@@ -542,13 +543,13 @@ function post_item_to_ah(item, price, duration)
         local success = post.start(post_data)
         
         if success then
-            aux.print(string.format('[AUTO-POST] Item posteado: %s x%d @ %s', 
+            aux.print(string.format(L['[AUTO-POST] Item posteado: %s x%d @ %s'], 
                 item.name or item.item_key, 
                 item.count, 
                 format_money(price)))
             return true
         else
-            aux.print('[AUTO-POST] Error: post.start() falló')
+            aux.print(L['[AUTO-POST] Error: post.start() falló'])
             return false
         end
     else
@@ -563,7 +564,7 @@ function post_item_to_ah(item, price, duration)
         local bid = math.floor(price * 0.95)
         StartAuction(bid, price, duration or 2)
         
-        aux.print(string.format('[AUTO-POST] Item posteado (fallback): %s x%d @ %s', 
+        aux.print(string.format(L['[AUTO-POST] Item posteado (fallback): %s x%d @ %s'], 
             item.name or item.item_key, 
             item.count, 
             format_money(price)))
@@ -622,12 +623,12 @@ function organize_inventory()
         consolidate_stacks(items)
     end
     
-    aux.print('[AUTOMATION] Inventario organizado')
+    aux.print(L['[AUTOMATION] Inventario organizado'])
 end
 
 function consolidate_stacks(items)
     -- Ordenar por cantidad (menor a mayor)
-    table.sort(items, function(a, b)
+    sort(items, function(a, b)
         return a.count < b.count
     end)
     
@@ -690,7 +691,7 @@ function create_shopping_list(name, items)
     
     shopping_lists[name] = list
     
-    aux.print(string.format('[AUTOMATION] Lista de compras "%s" creada', name))
+    aux.print(string.format(L['[AUTOMATION] Lista de compras \"%s\" creada'], name))
     
     return list
 end
@@ -723,7 +724,7 @@ function scan_shopping_list(list_name)
     
     local list = shopping_lists[list_name]
     
-    aux.print(string.format('[AUTOMATION] Escaneando lista: %s', list_name))
+    aux.print(string.format(L['[AUTOMATION] Escaneando lista: %s'], list_name))
     
     -- Escanear cada item de la lista
     for i = 1, getn(list.items) do
@@ -759,7 +760,7 @@ function scan_for_shopping_item(item, auto_buy)
     end
     
     -- Ordenar por precio (menor a mayor)
-    table.sort(auctions, function(a, b)
+    sort(auctions, function(a, b)
         local price_a = a.unit_buyout_price or a.buyout_price or 999999999
         local price_b = b.unit_buyout_price or b.buyout_price or 999999999
         return price_a < price_b
@@ -769,7 +770,8 @@ function scan_for_shopping_item(item, auto_buy)
     local found_count = 0
     local total_cost = 0
     
-    for i, auction in ipairs(auctions) do
+    for i = 1, getn(auctions) do
+        local auction = auctions[i]
         local unit_price = auction.unit_buyout_price or auction.buyout_price or 0
         
         if unit_price > 0 and unit_price <= item.max_price then

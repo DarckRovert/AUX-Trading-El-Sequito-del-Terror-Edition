@@ -7,7 +7,7 @@ local M = getfenv()
 -- Config UI - Panel de Configuración Profesional
 -- ============================================================================
 
-aux.print('[CONFIG_UI] Módulo de configuración cargado')
+aux.print(L['[CONFIG_UI] Módulo de configuración cargado'])
 
 -- ============================================================================
 -- Variables
@@ -67,8 +67,8 @@ end
 
 -- Popup Definition
 StaticPopupDialogs["AUX_CONFIG_EXPORT"] = {
-    text = "Configuración Exportada (Ctrl+C para copiar):",
-    button1 = "Cerrar",
+    text = L["Configuración Exportada (Ctrl+C para copiar):"],
+    button1 = L["Cerrar"],
     hasEditBox = 1,
     maxLetters = 99999,
     OnShow = function()
@@ -239,13 +239,13 @@ local function aplicar_perfil(profile_name)
     current_profile = profile_name
     local profile = profiles[profile_name]
     if not profile then
-        aux.print('|cFFFF0000Perfil no encontrado:|r ' .. tostring(profile_name))
+        aux.print(L['Perfil no encontrado:'] .. ' ' .. tostring(profile_name))
         return
     end
     
     -- Aplicar configuración al sistema usando la integración UI
-    aux.print('|cFF00FF00[Trading]|r Aplicando perfil: ' .. profile.name)
-    aux.print('|cFFFFFFFF' .. profile.description .. '|r')
+    aux.print(L['[Trading]'] .. ' ' .. L['Aplicando perfil: '] .. L[profile.name])
+    aux.print('|cFFFFFFFF' .. L[profile.description] .. '|r')
     
     -- Aplicar configuración real
     -- Aplicar configuración real
@@ -253,7 +253,7 @@ local function aplicar_perfil(profile_name)
         M.set_config(profile.config)
     end
     
-    aux.print('|cFF00FF00[Trading]|r Perfil aplicado correctamente')
+    aux.print(L['[Trading]'] .. ' ' .. L['Perfil aplicado correctamente'])
     current_profile = profile_name
 end
 
@@ -296,7 +296,7 @@ function M.crear_config_ui(parent)
     
     local titulo = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormalLarge')
     titulo:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo:SetText('|cFFFFD700⚙️ CONFIGURACIÓN DEL SISTEMA|r')
+    titulo:SetText(L['⚙️ CONFIGURACIÓN DEL SISTEMA'])
     y_offset = y_offset - 35
     
     -- ========================================
@@ -305,7 +305,7 @@ function M.crear_config_ui(parent)
     
     local titulo_perfil = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     titulo_perfil:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_perfil:SetText('|cFFFFFFFF📋 PERFIL DE TRADING|r')
+    titulo_perfil:SetText(L['📋 PERFIL DE TRADING'])
     y_offset = y_offset - 25
     
     -- Botones de perfil
@@ -313,13 +313,14 @@ function M.crear_config_ui(parent)
     local profile_names = {'principiante', 'intermedio', 'avanzado', 'experto'}
     local btn_x = 10
     
-    for i, profile_name in ipairs(profile_names) do
+    for i = 1, getn(profile_names) do
+        local profile_name = profile_names[i]
         local profile = profiles[profile_name]
         local btn = CreateFrame('Button', nil, content, 'UIPanelButtonTemplate')
         btn:SetWidth(110)
         btn:SetHeight(24)
         btn:SetPoint('TOPLEFT', content, 'TOPLEFT', btn_x, y_offset)
-        btn:SetText(profile.name)
+        btn:SetText(L[profile.name])
         btn.profile_name = profile_name
         
         btn:SetScript('OnClick', function()
@@ -329,8 +330,8 @@ function M.crear_config_ui(parent)
         
         btn:SetScript('OnEnter', function()
             GameTooltip:SetOwner(this, 'ANCHOR_RIGHT')
-            GameTooltip:AddLine(profile.name, 1, 0.82, 0)
-            GameTooltip:AddLine(profile.description, 1, 1, 1, true)
+            GameTooltip:AddLine(L[profile.name], 1, 0.82, 0)
+            GameTooltip:AddLine(L[profile.description], 1, 1, 1, true)
             GameTooltip:Show()
         end)
         
@@ -350,7 +351,7 @@ function M.crear_config_ui(parent)
     
     local titulo_limites = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     titulo_limites:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_limites:SetText('|cFFFFFFFF💰 LÍMITES DE INVERSIÓN|r')
+    titulo_limites:SetText(L['💰 LÍMITES DE INVERSIÓN'])
     y_offset = y_offset - 25
     
     local limites_panel = CreateFrame('Frame', nil, content)
@@ -365,7 +366,7 @@ function M.crear_config_ui(parent)
     -- Inversión diaria
     local daily_label = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
     daily_label:SetPoint('TOPLEFT', limites_panel, 'TOPLEFT', 10, -10)
-    daily_label:SetText('Inversión máxima diaria:')
+    daily_label:SetText(L['Inversión máxima diaria:'])
     
     local daily_value = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     daily_value:SetPoint('LEFT', daily_label, 'RIGHT', 10, 0)
@@ -375,7 +376,7 @@ function M.crear_config_ui(parent)
     -- Inversión por item
     local item_label = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
     item_label:SetPoint('TOPLEFT', daily_label, 'BOTTOMLEFT', 0, -10)
-    item_label:SetText('Inversión máxima por item:')
+    item_label:SetText(L['Inversión máxima por objeto:'])
     
     local item_value = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     item_value:SetPoint('LEFT', item_label, 'RIGHT', 10, 0)
@@ -385,7 +386,7 @@ function M.crear_config_ui(parent)
     -- Portfolio máximo
     local portfolio_label = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
     portfolio_label:SetPoint('TOPLEFT', item_label, 'BOTTOMLEFT', 0, -10)
-    portfolio_label:SetText('Portfolio máximo:')
+    portfolio_label:SetText(L['Portfolio máximo:'])
     
     local portfolio_value = limites_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     portfolio_value:SetPoint('LEFT', portfolio_label, 'RIGHT', 10, 0)
@@ -401,7 +402,7 @@ function M.crear_config_ui(parent)
     
     local titulo_estrategias = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     titulo_estrategias:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_estrategias:SetText('|cFFFFFFFF📊 ESTRATEGIAS|r')
+    titulo_estrategias:SetText(L['📊 ESTRATEGIAS'])
     y_offset = y_offset - 25
     
     local estrategias_panel = CreateFrame('Frame', nil, content)
@@ -420,7 +421,7 @@ function M.crear_config_ui(parent)
     
     local flipping_label = estrategias_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     flipping_label:SetPoint('LEFT', flipping_check, 'RIGHT', 5, 0)
-    flipping_label:SetText('|cFF00FF00Flipping|r - Margen mín: 15% | Max inv: 5g')
+    flipping_label:SetText(L['Flipping'] .. " - " .. L['Margen mín: 15% | Max inv: 5g'])
     
     -- Sniping
     local sniping_check = CreateFrame('CheckButton', nil, estrategias_panel, 'UICheckButtonTemplate')
@@ -429,7 +430,7 @@ function M.crear_config_ui(parent)
     
     local sniping_label = estrategias_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     sniping_label:SetPoint('LEFT', sniping_check, 'RIGHT', 5, 0)
-    sniping_label:SetText('|cFFFFAA00Sniping|r - Descuento: 40% | Max: 10g')
+    sniping_label:SetText(L['Sniping'] .. " - " .. L['Descuento: 40% | Max: 10g'])
     
     -- Market Reset
     local reset_check = CreateFrame('CheckButton', nil, estrategias_panel, 'UICheckButtonTemplate')
@@ -438,7 +439,7 @@ function M.crear_config_ui(parent)
     
     local reset_label = estrategias_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     reset_label:SetPoint('LEFT', reset_check, 'RIGHT', 5, 0)
-    reset_label:SetText('|cFFFF4444Market Reset|r - Markup: 30% | Max: 50g')
+    reset_label:SetText(L['Market Reset'] .. " - " .. L['Markup: 30% | Max: 50g'])
     
     -- Arbitraje
     local arbitrage_check = CreateFrame('CheckButton', nil, estrategias_panel, 'UICheckButtonTemplate')
@@ -447,7 +448,7 @@ function M.crear_config_ui(parent)
     
     local arbitrage_label = estrategias_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     arbitrage_label:SetPoint('LEFT', arbitrage_check, 'RIGHT', 5, 0)
-    arbitrage_label:SetText('|cFF88FF00Arbitraje|r - Diferencia: 20%')
+    arbitrage_label:SetText(L['Arbitraje'] .. " - " .. L['Diferencia: 20%'])
     
     f.estrategias_panel = estrategias_panel
     y_offset = y_offset - 180 -- Aumentado de 160 para más espacio
@@ -458,7 +459,7 @@ function M.crear_config_ui(parent)
     
     local titulo_auto = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     titulo_auto:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_auto:SetText('|cFFFFFFFF🤖 AUTOMATIZACIÓN|r')
+    titulo_auto:SetText(L['🤖 AUTOMATIZACIÓN'])
     y_offset = y_offset - 25
     
     local auto_panel = CreateFrame('Frame', nil, content)
@@ -477,11 +478,11 @@ function M.crear_config_ui(parent)
     
     local autopost_label = auto_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     autopost_label:SetPoint('LEFT', autopost_check, 'RIGHT', 5, 0)
-    autopost_label:SetText('|cFF00FF00Auto-posting habilitado|r')
+    autopost_label:SetText(L['Auto-posting habilitado'])
     
     local strategy_label = auto_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
     strategy_label:SetPoint('TOPLEFT', autopost_check, 'BOTTOMLEFT', 25, -5)
-    strategy_label:SetText('Estrategia: |cFFFFD700Undercut|r | Undercut: 1s | Margen mín: 10%')
+    strategy_label:SetText(L['Estrategia: |cFFFFD700Undercut|r | Undercut: 1s | Margen mín: 10%'])
     
     -- Auto-repost
     local repost_check = CreateFrame('CheckButton', nil, auto_panel, 'UICheckButtonTemplate')
@@ -490,7 +491,7 @@ function M.crear_config_ui(parent)
     
     local repost_label = auto_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     repost_label:SetPoint('LEFT', repost_check, 'RIGHT', 5, 0)
-    repost_label:SetText('|cFF88FF00Auto-repost|r (cada 5 min)')
+    repost_label:SetText(L['Auto-repost'] .. " " .. L['(cada 5 min)'])
     
     -- ML Pricing
     local ml_check = CreateFrame('CheckButton', nil, auto_panel, 'UICheckButtonTemplate')
@@ -499,7 +500,7 @@ function M.crear_config_ui(parent)
     
     local ml_label = auto_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     ml_label:SetPoint('LEFT', ml_check, 'RIGHT', 5, 0)
-    ml_label:SetText('|cFFAA88FFML Pricing|r (ajuste inteligente)')
+    ml_label:SetText(L['ML Pricing'] .. " " .. L['(ajuste inteligente)'])
     
     f.auto_panel = auto_panel
     y_offset = y_offset - 150 -- Aumentado de 130 para más espacio
@@ -510,7 +511,7 @@ function M.crear_config_ui(parent)
     
     local titulo_notif = content:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     titulo_notif:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    titulo_notif:SetText('|cFFFFFFFF🔔 NOTIFICACIONES|r')
+    titulo_notif:SetText(L['🔔 NOTIFICACIONES'])
     y_offset = y_offset - 25
     
     local notif_panel = CreateFrame('Frame', nil, content)
@@ -529,7 +530,7 @@ function M.crear_config_ui(parent)
     
     local alerts_label = notif_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     alerts_label:SetPoint('LEFT', alerts_check, 'RIGHT', 5, 0)
-    alerts_label:SetText('Alertas de oportunidades excepcionales')
+    alerts_label:SetText(L['Alertas de oportunidades excepcionales'])
     
     -- Sonidos
     local sound_check = CreateFrame('CheckButton', nil, notif_panel, 'UICheckButtonTemplate')
@@ -538,7 +539,7 @@ function M.crear_config_ui(parent)
     
     local sound_label = notif_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     sound_label:SetPoint('LEFT', sound_check, 'RIGHT', 5, 0)
-    sound_label:SetText('Sonidos')
+    sound_label:SetText(L['Sonidos'])
     
     -- Pantalla
     local screen_check = CreateFrame('CheckButton', nil, notif_panel, 'UICheckButtonTemplate')
@@ -547,7 +548,7 @@ function M.crear_config_ui(parent)
     
     local screen_label = notif_panel:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     screen_label:SetPoint('LEFT', screen_check, 'RIGHT', 5, 0)
-    screen_label:SetText('Notificaciones en pantalla')
+    screen_label:SetText(L['Notificaciones en pantalla'])
     
     f.notif_panel = notif_panel
     y_offset = y_offset - 130 -- Aumentado de 110 para más espacio
@@ -562,7 +563,7 @@ function M.crear_config_ui(parent)
     btn_save:SetWidth(150)
     btn_save:SetHeight(28)
     btn_save:SetPoint('TOPLEFT', content, 'TOPLEFT', 10, y_offset)
-    btn_save:SetText('|cFF00FF00Guardar Config|r')
+    btn_save:SetText(L['Guardar Config'])
     btn_save:SetScript('OnClick', function()
         -- Recopilar configuración de la UI
     local current = M.get_config() or {}
@@ -594,7 +595,7 @@ end)
     btn_reset:SetWidth(150)
     btn_reset:SetHeight(28)
     btn_reset:SetPoint('LEFT', btn_save, 'RIGHT', 5, 0)
-    btn_reset:SetText('Restaurar Defaults')
+    btn_reset:SetText(L['Restaurar Defaults'])
     btn_reset:SetScript('OnClick', function()
         aplicar_perfil('intermedio')
         M.actualizar_config_ui()
@@ -604,7 +605,7 @@ end)
     btn_export:SetWidth(100)
     btn_export:SetHeight(28)
     btn_export:SetPoint('LEFT', btn_reset, 'RIGHT', 5, 0)
-    btn_export:SetText('Exportar')
+    btn_export:SetText(L['Exportar'])
     btn_export:SetScript('OnClick', function()
         if M.export_config then M.export_config() end
     end)
@@ -628,9 +629,9 @@ function M.actualizar_config_ui()
     -- Actualizar botones de perfil
     for name, btn in pairs(f.profile_buttons) do
         if name == current_profile then
-            btn:SetText('|cFF00FF00>' .. profiles[name].name .. '<|r')
+            btn:SetText('|cFF00FF00>' .. L[profiles[name].name] .. '<|r')
         else
-            btn:SetText(profiles[name].name)
+            btn:SetText(L[profiles[name].name])
         end
     end
     
@@ -666,7 +667,7 @@ end
 
 function M.mostrar_config()
     if not config_frame then
-        aux.print('|cFFFF0000Config UI no inicializado|r')
+        aux.print(L['Config UI no inicializado'])
         return
     end
     
@@ -690,4 +691,4 @@ M.modules.config_ui.mostrar_config = M.mostrar_config
 M.modules.config_ui.ocultar_config = M.ocultar_config
 M.modules.config_ui.aplicar_perfil = aplicar_perfil
 
-aux.print('|cFF00FF00[CONFIG_UI]|r Panel de configuración listo')
+aux.print(L['[CONFIG_UI]|r Panel de configuración listo'])

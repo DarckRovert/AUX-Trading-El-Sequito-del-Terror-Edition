@@ -9,7 +9,7 @@ local history = require 'aux.core.history'
 -- Helper Functions - Integración con APIs de WoW y aux-addon
 -- ============================================================================
 
-aux.print('[HELPERS] Módulo de helpers cargado')
+aux.print(L['[HELPERS] Módulo de helpers cargado'])
 
 -- ============================================================================
 -- Item Information Helpers
@@ -18,7 +18,7 @@ aux.print('[HELPERS] Módulo de helpers cargado')
 -- Obtener categoría real del item
 function get_item_category(item_key)
     if not item_key then
-        return 'Unknown'
+        return L['Unknown']
     end
     
     -- Extraer item_id del item_key (formato: "item_id:suffix_id")
@@ -27,23 +27,23 @@ function get_item_category(item_key)
     local item_id_str = colon_pos and string.sub(item_key, 1, colon_pos - 1) or item_key
     local item_id = tonumber(item_id_str)
     if not item_id then
-        return 'Unknown'
+        return L['Unknown']
     end
     
     -- Obtener información del item desde el cache de aux
     local item_info = info.item(item_id)
     if not item_info then
-        return 'Unknown'
+        return L['Unknown']
     end
     
     -- Retornar la clase del item (type es la categoría principal)
-    return item_info.type or 'Unknown'
+    return item_info.type or L['Unknown']
 end
 
 -- Obtener subcategoría del item
 function get_item_subcategory(item_key)
     if not item_key then
-        return 'Unknown'
+        return L['Unknown']
     end
     
     -- FIX: Usar string.find en lugar de strsplit para Lua 5.0
@@ -51,15 +51,15 @@ function get_item_subcategory(item_key)
     local item_id_str = colon_pos and string.sub(item_key, 1, colon_pos - 1) or item_key
     local item_id = tonumber(item_id_str)
     if not item_id then
-        return 'Unknown'
+        return L['Unknown']
     end
     
     local item_info = info.item(item_id)
     if not item_info then
-        return 'Unknown'
+        return L['Unknown']
     end
     
-    return item_info.subtype or 'Unknown'
+    return item_info.subtype or L['Unknown']
 end
 
 -- Obtener información completa del item
@@ -446,8 +446,8 @@ function format_money(copper)
     copper = math.abs(copper)
     
     local gold = math.floor(copper / 10000)
-    local silver = math.floor(mod(copper, 10000) / 100)
-    local copper_left = mod(copper, 100)
+    local silver = math.floor(math.mod(copper, 10000) / 100)
+    local copper_left = math.mod(copper, 100)
     
     local result = ''
     if gold > 0 then
@@ -504,15 +504,15 @@ end
 -- Obtener nombre del día de la semana
 function get_day_name(wday)
     local days = {
-        [1] = 'Domingo',
-        [2] = 'Lunes',
-        [3] = 'Martes',
-        [4] = 'Miércoles',
-        [5] = 'Jueves',
-        [6] = 'Viernes',
-        [7] = 'Sábado',
+        [1] = L['Domingo'],
+        [2] = L['Lunes'],
+        [3] = L['Martes'],
+        [4] = L['Miércoles'],
+        [5] = L['Jueves'],
+        [6] = L['Viernes'],
+        [7] = L['Sábado'],
     }
-    return days[wday] or 'Unknown'
+    return days[wday] or L['Unknown']
 end
 
 -- ============================================================================
@@ -540,7 +540,7 @@ end)
 -- ============================================================================
 
 aux.event_listener('LOAD2', function()
-    aux.print('[HELPERS] Sistema de helpers inicializado')
+    aux.print(L['[HELPERS] Sistema de helpers inicializado'])
 end)
 
 -- ============================================================================
@@ -613,7 +613,7 @@ function detect_market_manipulation(item_key)
     return {
         is_manipulated = false,
         confidence = 0,
-        reason = 'no_data',
+        reason = L['no_data'],
         volatility = 0,
     }
 end
@@ -622,4 +622,4 @@ end
 M.get_average_daily_volume = get_average_daily_volume
 M.detect_market_manipulation = detect_market_manipulation
 
-aux.print('[HELPERS] Funciones exportadas al módulo trading')
+aux.print(L['[HELPERS] Funciones exportadas al módulo trading'])

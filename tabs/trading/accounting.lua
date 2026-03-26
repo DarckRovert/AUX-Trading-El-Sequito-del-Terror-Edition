@@ -10,6 +10,7 @@ local aux = require 'aux'
 local info = require 'aux.util.info'
 
 local M = getfenv()
+local L = require('aux.tabs.trading').L
 
 -- ============================================
 -- CONSTANTES
@@ -45,15 +46,15 @@ function M.record_sale(item_key, price, quantity, buyer)
     local record = {
         price = price,
         quantity = quantity or 1,
-        buyer = buyer or "Unknown",
+        buyer = buyer or L["Unknown"],
         time = time(),
         player = UnitName("player")
     }
     
-    table.insert(data.sales[item_key], record)
+    tinsert(data.sales[item_key], record)
     data.lastUpdate = time()
     
-    aux.print(string.format("[ACCOUNTING] Venta registrada: %s x%d por %s", 
+    aux.print(string.format(L["[ACCOUNTING] Venta registrada: %s x%d por %s"], 
         item_key, quantity or 1, M.format_money(price)))
 end
 
@@ -67,15 +68,15 @@ function M.record_purchase(item_key, price, quantity, seller)
     local record = {
         price = price,
         quantity = quantity or 1,
-        seller = seller or "Unknown",
+        seller = seller or L["Unknown"],
         time = time(),
         player = UnitName("player")
     }
     
-    table.insert(data.purchases[item_key], record)
+    tinsert(data.purchases[item_key], record)
     data.lastUpdate = time()
     
-    aux.print(string.format("[ACCOUNTING] Compra registrada: %s x%d por %s", 
+    aux.print(string.format(L["[ACCOUNTING] Compra registrada: %s x%d por %s"], 
         item_key, quantity or 1, M.format_money(price)))
 end
 
@@ -87,7 +88,7 @@ end
 function M.get_average_sell_price(item_key, max_days)
     local data = get_data()
     local records = data.sales[item_key]
-    if not records or table.getn(records) == 0 then
+    if not records or getn(records) == 0 then
         return nil
     end
     
@@ -97,7 +98,8 @@ function M.get_average_sell_price(item_key, max_days)
     local total_price = 0
     local total_quantity = 0
     
-    for _, record in ipairs(records) do
+    for j = 1, getn(records) do
+        local record = records[j]
         if record.time >= cutoff_time then
             total_price = total_price + (record.price * record.quantity)
             total_quantity = total_quantity + record.quantity
@@ -115,7 +117,7 @@ end
 function M.get_average_buy_price(item_key, max_days)
     local data = get_data()
     local records = data.purchases[item_key]
-    if not records or table.getn(records) == 0 then
+    if not records or getn(records) == 0 then
         return nil
     end
     
@@ -125,7 +127,8 @@ function M.get_average_buy_price(item_key, max_days)
     local total_price = 0
     local total_quantity = 0
     
-    for _, record in ipairs(records) do
+    for j = 1, getn(records) do
+        local record = records[j]
         if record.time >= cutoff_time then
             total_price = total_price + (record.price * record.quantity)
             total_quantity = total_quantity + record.quantity
@@ -198,7 +201,8 @@ function M.get_gold_summary()
     local item_sales = {}
     for item_key, records in pairs(data.sales) do
         item_sales[item_key] = 0
-        for _, record in ipairs(records) do
+        for j = 1, getn(records) do
+            local record = records[j]
             local amount = record.price * record.quantity
             summary.total_sales = summary.total_sales + amount
             summary.total_sales_count = summary.total_sales_count + record.quantity
@@ -222,7 +226,8 @@ function M.get_gold_summary()
     local item_purchases = {}
     for item_key, records in pairs(data.purchases) do
         item_purchases[item_key] = 0
-        for _, record in ipairs(records) do
+        for j = 1, getn(records) do
+            local record = records[j]
             local amount = record.price * record.quantity
             summary.total_purchases = summary.total_purchases + amount
             summary.total_purchases_count = summary.total_purchases_count + record.quantity
@@ -261,7 +266,7 @@ function M.get_most_profitable_items(limit)
         if data.purchases[item_key] then
             local profit, percent = M.get_resale_profit(item_key, 30)
             if profit and profit > 0 then
-                table.insert(profits, {
+                tinsert(profits, {
                     item_key = item_key,
                     profit = profit,
                     percent = percent
@@ -271,14 +276,14 @@ function M.get_most_profitable_items(limit)
     end
     
     -- Ordenar por ganancia
-    table.sort(profits, function(a, b)
+    sort(profits, function(a, b)
         return a.profit > b.profit
     end)
     
     -- Limitar resultados
     local result = {}
-    for i = 1, math.min(limit, table.getn(profits)) do
-        table.insert(result, profits[i])
+    for i = 1, math.min(limit, getn(profits)) do
+        tinsert(result, profits[i])
     end
     
     return result
@@ -312,13 +317,13 @@ function M.format_time_ago(timestamp)
     local diff = time() - timestamp
     
     if diff < 60 then
-        return "hace menos de 1 min"
+        return L["less than 1 min ago"]
     elseif diff < 3600 then
-        return string.format("hace %d min", math.floor(diff / 60))
+        return string.format(L["%d min ago"], math.floor(diff / 60))
     elseif diff < 86400 then
-        return string.format("hace %d horas", math.floor(diff / 3600))
+        return string.format(L["%d hours ago"], math.floor(diff / 3600))
     else
-        return string.format("hace %d dias", math.floor(diff / 86400))
+        return string.format(L["%d days ago"], math.floor(diff / 86400))
     end
 end
 
@@ -332,14 +337,15 @@ function M.cleanup_old_data(days_to_keep)
     -- Limpiar ventas
     for item_key, records in pairs(data.sales) do
         local new_records = {}
-        for _, record in ipairs(records) do
+        for j = 1, getn(records) do
+            local record = records[j]
             if record.time >= cutoff then
-                table.insert(new_records, record)
+                tinsert(new_records, record)
             else
                 removed_count = removed_count + 1
             end
         end
-        if table.getn(new_records) > 0 then
+        if getn(new_records) > 0 then
             data.sales[item_key] = new_records
         else
             data.sales[item_key] = nil
@@ -349,21 +355,22 @@ function M.cleanup_old_data(days_to_keep)
     -- Limpiar compras
     for item_key, records in pairs(data.purchases) do
         local new_records = {}
-        for _, record in ipairs(records) do
+        for k = 1, getn(records) do
+            local record = records[k]
             if record.time >= cutoff then
-                table.insert(new_records, record)
+                tinsert(new_records, record)
             else
                 removed_count = removed_count + 1
             end
         end
-        if table.getn(new_records) > 0 then
+        if getn(new_records) > 0 then
             data.purchases[item_key] = new_records
         else
             data.purchases[item_key] = nil
         end
     end
     
-    aux.print(string.format("[ACCOUNTING] Limpieza completada: %d registros eliminados", removed_count))
+    aux.print(string.format(L["[ACCOUNTING] Limpieza completada: %d registros eliminados"], removed_count))
     return removed_count
 end
 
@@ -391,14 +398,14 @@ function M.get_record_count()
     local purchases_count = 0
     
     for _, records in pairs(data.sales) do
-        sales_count = sales_count + table.getn(records)
+        sales_count = sales_count + getn(records)
     end
     
     for _, records in pairs(data.purchases) do
-        purchases_count = purchases_count + table.getn(records)
+        purchases_count = purchases_count + getn(records)
     end
     
     return sales_count, purchases_count
 end
 
-aux.print('[TRADING] Modulo Accounting cargado')
+aux.print(L['[TRADING] Modulo Accounting cargado'])

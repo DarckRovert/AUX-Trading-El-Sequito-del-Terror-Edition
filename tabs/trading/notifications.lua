@@ -6,7 +6,7 @@ local aux = require 'aux'
 -- NOTIFICATION SYSTEM - Sistema de Notificaciones Visuales
 -- ============================================================================
 
-aux.print('[NOTIFICATIONS] Módulo de notificaciones cargado')
+aux.print(L['[NOTIFICATIONS] Módulo de notificaciones cargado'])
 
 -- ============================================================================
 -- Notification Queue
@@ -160,7 +160,8 @@ end
 
 function get_notification_frame()
     -- Buscar frame disponible en el pool
-    for i, frame in ipairs(notification_frame_pool) do
+    for i = 1, getn(notification_frame_pool) do
+        local frame = notification_frame_pool[i]
         if not frame:IsShown() then
             return frame
         end
@@ -196,7 +197,8 @@ function show_notification(notification)
     local y_offset = -10
     local notification_count = 0
     
-    for i, active_notif in ipairs(active_notifications) do
+    for i = 1, getn(active_notifications) do
+        local active_notif = active_notifications[i]
         if active_notif.frame and active_notif.frame:IsShown() then
             notification_count = notification_count + 1
         end
@@ -259,7 +261,8 @@ function update_notification_progress(frame, elapsed)
     
     -- Buscar notificación activa
     local notification = nil
-    for i, notif in ipairs(active_notifications) do
+    for i = 1, getn(active_notifications) do
+        local notif = active_notifications[i]
         if notif.id == frame.notification_id then
             notification = notif
             break
@@ -285,7 +288,8 @@ function update_notification_progress(frame, elapsed)
 end
 
 function hide_notification(notification_id)
-    for i, notification in ipairs(active_notifications) do
+    for i = 1, getn(active_notifications) do
+        local notification = active_notifications[i]
         if notification.id == notification_id then
             if notification.frame then
                 -- Animación de salida (fade out)
@@ -324,7 +328,8 @@ end
 function reposition_notifications()
     local y_offset = -10
     
-    for i, notification in ipairs(active_notifications) do
+    for i = 1, getn(active_notifications) do
+        local notification = active_notifications[i]
         if notification.frame and notification.frame:IsShown() then
             notification.frame:ClearAllPoints()
             notification.frame:SetPoint('TOPRIGHT', UIParent, 'TOPRIGHT', -10, y_offset)
@@ -372,32 +377,32 @@ function notify_info(title, message, duration)
 end
 
 function notify_profit(item_name, profit, duration)
-    local title = 'Profit Made!'
-    local message = string.format('Sold %s for %s profit', item_name, format_money(profit))
+    local title = L['Profit Made!']
+    local message = string.format(L['Sold %s for %s profit'], item_name, format_money(profit))
     return create_notification('PROFIT', title, message, duration or 7)
 end
 
 function notify_opportunity(item_name, potential_profit, duration)
-    local title = 'Trading Opportunity!'
-    local message = string.format('%s - Potential profit: %s', item_name, format_money(potential_profit))
+    local title = L['Trading Opportunity!']
+    local message = string.format(L['%s - Potential profit: %s'], item_name, format_money(potential_profit))
     return create_notification('OPPORTUNITY', title, message, duration or 10)
 end
 
 function notify_purchase(item_name, price, duration)
-    local title = 'Item Purchased'
-    local message = string.format('Bought %s for %s', item_name, format_money(price))
+    local title = L['Item Purchased']
+    local message = string.format(L['Bought %s for %s'], item_name, format_money(price))
     return create_notification('SUCCESS', title, message, duration or 5)
 end
 
 function notify_post(item_name, price, duration)
-    local title = 'Item Posted'
-    local message = string.format('Posted %s for %s', item_name, format_money(price))
+    local title = L['Item Posted']
+    local message = string.format(L['Posted %s for %s'], item_name, format_money(price))
     return create_notification('INFO', title, message, duration or 4)
 end
 
 function notify_sale(item_name, profit, roi, duration)
-    local title = 'Item Sold!'
-    local message = string.format('%s sold! Profit: %s (ROI: %.1f%%)', item_name, format_money(profit), roi)
+    local title = L['Item Sold!']
+    local message = string.format(L['%s sold! Profit: %s (ROI: %.1f%%)'], item_name, format_money(profit), roi)
     return create_notification('PROFIT', title, message, duration or 8)
 end
 
@@ -426,7 +431,7 @@ local notification_update_frame = CreateFrame('Frame')
 notification_update_frame:SetScript('OnUpdate', on_update)
 
 aux.event_listener('LOAD2', function()
-    aux.print('[NOTIFICATIONS] Sistema de notificaciones inicializado')
+    aux.print(L['[NOTIFICATIONS] Sistema de notificaciones inicializado'])
 end)
 
 -- ============================================================================
@@ -449,5 +454,5 @@ if M.modules then
         post = notify_post,
         sale = notify_sale,
     }
-    aux.print('[NOTIFICATIONS] Funciones registradas en M.modules.notifications')
+    aux.print(L['[NOTIFICATIONS] Funciones registradas en M.modules.notifications'])
 end

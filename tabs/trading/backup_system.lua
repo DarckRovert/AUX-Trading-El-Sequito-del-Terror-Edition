@@ -44,8 +44,10 @@ local function crear_backup(nombre)
     -- Guardar historial
     if aux.trading and aux.trading.historial then
         backup.datos.historial = {}
-        for i, trade in ipairs(aux.trading.historial) do
-            table.insert(backup.datos.historial, trade)
+        local historial = aux.trading.historial
+        for i = 1, getn(historial) do
+            local trade = historial[i]
+            tinsert(backup.datos.historial, trade)
         end
     end
     
@@ -79,11 +81,11 @@ local function guardar_backup(backup, slot)
         return false, "Backup inválido"
     end
     
-    slot = slot or (table.getn(backup_slots) + 1)
+    slot = slot or (getn(backup_slots) + 1)
     
     if slot > max_backup_slots then
         -- Eliminar el backup más antiguo
-        table.remove(backup_slots, 1)
+        tremove(backup_slots, 1)
         slot = max_backup_slots
     end
     
@@ -93,17 +95,17 @@ local function guardar_backup(backup, slot)
     local success = guardar_backup_a_archivo(backup)
     
     if success then
-        return true, "Backup guardado en slot " .. slot
+        return true, L["Backup guardado en slot "] .. slot
     else
-        return false, "Error al guardar backup en archivo"
+        return false, L["Error al guardar backup en archivo"]
     end
 end
 
 local function guardar_backup_a_archivo(backup)
     local path = "Interface\\AddOns\\aux-addon\\backups\\" .. backup.nombre .. ".lua"
     
-    local content = "-- Backup de AUX Trading System\n"
-    content = content .. "-- Fecha: " .. backup.fecha .. "\n\n"
+    local content = "-- " .. L["Backup de AUX Trading System"] .. "\n"
+    content = content .. "-- " .. L["Fecha: "] .. backup.fecha .. "\n\n"
     content = content .. "return " .. serialize_table(backup) .. "\n"
     
     local file = io.open(path, "w")
@@ -155,7 +157,7 @@ end
 
 local function restaurar_backup(slot)
     if not backup_slots[slot] then
-        return false, "Slot de backup vacío"
+        return false, L["Slot de backup vacío"]
     end
     
     local backup = backup_slots[slot]
@@ -171,8 +173,10 @@ local function restaurar_backup(slot)
     -- Restaurar historial
     if backup.datos.historial and aux.trading then
         aux.trading.historial = {}
-        for i, trade in ipairs(backup.datos.historial) do
-            table.insert(aux.trading.historial, trade)
+        local historial = backup.datos.historial
+        for i = 1, getn(historial) do
+            local trade = historial[i]
+            tinsert(aux.trading.historial, trade)
         end
     end
     
@@ -197,7 +201,7 @@ local function restaurar_backup(slot)
         end
     end
     
-    return true, "Backup restaurado desde slot " .. slot
+    return true, L["Backup restaurado desde slot "] .. slot
 end
 
 local function cargar_backup_desde_archivo(nombre_archivo)
@@ -208,7 +212,7 @@ local function cargar_backup_desde_archivo(nombre_archivo)
         local backup = backup_func()
         return true, backup
     else
-        return false, "Error al cargar backup"
+        return false, L["Error al cargar backup"]
     end
 end
 
@@ -222,7 +226,7 @@ end
 
 local function eliminar_backup(slot)
     if not backup_slots[slot] then
-        return false, "Slot de backup vacío"
+        return false, L["Slot de backup vacío"]
     end
     
     local backup = backup_slots[slot]
@@ -232,9 +236,9 @@ local function eliminar_backup(slot)
     os.remove(path)
     
     -- Eliminar de slots
-    table.remove(backup_slots, slot)
+    tremove(backup_slots, slot)
     
-    return true, "Backup eliminado"
+    return true, L["Backup eliminado"]
 end
 
 local function limpiar_backups_antiguos(dias)
@@ -243,7 +247,7 @@ local function limpiar_backups_antiguos(dias)
     
     local eliminados = 0
     
-    for i = table.getn(backup_slots), 1, -1 do
+    for i = getn(backup_slots), 1, -1 do
         local backup = backup_slots[i]
         if backup.timestamp < tiempo_limite then
             eliminar_backup(i)
@@ -269,7 +273,7 @@ local function auto_backup()
         local backup = crear_backup("auto_backup_" .. date("%Y%m%d_%H%M%S"))
         guardar_backup(backup)
         last_auto_backup = tiempo_actual
-        print("Auto-backup creado")
+        aux.print(L["Auto-backup creado"])
     end
 end
 
@@ -292,7 +296,7 @@ local function crear_backup_ui(parent)
     -- Título
     local title = backup_frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOP", 0, -10)
-    title:SetText("Sistema de Backup y Restauración")
+    title:SetText(L["Sistema de Backup y Restauración"])
     title:SetTextColor(1, 0.82, 0)
     
     local y_offset = -50
@@ -303,14 +307,14 @@ local function crear_backup_ui(parent)
     
     local create_title = backup_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     create_title:SetPoint("TOPLEFT", 20, y_offset)
-    create_title:SetText("Crear Nuevo Backup:")
+    create_title:SetText(L["Crear Nuevo Backup:"])
     create_title:SetTextColor(0.5, 1, 0.5)
     y_offset = y_offset - 30
     
     local create_btn = CreateFrame("Button", nil, backup_frame, "UIPanelButtonTemplate")
     create_btn:SetSize(200, 30)
     create_btn:SetPoint("TOPLEFT", 20, y_offset)
-    create_btn:SetText("Crear Backup Ahora")
+    create_btn:SetText(L["Crear Backup Ahora"])
     create_btn:SetScript("OnClick", function()
         StaticPopup_Show("CREATE_BACKUP_POPUP")
     end)
@@ -323,7 +327,7 @@ local function crear_backup_ui(parent)
     
     local list_title = backup_frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     list_title:SetPoint("TOPLEFT", 20, y_offset)
-    list_title:SetText("Backups Guardados:")
+    list_title:SetText(L["Backups Guardados:"])
     list_title:SetTextColor(0.5, 1, 0.5)
     y_offset = y_offset - 30
     
@@ -362,7 +366,7 @@ local function crear_backup_ui(parent)
     
     local auto_text = auto_checkbox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     auto_text:SetPoint("LEFT", auto_checkbox, "RIGHT", 5, 0)
-    auto_text:SetText("Activar auto-backup cada hora")
+    auto_text:SetText(L["Activar auto-backup cada hora"])
     
     auto_checkbox:SetScript("OnClick", function(self)
         configurar_auto_backup(self:GetChecked())
@@ -377,10 +381,10 @@ local function crear_backup_ui(parent)
     local clean_btn = CreateFrame("Button", nil, backup_frame, "UIPanelButtonTemplate")
     clean_btn:SetSize(250, 30)
     clean_btn:SetPoint("TOPLEFT", 20, y_offset)
-    clean_btn:SetText("Limpiar Backups Antiguos (>30 días)")
+    clean_btn:SetText(L["Limpiar Backups Antiguos (>30 días)"])
     clean_btn:SetScript("OnClick", function()
         local eliminados = limpiar_backups_antiguos(30)
-        print(string.format("Se eliminaron %d backups antiguos", eliminados))
+        aux.print(string.format(L["Se eliminaron %d backups antiguos"], eliminados))
         actualizar_lista_backups(backup_frame)
     end)
     
@@ -396,7 +400,8 @@ function actualizar_lista_backups(backup_frame)
     
     -- Limpiar lista anterior
     if content.items then
-        for _, item in ipairs(content.items) do
+        for j = 1, getn(content.items) do
+            local item = content.items[j]
             if item.frame then
                 item.frame:Hide()
             end
@@ -407,7 +412,8 @@ function actualizar_lista_backups(backup_frame)
     local backups = obtener_backups()
     local y_offset = -10
     
-    for i, backup in ipairs(backups) do
+    for i = 1, getn(backups) do
+        local backup = backups[i]
         local item_frame = CreateFrame("Frame", nil, content)
         item_frame:SetSize(520, 60)
         item_frame:SetPoint("TOPLEFT", 10, y_offset)
@@ -430,7 +436,7 @@ function actualizar_lista_backups(backup_frame)
         -- Fecha
         local date_text = item_frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         date_text:SetPoint("TOPLEFT", 10, -30)
-        date_text:SetText("Fecha: " .. backup.fecha)
+        date_text:SetText(L["Fecha: "] .. backup.fecha)
         date_text:SetTextColor(0.7, 0.7, 0.7)
         
         -- Botón restaurar
@@ -440,7 +446,7 @@ function actualizar_lista_backups(backup_frame)
         restore_btn:SetText("Restaurar")
         restore_btn:SetScript("OnClick", function()
             local success, msg = restaurar_backup(i)
-            print(msg)
+            aux.print(msg)
         end)
         
         -- Botón eliminar
@@ -450,20 +456,20 @@ function actualizar_lista_backups(backup_frame)
         delete_btn:SetText("Eliminar")
         delete_btn:SetScript("OnClick", function()
             local success, msg = eliminar_backup(i)
-            print(msg)
+            aux.print(msg)
             actualizar_lista_backups(backup_frame)
         end)
         
-        table.insert(content.items, {frame = item_frame, data = backup})
+        tinsert(content.items, {frame = item_frame, data = backup})
         y_offset = y_offset - 65
     end
 end
 
 -- Popup para crear backup
 StaticPopupDialogs["CREATE_BACKUP_POPUP"] = {
-    text = "Nombre del backup:",
-    button1 = "Crear",
-    button2 = "Cancelar",
+    text = L["Nombre del backup:"],
+    button1 = L["Crear"],
+    button2 = L["Cancelar"],
     hasEditBox = true,
     OnAccept = function(self)
         local nombre = self.editBox:GetText()
@@ -472,7 +478,7 @@ StaticPopupDialogs["CREATE_BACKUP_POPUP"] = {
         end
         local backup = crear_backup(nombre)
         local success, msg = guardar_backup(backup)
-        print(msg)
+        aux.print(msg)
     end,
     timeout = 0,
     whileDead = true,
@@ -517,4 +523,4 @@ M.modules.backup_system = {
     actualizar_lista_backups = actualizar_lista_backups
 }
 
-aux.print('[TRADING] backup_system.lua cargado')
+aux.print(L["[TRADING] backup_system.lua cargado"])

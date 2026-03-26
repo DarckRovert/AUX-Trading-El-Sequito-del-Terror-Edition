@@ -46,7 +46,7 @@ local function comparar_valores(a, b, campo, direccion)
 end
 
 local function ordenar_lista(lista, campo, direccion)
-    if not lista or table.getn(lista) == 0 then
+    if not lista or getn(lista) == 0 then
         return lista
     end
     
@@ -59,12 +59,13 @@ local function ordenar_lista(lista, campo, direccion)
     
     -- Crear copia de la lista
     local lista_ordenada = {}
-    for i, item in ipairs(lista) do
-        table.insert(lista_ordenada, item)
+    for i = 1, getn(lista) do
+        local item = lista[i]
+        tinsert(lista_ordenada, item)
     end
     
     -- Ordenar
-    table.sort(lista_ordenada, function(a, b)
+    sort(lista_ordenada, function(a, b)
         return comparar_valores(a, b, campo, direccion)
     end)
     
@@ -106,13 +107,14 @@ local function ordenar_por_rareza(lista, direccion)
     }
     
     local lista_ordenada = {}
-    for i, item in ipairs(lista) do
+    for i = 1, getn(lista) do
+        local item = lista[i]
         local copia = {}
         for k, v in pairs(item) do
             copia[k] = v
         end
         copia.rareza_valor = rareza_valores[item.rareza] or 0
-        table.insert(lista_ordenada, copia)
+        tinsert(lista_ordenada, copia)
     end
     
     return ordenar_lista(lista_ordenada, "rareza_valor", direccion or "desc")
@@ -120,8 +122,8 @@ end
 
 local function invertir_orden(lista)
     local lista_invertida = {}
-    for i = table.getn(lista), 1, -1 do
-        table.insert(lista_invertida, lista[i])
+    for i = getn(lista), 1, -1 do
+        tinsert(lista_invertida, lista[i])
     end
     return lista_invertida
 end
@@ -145,17 +147,19 @@ end
 
 local function ordenar_multiple(lista, criterios)
     -- criterios = {{campo = "profit", direccion = "desc"}, {campo = "roi", direccion = "desc"}}
-    if not lista or table.getn(lista) == 0 or not criterios or table.getn(criterios) == 0 then
+    if not lista or getn(lista) == 0 or not criterios or getn(criterios) == 0 then
         return lista
     end
     
     local lista_ordenada = {}
-    for i, item in ipairs(lista) do
-        table.insert(lista_ordenada, item)
+    for i = 1, getn(lista) do
+        local item = lista[i]
+        tinsert(lista_ordenada, item)
     end
     
-    table.sort(lista_ordenada, function(a, b)
-        for _, criterio in ipairs(criterios) do
+    sort(lista_ordenada, function(a, b)
+        for i = 1, getn(criterios) do
+            local criterio = criterios[i]
             local campo = criterio.campo
             local direccion = criterio.direccion or "desc"
             
@@ -249,7 +253,8 @@ local function crear_barra_cabeceras(parent, columnas, y_offset, callback)
     local cabeceras = {}
     local x_offset = 10
     
-    for i, col in ipairs(columnas) do
+    for i = 1, getn(columnas) do
+        local col = columnas[i]
         local header = crear_cabecera_ordenable(
             parent,
             col.texto,
@@ -260,7 +265,7 @@ local function crear_barra_cabeceras(parent, columnas, y_offset, callback)
             callback
         )
         
-        table.insert(cabeceras, header)
+        tinsert(cabeceras, header)
         x_offset = x_offset + col.width + 5
     end
     
@@ -272,7 +277,8 @@ local function actualizar_indicadores_cabeceras(cabeceras)
         return
     end
     
-    for _, header in ipairs(cabeceras) do
+    for i = 1, getn(cabeceras) do
+        local header = cabeceras[i]
         if header.actualizar_indicador then
             header.actualizar_indicador()
         end
@@ -306,17 +312,18 @@ local function quicksort(lista, campo, direccion, inicio, fin)
 end
 
 local function ordenar_rapido(lista, campo, direccion)
-    if not lista or table.getn(lista) <= 1 then
+    if not lista or getn(lista) <= 1 then
         return lista
     end
     
     -- Crear copia
     local lista_ordenada = {}
-    for i, item in ipairs(lista) do
-        table.insert(lista_ordenada, item)
+    for i = 1, getn(lista) do
+        local item = lista[i]
+        tinsert(lista_ordenada, item)
     end
     
-    quicksort(lista_ordenada, campo or "profit", direccion or "desc", 1, table.getn(lista_ordenada))
+    quicksort(lista_ordenada, campo or "profit", direccion or "desc", 1, getn(lista_ordenada))
     
     return lista_ordenada
 end
@@ -326,12 +333,12 @@ end
 -- ============================================================================
 
 local function busqueda_binaria(lista, campo, valor)
-    if not lista or table.getn(lista) == 0 then
+    if not lista or getn(lista) == 0 then
         return nil
     end
     
     local inicio = 1
-    local fin = table.getn(lista)
+    local fin = getn(lista)
     
     while inicio <= fin do
         local medio = math.floor((inicio + fin) / 2)

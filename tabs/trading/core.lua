@@ -58,9 +58,29 @@ require 'aux.tabs.trading.auctioning_ui'
 require 'aux.tabs.trading.crafting_ui'
 require 'aux.tabs.trading.item_tracker_ui'
 
+-- ============================================================================
+-- UTILIDADES GLOBALES (Lua 5.0 compatible)
+-- ============================================================================
+
+-- Equivalente a table.concat para Lua 5.0 / WoW 1.12
+-- table.concat no existe como función global; se debe usar esta versión
+function aux_join(t, sep)
+    if not t then return '' end
+    sep = sep or ''
+    local result = ''
+    local n = getn(t)
+    for i = 1, n do
+        if i > 1 then
+            result = result .. sep
+        end
+        result = result .. tostring(t[i])
+    end
+    return result
+end
+
 -- Print para confirmar que el módulo se carga
-aux.print('[TRADING] Módulo core.lua cargado correctamente')
-aux.print('[TRADING] Sistema de registro de módulos inicializado')
+aux.print(L['[TRADING] Módulo core.lua cargado correctamente'])
+aux.print(L['[TRADING] Sistema de registro de módulos inicializado'])
 
 -- Register tab
 local tab = aux.tab('Trading')
@@ -206,7 +226,7 @@ local function save_trading_config(config)
     -- Update runtime defaults merge
     trading_config = merge_config(trading_config, config)
 
-    aux.print('[TRADING] Configuración guardada')
+    aux.print(L['[TRADING] Configuración guardada'])
 end
 
 -- Export Config Functions
@@ -265,16 +285,16 @@ end
 
 -- Función para scan rápido (solo 5 páginas)
 function start_quick_scan()
-    aux.print('[TRADING] Iniciando Scan Rápido...')
+    aux.print(L['[TRADING] Iniciando Scan Rápido...'])
     
     if is_scanning then
-        aux.print('[TRADING] Ya hay un scan en progreso')
+        aux.print(L['[TRADING] Ya hay un scan en progreso'])
         return false
     end
     
     -- Verificar que estamos en el AH
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para escanear')
+        aux.print(L['|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para escanear'])
         return false
     end
     
@@ -295,13 +315,13 @@ function start_quick_scan()
     -- Build queries para scan rápido (solo 5 páginas)
     local queries = build_quick_queries()
     if not queries or getn(queries) == 0 then
-        aux.print('|cFFFF0000[ERROR]|r No se pudieron crear queries para el scan')
+        aux.print(L["|cFFFF0000[ERROR]|r No se pudieron crear queries para el scan"])
         is_scanning = false
         return false
     end
     scan_stats.total_queries = getn(queries)
     
-    aux.print('[TRADING] Escaneando primeras páginas...')
+    aux.print(L['[TRADING] Escaneando primeras páginas...'])
     
     -- Start scan
     current_scan_id = scan.start({
@@ -316,7 +336,7 @@ function start_quick_scan()
     })
     
     if not current_scan_id then
-        aux.print('|cFFFF0000[ERROR]|r No se pudo iniciar el scan')
+        aux.print(L['|cFFFF0000[ERROR]|r No se pudo iniciar el scan'])
         is_scanning = false
         return false
     end
@@ -325,16 +345,16 @@ function start_quick_scan()
 end
 
 function start_scan()
-    aux.print('[TRADING] Iniciando Full Scan...')
+    aux.print(L['[TRADING] Iniciando Full Scan...'])
     
     if is_scanning then
-        aux.print('[TRADING] Ya hay un scan en progreso')
+        aux.print(L['[TRADING] Ya hay un scan en progreso'])
         return false
     end
     
     -- Verificar que estamos en el AH
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para escanear')
+        aux.print(L['|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para escanear'])
         return false
     end
     
@@ -358,14 +378,14 @@ function start_scan()
     -- Build queries para items populares
     local queries = build_queries()
     if not queries or getn(queries) == 0 then
-        aux.print('|cFFFF0000[ERROR]|r No se pudieron crear queries para el scan')
+        aux.print(L["|cFFFF0000[ERROR]|r No se pudieron crear queries para el scan"])
         is_scanning = false
         return false
     end
     scan_stats.total_queries = getn(queries)
     
-    aux.print(string.format('[TRADING] Escaneando %d categorías...', scan_stats.total_queries))
-    update_scan_status('Iniciando scan...')
+    aux.print(string.format(L['[TRADING] Escaneando %d categorías...'], scan_stats.total_queries))
+    update_scan_status(L['Iniciando scan...'])
     
     -- Queries creadas correctamente
     
@@ -376,8 +396,8 @@ function start_scan()
         queries = queries,
             
             on_scan_start = function()
-                aux.print('Iniciando scan de oportunidades...')
-                update_scan_status('Escaneando...')
+                aux.print(L['Iniciando scan de oportunidades...'])
+                update_scan_status(L['Escaneando...'])
                 
                 -- Limpiar datos para Monopolio
                 if M.clear_scan_data then
@@ -387,13 +407,13 @@ function start_scan()
             
             on_start_query = function(query_index)
                 scan_stats.current_query = query_index
-                update_scan_status(string.format('Query %d/%d', query_index, scan_stats.total_queries))
+                update_scan_status(string.format(L['Query %d/%d'], query_index, scan_stats.total_queries))
             end,
             
             on_page_loaded = function(current, total, total_all)
                 scan_stats.current_page = current
                 scan_stats.total_pages = total
-                update_scan_status(string.format('Página %d/%d', current, total))
+                update_scan_status(string.format(L['Página %d/%d'], current, total))
             end,
             
             on_auction = function(auction_info)
@@ -436,27 +456,31 @@ function stop_scan()
     end
     
     is_scanning = false
-    update_scan_status('Detenido')
-    aux.print('Scan detenido')
+    update_scan_status(L['Detenido'])
+    aux.print(L['Scan detenido'])
 end
+
+aux.event_listener('LOAD2', function()
+    aux.print(L['[HELPERS] Sistema de helpers inicializado'])
+end)
 
 -- Función para comprar una oportunidad seleccionada
 function buy_opportunity(opportunity)
     if not opportunity then
-        aux.print('|cFFFF0000[ERROR]|r No hay oportunidad seleccionada')
+        aux.print(L['|cFFFF0000[ERROR]|r No hay oportunidad seleccionada'])
         return false
     end
     
     -- Verificar que estamos en el AH
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para comprar')
+        aux.print(L['|cFFFF0000[ERROR]|r Debes estar en la Casa de Subastas para comprar'])
         return false
     end
     
     -- Verificar que tenemos suficiente oro
     local player_money = GetMoney()
     if player_money < opportunity.buyout then
-        aux.print(string.format('|cFFFF0000[ERROR]|r No tienes suficiente oro. Necesitas %s', 
+        aux.print(string.format(L['|cFFFF0000[ERROR]|r No tienes suficiente oro. Necesitas %s'], 
             M.modules.helpers.format_money(opportunity.buyout)))
         return false
     end
@@ -465,7 +489,7 @@ function buy_opportunity(opportunity)
     if M.modules.automation and M.modules.automation.buy_auction then
         local success = M.modules.automation.buy_auction(opportunity.auction_id)
         if success then
-            aux.print(string.format('|cFF00FF00[COMPRA]|r %s por %s', 
+            aux.print(string.format(L['|cFF00FF00[COMPRA]|r %s por %s'], 
                 opportunity.item_name,
                 M.modules.helpers.format_money(opportunity.buyout)))
             
@@ -488,11 +512,11 @@ function buy_opportunity(opportunity)
             
             return true
         else
-            aux.print('|cFFFF0000[ERROR]|r No se pudo completar la compra')
+            aux.print(L['|cFFFF0000[ERROR]|r No se pudo completar la compra'])
             return false
         end
     else
-        aux.print('|cFFFF0000[ERROR]|r Módulo de automatización no disponible')
+        aux.print(L['|cFFFF0000[ERROR]|r Módulo de automatización no disponible'])
         return false
     end
 end
@@ -540,7 +564,7 @@ function process_auction(auction_info)
     
     -- Update stats every 50 auctions
     if mod(scan_stats.total_scanned, 50) == 0 then
-        update_scan_status(string.format('Escaneadas: %d', scan_stats.total_scanned))
+        update_scan_status(string.format(L['Escaneadas: %d'], scan_stats.total_scanned))
     end
     
     -- Registrar precio en market_analysis (integración con helpers)
@@ -637,7 +661,7 @@ function process_auction(auction_info)
     
     -- Update status every 10 opportunities
     if mod(scan_stats.opportunities_found, 10) == 0 then
-        update_scan_status(string.format('Oportunidades: %d', scan_stats.opportunities_found))
+        update_scan_status(string.format(L['Oportunidades: %d'], scan_stats.opportunities_found))
     end
     
     -- Actualizar la UI cada 10 oportunidades para no sobrecargar
@@ -670,7 +694,7 @@ function is_opportunity(auction_info)
     if not avg_price or avg_price == 0 then
         -- Debug: No historical data
         if mod(scan_stats.total_scanned, 50) == 0 then
-            aux.print(string.format('Sin datos históricos para: %s', auction_info.name or 'unknown'))
+            aux.print(string.format(L['Sin datos históricos para: %s'], auction_info.name or 'unknown'))
         end
         return false
     end
@@ -874,7 +898,7 @@ function on_scan_complete()
     local duration = time() - scan_stats.start_time
     
     aux.print(string.format(
-        'Scan completado: %d subastas escaneadas, %d oportunidades encontradas en %d segundos',
+        L['Scan completado: %d subastas escaneadas, %d oportunidades encontradas en %d segundos'],
         scan_stats.total_scanned,
         scan_stats.opportunities_found,
         duration
@@ -886,12 +910,12 @@ function on_scan_complete()
     stats.last_scan = time()
     
     -- Sort opportunities by score
-    table.sort(opportunities, function(a, b)
+    sort(opportunities, function(a, b)
         return a.score > b.score
     end)
     
     update_opportunities_display()
-    update_scan_status('Completado')
+    update_scan_status(L['Completado'])
     
     -- Update stats display if function exists
     if update_stats_display then
@@ -903,8 +927,8 @@ function on_scan_abort()
     is_scanning = false
     current_scan_id = nil
     
-    aux.print('Scan abortado')
-    update_scan_status('Abortado')
+    aux.print(L['Scan abortado'])
+    update_scan_status(L['Abortado'])
 end
 
 -- ============================================================================
@@ -988,14 +1012,14 @@ end
 
 function buy_opportunity(opportunity)
     if not opportunity or not opportunity.auction_info then
-        aux.print('|cFFFF0000Error: Oportunidad inválida|r')
+        aux.print(L['|cFFFF0000Error: Oportunidad inválida|r'])
         return false
     end
     
     local auction_info = opportunity.auction_info
     
     if not auction_info.buyout_price or auction_info.buyout_price <= 0 then
-        aux.print('|cFFFF0000Error: Información de subasta incompleta|r')
+        aux.print(L['|cFFFF0000Error: Información de subasta incompleta|r'])
         return false
     end
     
@@ -1009,26 +1033,26 @@ function buy_opportunity(opportunity)
     local daily_investment = get_daily_investment(today_key)
     
     if daily_investment + buyout_price > (config.scan.max_daily_investment or 1000000) then
-        aux.print('|cFFFF0000Error: Límite diario de inversión excedido|r')
+        aux.print(L['|cFFFF0000Error: Límite diario de inversión excedido|r'])
         return false
     end
     
     -- Check per-item investment limit
     if buyout_price > (config.scan.max_investment_per_item or 100000) then
-        aux.print('|cFFFF0000Error: Precio demasiado alto para esta oportunidad|r')
+        aux.print(L['|cFFFF0000Error: Precio demasiado alto para esta oportunidad|r'])
         return false
     end
     
     -- Check available gold
     local player_gold = GetMoney()
     if player_gold < buyout_price then
-        aux.print('|cFFFF0000Error: No tienes suficiente oro|r')
+        aux.print(L['|cFFFF0000Error: No tienes suficiente oro|r'])
         return false
     end
     
     -- Check if aux is already buying something
     if aux.bid_in_progress and aux.bid_in_progress() then
-        aux.print('|cFFFFFF00Esperando... hay una compra en progreso|r')
+        aux.print(L['|cFFFFFF00Esperando... hay una compra en progreso|r'])
         return false
     end
     
@@ -1049,8 +1073,8 @@ function buy_opportunity(opportunity)
     local target_count = auction_info.count or 1
     
     aux.print(string.format(
-        '|cFFFFFF00Buscando:|r %s x%d por %s...',
-        item_name or 'Unknown',
+        L['|cFFFFFF00Buscando:|r %s x%d por %s...'],
+        item_name or L['Unknown'],
         target_count,
         money_str
     ))
@@ -1080,8 +1104,8 @@ function buy_opportunity(opportunity)
                 aux.place_bid('list', record.index, record.buyout_price, function()
                     -- Success callback
                     aux.print(string.format(
-                        '|cFF00FF00Comprado:|r %s x%d por %s (%.0f%% descuento)',
-                        item_name or 'Unknown',
+                        L['|cFF00FF00Comprado:|r %s x%d por %s (%.0f%% descuento)'],
+                        item_name or L['Unknown'],
                         target_count,
                         money_str,
                         (opportunity.discount or 0) * 100
@@ -1112,7 +1136,7 @@ function buy_opportunity(opportunity)
             -- Scan finished
         end,
         on_abort = function()
-            aux.print('|cFFFF0000Búsqueda cancelada|r')
+            aux.print(L['|cFFFF0000Búsqueda cancelada|r'])
         end
     })
     
@@ -1121,19 +1145,19 @@ end
 
 function place_bid(auction_info)
     if not auction_info then
-        aux.print('|cFFFF0000Error: Información de subasta inválida|r')
+        aux.print(L['|cFFFF0000Error: Información de subasta inválida|r'])
         return
     end
     
     -- Check if AH is open
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000Error: Debes tener la Casa de Subastas abierta|r')
+        aux.print(L['|cFFFF0000Error: Debes tener la Casa de Subastas abierta|r'])
         return
     end
     
     -- Check if we have page and index from scan
     if not auction_info.page or not auction_info.index then
-        aux.print('|cFFFF0000Error: Información de página/índice no disponible. Haz un nuevo scan.|r')
+        aux.print(L['|cFFFF0000Error: Información de página/índice no disponible. Haz un nuevo scan.|r'])
         return
     end
     
@@ -1142,7 +1166,7 @@ function place_bid(auction_info)
     
     -- If we're not on the right page, we need to navigate there
     if current_page ~= auction_info.page then
-        aux.print(string.format('Cambiando a página %d para comprar...', auction_info.page + 1))
+        aux.print(string.format(L['Cambiando a página %d para comprar...'], auction_info.page + 1))
         AuctionFrameBrowse.page = auction_info.page
         AuctionFrameBrowse_Update()
     end
@@ -1150,7 +1174,7 @@ function place_bid(auction_info)
     -- Verify the auction still exists at the expected index
     local num_auctions = GetNumAuctionItems('list')
     if auction_info.index > num_auctions then
-        aux.print('|cFFFF0000Error: La subasta ya no existe. Intenta hacer un nuevo scan.|r')
+        aux.print(L['|cFFFF0000Error: La subasta ya no existe. Intenta hacer un nuevo scan.|r'])
         return
     end
     
@@ -1159,7 +1183,7 @@ function place_bid(auction_info)
     
     -- Verify this is still the same auction
     if name ~= auction_info.item_name or count ~= auction_info.count or buyout ~= auction_info.buyout_price then
-        aux.print('|cFFFF0000Error: La subasta ha cambiado. Intenta hacer un nuevo scan.|r')
+        aux.print(L['|cFFFF0000Error: La subasta ha cambiado. Intenta hacer un nuevo scan.|r'])
         return
     end
     
@@ -1168,7 +1192,7 @@ function place_bid(auction_info)
     
     -- If we're not on the right page, we need to navigate there
     if current_page ~= auction_info.page then
-        aux.print(string.format('Cambiando a página %d para hacer bid...', auction_info.page + 1))
+        aux.print(string.format(L['Cambiando a página %d para hacer bid...'], auction_info.page + 1))
         AuctionFrameBrowse.page = auction_info.page
         -- Trigger page change
         AuctionFrameBrowse_Update()
@@ -1180,7 +1204,7 @@ function place_bid(auction_info)
     -- Verify the auction still exists at the expected index
     local num_auctions = GetNumAuctionItems('list')
     if auction_info.index > num_auctions then
-        aux.print('|cFFFF0000Error: La subasta ya no existe en el índice esperado. Intenta hacer un nuevo scan.|r')
+        aux.print(L['|cFFFF0000Error: La subasta ya no existe en el índice esperado. Intenta hacer un nuevo scan.|r'])
         return
     end
     
@@ -1189,7 +1213,7 @@ function place_bid(auction_info)
     
     -- Verify this is still the same auction (basic check)
     if name ~= auction_info.item_name or count ~= auction_info.count or buyout ~= auction_info.buyout_price then
-        aux.print('|cFFFF0000Error: La subasta ha cambiado. Intenta hacer un nuevo scan.|r')
+        aux.print(L['|cFFFF0000Error: La subasta ha cambiado. Intenta hacer un nuevo scan.|r'])
         return
     end
     
@@ -1204,13 +1228,13 @@ function place_bid(auction_info)
     end
     
     if not bid_price or bid_price == 0 then
-        aux.print('|cFFFF0000Error: No se pudo calcular el precio de bid|r')
+        aux.print(L['|cFFFF0000Error: No se pudo calcular el precio de bid|r'])
         return
     end
     
     -- Check if we have enough money
     if GetMoney() < bid_price then
-        aux.print('|cFFFF0000Error: No tienes suficiente oro para hacer esta oferta|r')
+        aux.print(L['|cFFFF0000Error: No tienes suficiente oro para hacer esta oferta|r'])
         return
     end
     
@@ -1220,7 +1244,7 @@ function place_bid(auction_info)
     local copper = mod(bid_price, 100)
     local money_str = string.format('%dg %ds %dc', gold, silver, copper)
     
-    aux.print(string.format('|cFFFFFF00Haciendo oferta de %s por %s x%d|r', money_str, name or 'Unknown', count or 1))
+    aux.print(string.format(L['|cFFFFFF00Haciendo oferta de %s por %s x%d|r'], money_str, name or L['Unknown'], count or 1))
     
     -- Place the bid
     PlaceAuctionBid('list', auction_info.index, bid_price)
@@ -1284,27 +1308,27 @@ function init_trade_tracking()
     -- Inicializar subsistemas de trading
     if M.init_price_history then 
         M.init_price_history() 
-        aux.print('[TRADING] Price history initialized')
+        aux.print(L['[TRADING] Price history initialized'])
     end
     
     if M.init_time_patterns then 
         M.init_time_patterns() 
-        aux.print('[TRADING] Time patterns initialized')
+        aux.print(L['[TRADING] Time patterns initialized'])
     end
     
     if M.init_auto_post_config then 
         M.init_auto_post_config() 
-        aux.print('[TRADING] Auto-post config initialized')
+        aux.print(L['[TRADING] Auto-post config initialized'])
     end
     
     if M.init_repost_system then 
         M.init_repost_system() 
-        aux.print('[TRADING] Repost system initialized')
+        aux.print(L['[TRADING] Repost system initialized'])
     end
     
     if M.init_item_classifications then 
         M.init_item_classifications() 
-        aux.print('[TRADING] Item classifications initialized')
+        aux.print(L['[TRADING] Item classifications initialized'])
     end
 
     trade_history = aux.faction_data.trading.trade_history
@@ -1318,10 +1342,10 @@ function record_purchase(auction_info)
     
     -- Usar el módulo accounting para registrar
     local accounting = require 'aux.tabs.trading.accounting'
-    local item_key = auction_info.item_key or 'unknown'
+    local item_key = auction_info.item_key or L['unknown']
     local price = auction_info.unit_buyout_price or (auction_info.buyout_price and auction_info.count and auction_info.buyout_price / auction_info.count) or 0
     local quantity = auction_info.count or 1
-    local seller = auction_info.owner or 'Desconocido'
+    local seller = auction_info.owner or L['Desconocido']
     
     -- Llamar al módulo accounting
     if accounting and accounting.record_purchase then
@@ -1335,7 +1359,7 @@ function record_purchase(auction_info)
     
     local trade_id = string.format('%s_%d', auction_info.item_key, time())
     local item_key = auction_info.item_key
-    local item_name = auction_info.name or 'Unknown'
+    local item_name = auction_info.name or L['Unknown']
     local count = auction_info.count or 1
     local buy_price = auction_info.buyout_price or auction_info.bid_price or 0
     local unit_price = auction_info.unit_buyout_price or (buy_price / count)
@@ -1371,7 +1395,7 @@ function record_purchase(auction_info)
     active_trades[trade_id] = trade
     
     -- El módulo accounting ya guardó en AuxTradingAccounting
-    aux.print(string.format('[TRADE] Compra registrada: %s x%d', item_name, count))
+    aux.print(string.format(L['[TRADE] Compra registrada: %s x%d'], item_name, count))
 end
 
 -- Registrar cuando posteamos un item
@@ -1383,7 +1407,7 @@ function record_post(item_key, count, price)
             trade.posted_at = time()
             trade.actual_sell_price = price
             
-            aux.print(string.format('[TRADE] Post registrado: %s x%d por %d copper', 
+            aux.print(string.format(L['[TRADE] Post registrado: %s x%d por %d copper'], 
                 trade.item_name, trade.count, price))
             return
         end
@@ -1398,7 +1422,7 @@ function record_sale(item_key, count, price)
     -- Usar el módulo accounting para registrar
     local accounting = require 'aux.tabs.trading.accounting'
     if accounting and accounting.record_sale then
-        accounting.record_sale(item_key, unit_price, count, 'Comprador')
+        accounting.record_sale(item_key, unit_price, count, L["Comprador"])
     end
     
     -- Buscar trade posteado que coincida
@@ -1424,7 +1448,7 @@ function record_sale(item_key, count, price)
                 M.modules.dashboard.update_stats_on_trade(trade)
             end
             
-            aux.print(string.format('[TRADE] Venta completada: %s x%d | Profit: %d copper (%.1f%% ROI)', 
+            aux.print(string.format(L['[TRADE] Venta completada: %s x%d | Profit: %d copper (%.1f%% ROI)'], 
                 trade.item_name, trade.count, trade.profit, trade.roi * 100))
             break
         end
@@ -1432,7 +1456,7 @@ function record_sale(item_key, count, price)
     
     -- Ya no necesitamos guardar aquí porque accounting.record_sale lo hace
     -- Pero mantenemos el mensaje de log
-    aux.print(string.format('[TRADE] Venta registrada en historial: %s x%d', item_name, count))
+    aux.print(string.format(L['[TRADE] Venta registrada en historial: %s x%d'], item_name, count))
 end
 
 -- Registrar cuando expira un item
@@ -1447,7 +1471,7 @@ function record_expiration(item_key, count)
             trade.status = 'active'
             trade.posted_at = nil
             
-            aux.print(string.format('[TRADE] Expiración registrada: %s x%d (listo para repostear)', 
+            aux.print(string.format(L['[TRADE] Expiración registrada: %s x%d (listo para repostear)'], 
                 trade.item_name, trade.count))
             return
         end
@@ -1489,7 +1513,8 @@ function cleanup_old_trades()
     
     -- Limpiar historial
     local new_history = {}
-    for _, trade in ipairs(trade_history) do
+    for j = 1, getn(trade_history) do
+        local trade = trade_history[j]
         if current_time - (trade.sold_at or trade.expired_at or 0) < thirty_days then
             tinsert(new_history, trade)
         else
@@ -1503,7 +1528,7 @@ function cleanup_old_trades()
     end
     
     if cleaned > 0 then
-        aux.print(string.format('[TRADE] Limpiados %d trades antiguos', cleaned))
+        aux.print(string.format(L['[TRADE] Limpiados %d trades antiguos'], cleaned))
     end
 end
 
@@ -1572,7 +1597,7 @@ M.buy_opportunity = buy_opportunity
 
 -- Simple cache clearing function
 function clear_cache()
-    aux.print('Limpiando cache del sistema de trading...')
+    aux.print(L['Limpiando cache del sistema de trading...'])
     -- Clear opportunities
     opportunities = {}
     -- Clear scan stats
@@ -1592,12 +1617,12 @@ function clear_cache()
     daily_investments = {}
     daily_investments[today_key] = current_investment
     
-    aux.print('Cache limpiado exitosamente')
+    aux.print(L['Cache limpiado exitosamente'])
 end
 
 M.clear_cache = clear_cache
 
-aux.print('[TRADING] Funciones del core registradas en M.modules.core')
+aux.print(L['[HELPERS] Funciones exportadas al módulo trading'])
 
 -- ============================================================================
 -- COMANDOS DE CONSOLA
@@ -1606,10 +1631,10 @@ aux.print('[TRADING] Funciones del core registradas en M.modules.core')
 -- Comando para ejecutar tests
 SlashCmdList['AUXTEST'] = function(msg)
     if M.modules and M.modules.testing then
-        aux.print('[TRADING] Ejecutando tests del sistema...')
+        aux.print(L['[TRADING] Ejecutando tests del sistema...'])
         M.modules.testing.run_all_tests()
     else
-        aux.print('[TRADING] Módulo de testing no disponible')
+        aux.print(L['[TRADING] Módulo de testing no disponible'])
     end
 end
 SLASH_AUXTEST1 = '/auxtest'
@@ -1618,13 +1643,13 @@ SLASH_AUXTEST1 = '/auxtest'
 SlashCmdList['AUXSTATS'] = function(msg)
     if M.modules and M.modules.dashboard then
         local stats = M.modules.dashboard.get_stats()
-        aux.print('[TRADING] ===== ESTADÍSTICAS =====')
-        aux.print('[TRADING] Total Profit: ' .. (stats.total_profit or 0) .. ' copper')
-        aux.print('[TRADING] Total Trades: ' .. (stats.total_trades or 0))
-        aux.print('[TRADING] Success Rate: ' .. string.format('%.1f%%', stats.success_rate or 0))
-        aux.print('[TRADING] Avg ROI: ' .. string.format('%.1f%%', stats.avg_roi or 0))
+        aux.print(L['[TRADING] ===== ESTADÍSTICAS ====='])
+        aux.print(L['[TRADING] Total Profit: '] .. (stats.total_profit or 0) .. L[' copper'])
+        aux.print(L['[TRADING] Total Trades: '] .. (stats.total_trades or 0))
+        aux.print(L['[TRADING] Success Rate: '] .. string.format('%.1f%%', stats.success_rate or 0))
+        aux.print(L['[TRADING] Avg ROI: '] .. string.format('%.1f%%', stats.avg_roi or 0))
     else
-        aux.print('[TRADING] Dashboard no disponible')
+        aux.print(L['[TRADING] Dashboard no disponible'])
     end
 end
 SLASH_AUXSTATS1 = '/auxstats'
@@ -1632,18 +1657,18 @@ SLASH_AUXSTATS1 = '/auxstats'
 -- Comando para limpiar datos antiguos
 SlashCmdList['AUXCLEANUP'] = function(msg)
     if M.modules and M.modules.optimization then
-        aux.print('[TRADING] Ejecutando limpieza de datos...')
+        aux.print(L['[TRADING] Ejecutando limpieza de datos...'])
         M.modules.optimization.cleanup_old_data()
         M.modules.optimization.compress_historical_data()
         collectgarbage('collect')
-        aux.print('[TRADING] Limpieza completada')
+        aux.print(L['[TRADING] Limpieza completada'])
     else
-        aux.print('[TRADING] Módulo de optimización no disponible')
+        aux.print(L['[TRADING] Módulo de optimización no disponible'])
     end
 end
 SLASH_AUXCLEANUP1 = '/auxcleanup'
 
-aux.print('[TRADING] Comandos de consola registrados: /auxtest, /auxstats, /auxcleanup')
+aux.print(L['[TRADING] Comandos de consola registrados: /auxtest, /auxstats, /auxcleanup'])
 
 -- ============================================================================
 -- INTEGRACIÓN CON SCAN_INTEGRATION.LUA
@@ -1652,10 +1677,10 @@ aux.print('[TRADING] Comandos de consola registrados: /auxtest, /auxstats, /auxc
 -- Comando para escanear con el nuevo sistema
 SlashCmdList['AUXSCAN'] = function(msg)
     if M.scan_for_opportunities then
-        aux.print('[TRADING] Iniciando scan con sistema de integración...')
+        aux.print(L['[TRADING] Iniciando scan con sistema de integración...'])
         start_scan()
     else
-        aux.print('[TRADING] Sistema de scan_integration no disponible')
+        aux.print(L['[TRADING] Sistema de scan_integration no disponible'])
     end
 end
 SLASH_AUXSCAN1 = '/auxscan'
@@ -1663,32 +1688,32 @@ SLASH_AUXSCAN1 = '/auxscan'
 -- Comando para detectar undercuts
 SlashCmdList['AUXUNDERCUT'] = function(msg)
     if M.check_for_undercuts then
-        aux.print('[TRADING] Detectando undercuts...')
+        aux.print(L['[TRADING] Detectando undercuts...'])
         M.check_for_undercuts(function(result)
             if result.success then
                 if result.count > 0 then
-                    aux.print(string.format('|cFFFF0000¡Te hicieron undercut en %d items!|r', result.count))
+                    aux.print(string.format(L['|cFFFF0000¡Te hicieron undercut en %d items!|r'], result.count))
                     for i = 1, min(5, result.count) do
                         local u = result.undercuts[i]
-                        aux.print(string.format('  %s: Tu precio %s vs Competencia %s', 
+                        aux.print(string.format(L['  %s: Tu precio %s vs Competencia %s'], 
                             u.item_name,
                             M.format_money(u.our_price),
                             M.format_money(u.competitor_price)))
                     end
                 else
-                    aux.print('|cFF00FF00No hay undercuts|r')
+                    aux.print(L['|cFF00FF00No hay undercuts|r'])
                 end
             else
-                aux.print('|cFFFF0000Error al detectar undercuts|r')
+                aux.print(L['|cFFFF0000Error al detectar undercuts|r'])
             end
         end)
     else
-        aux.print('[TRADING] Sistema de detección de undercuts no disponible')
+        aux.print(L['[TRADING] Sistema de detección de undercuts no disponible'])
     end
 end
 SLASH_AUXUNDERCUT1 = '/auxundercut'
 
-aux.print('[TRADING] Comandos adicionales: /auxscan, /auxundercut')
+aux.print(L['[TRADING] Comandos adicionales: /auxscan, /auxundercut'])
 
 -- ============================================================================
 -- SNIPER SYSTEM
@@ -1724,6 +1749,11 @@ function is_sniper_running()
     return sniper_state.running
 end
 
+-- Retornar la clase del item (type es la categoría principal)
+local function get_item_class(item_info)
+    return item_info.type or L['Unknown']
+end
+
 -- Toggle sniper on/off
 function toggle_sniper()
     if sniper_state.running then
@@ -1736,13 +1766,13 @@ end
 -- Iniciar sniper
 function start_sniper()
     if sniper_state.running then
-        aux.print('|cFFFFFF00[SNIPER]|r Ya esta corriendo')
+        aux.print(L['|cFFFFFF00[SNIPER]|r Ya esta corriendo'])
         return
     end
     
     -- Verificar que estamos en la AH
     if not AuctionFrame or not AuctionFrame:IsVisible() then
-        aux.print('|cFFFF0000[SNIPER]|r Debes estar en la Casa de Subastas')
+        aux.print(L['|cFFFF0000[SNIPER]|r Debes estar en la Casa de Subastas'])
         return
     end
     
@@ -1751,9 +1781,9 @@ function start_sniper()
     sniper_state.deals_found = 0
     sniper_deals = {}
     
-    aux.print('|cFF00FF00=== SNIPER MODE ACTIVADO ===|r')
-    aux.print(string.format('|cFF00FF00Config:|r Min %d%% ganancia, Min 50s profit', sniper_config.min_profit_percent))
-    aux.print('|cFF00FF00Buscando deals en la AH...|r')
+    aux.print(L['|cFF00FF00=== SNIPER MODE ACTIVADO ===|r'])
+    aux.print(string.format(L['|cFF00FF00Config:|r Min %d%% ganancia, Min 50s profit'], sniper_config.min_profit_percent))
+    aux.print(L['|cFF00FF00Buscando deals en la AH...|r'])
     
     -- Iniciar scan continuo
     run_sniper_scan()
@@ -1770,8 +1800,8 @@ function stop_sniper()
         sniper_state.scan_id = nil
     end
     
-    aux.print('|cFFFF0000[SNIPER]|r Detenido')
-    aux.print(string.format('|cFFFFFF00Resumen:|r Escaneados: %d, Deals encontrados: %d', 
+    aux.print(L['|cFFFF0000[SNIPER]|r Detenido'])
+    aux.print(string.format(L['|cFFFFFF00Resumen:|r Escaneados: %d, Deals encontrados: %d'], 
         sniper_state.items_scanned, sniper_state.deals_found))
 end
 
@@ -1849,8 +1879,8 @@ function run_sniper_scan()
                 
                 -- Notificar
                 aux.print(string.format(
-                    '|cFF00FF00[SNIPER DEAL]|r %s x%d - %s (-%d%% = +%s)',
-                    auction_info.name or 'Unknown',
+                    L['|cFF00FF00[SNIPER DEAL]|r %s x%d - %s (-%d%% = +%s)'],
+                    auction_info.name or L['Unknown'],
                     auction_info.count or 1,
                     format_money(auction_info.buyout_price),
                     math.floor(profit_percent),
@@ -1896,22 +1926,27 @@ function run_sniper_scan()
     })
 end
 
+-- Retornar la subclase del item
+local function get_item_subtype(item_info)
+    return item_info.subtype or L['Unknown']
+end
+
 -- Comprar un deal del sniper
 function buy_sniper_deal(deal)
     if not deal or not deal.auction_info then
-        aux.print('|cFFFF0000[SNIPER]|r Deal invalido')
+        aux.print(L['|cFFFF0000[SNIPER]|r Deal invalido'])
         return false
     end
     
     -- Verificar oro
     if GetMoney() < deal.buyout_price then
-        aux.print('|cFFFF0000[SNIPER]|r No tienes suficiente oro')
+        aux.print(L['|cFFFF0000[SNIPER]|r No tienes suficiente oro'])
         return false
     end
     
     -- Verificar si aux esta comprando algo
     if aux.bid_in_progress and aux.bid_in_progress() then
-        aux.print('|cFFFFFF00[SNIPER]|r Esperando... hay una compra en progreso')
+        aux.print(L['|cFFFFFF00[SNIPER]|r Esperando... hay una compra en progreso'])
         return false
     end
     
@@ -1919,8 +1954,8 @@ function buy_sniper_deal(deal)
     local scan = require 'aux.core.scan'
     
     aux.print(string.format(
-        '|cFFFFFF00[SNIPER]|r Buscando %s para comprar...',
-        deal.item_name or 'Unknown'
+        L['|cFFFFFF00[SNIPER]|r Buscando %s para comprar...'],
+        deal.item_name or L['Unknown']
     ))
     
     -- Buscar y comprar el item
@@ -1943,8 +1978,8 @@ function buy_sniper_deal(deal)
             if record and record.index and record.buyout_price > 0 then
                 aux.place_bid('list', record.index, record.buyout_price, function()
                     aux.print(string.format(
-                        '|cFF00FF00[SNIPER]|r Comprado: %s x%d por %s',
-                        deal.item_name or 'Unknown',
+                        L['|cFF00FF00[SNIPER]|r Comprado: %s x%d por %s'],
+                        deal.item_name or L['Unknown'],
                         deal.count or 1,
                         format_money(deal.buyout_price)
                     ))
@@ -1972,6 +2007,20 @@ function buy_sniper_deal(deal)
     })
     
     return true
+end
+
+-- Retornar el nombre del día de la semana
+local function get_day_name(wday)
+    local days = {
+        [1] = L['Domingo'],
+        [2] = L['Lunes'],
+        [3] = L['Martes'],
+        [4] = L['Miércoles'],
+        [5] = L['Jueves'],
+        [6] = L['Viernes'],
+        [7] = L['Sábado'],
+    }
+    return days[wday] or L['Unknown']
 end
 
 -- Exportar funciones del sniper

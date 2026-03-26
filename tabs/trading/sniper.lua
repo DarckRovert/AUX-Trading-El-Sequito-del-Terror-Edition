@@ -206,7 +206,8 @@ function M.process_scan()
     end
 
     -- PASS 2: Evaluate Deals
-    for _, record in records do
+    for i = 1, getn(records) do
+        local record = records[i]
         -- Ignore user's own auctions
         if record.owner ~= UnitName('player') then
              local deal = M.evaluate_snipe(record, page_context)
@@ -214,7 +215,8 @@ function M.process_scan()
              if deal then
                 -- Check for duplicates
                 local is_dup = false
-                for _, d in ipairs(sniper_state.current_deals) do
+                for j = 1, getn(sniper_state.current_deals) do
+                    local d = sniper_state.current_deals[j]
                     if d.item_id == deal.item_id and d.buyout_price == deal.buyout_price and d.auction_record.owner == record.owner then
                         is_dup = true
                         break
@@ -243,7 +245,7 @@ function M.process_scan()
     
     -- Cleanup
     -- Release context maps
-    for _, ctx in page_context do
+    for _, ctx in pairs(page_context) do
         T.release(ctx)
     end
     T.release(page_context)
@@ -267,13 +269,13 @@ function M.sniper_alert(count)
         local deal = sniper_state.current_deals[1]
         local profit_text = money.to_string(deal.profit, nil, true)
         aux.print(string.format(
-            '|cFF00FF00[SNIPE!]|r %s - |cFFFFD700%s|r (Profit: %s)',
+            L['[SNIPE!] %s - |cFFFFD700%s|r (Profit: %s)'],
             deal.item_name,
             money.to_string(deal.buyout_price, nil, true),
             profit_text
         ))
     else
-        aux.print(string.format('|cFF00FF00[SNIPE!]|r Found %d new deals!', count))
+        aux.print(string.format(L['[SNIPE!] Found %d new deals!'], count))
     end
 end
 
@@ -290,7 +292,7 @@ function M.start_sniper()
     sniper_state.deals_found = 0
     sniper_state.scan_count = 0
     
-    aux.print('|cFF00FF00[Sniper]|r Started. Scanning last page...')
+    aux.print(L['[Sniper] Started. Scanning last page...'])
 
     -- Register Event Listener
     sniper_state.listener_id = aux.event_listener('AUCTION_ITEM_LIST_UPDATE', function()
@@ -352,7 +354,7 @@ function M.stop_sniper()
         sniper_state.listener_id = nil
     end
     
-    aux.print('|cFFFF8888[Sniper]|r Stopped.')
+    aux.print(L['[Sniper] Stopped.'])
 end
 
 function M.toggle_sniper()
@@ -391,7 +393,7 @@ function M.buy_sniper_deal(deal)
     -- I will keep the original logic of "Find it again then buy" if possible, 
     -- but simplified.
     
-    aux.print('Attempting to buy ' .. deal.item_name)
+    aux.print(string.format(L['Attempting to buy %s'], deal.item_name))
     
     -- For now, simple placeholder for buy logic relying on core
     -- (The user didn't ask explicitly to rewrite buy logic, but it was in the original file)
@@ -411,11 +413,12 @@ function M.buy_sniper_deal(deal)
         on_auction = function(record)
             if record then
                 aux.place_bid('list', record.index, record.buyout_price, function()
-                    aux.print('Snipped ' .. deal.item_name)
+                    aux.print(string.format(L['Snipped %s'], deal.item_name))
                     -- Remove from list
-                    for i, d in ipairs(sniper_state.current_deals) do
+                    for j = 1, getn(sniper_state.current_deals) do
+                        local d = sniper_state.current_deals[j]
                         if d == deal then
-                            tremove(sniper_state.current_deals, i)
+                            tremove(sniper_state.current_deals, j)
                             break
                         end
                     end
@@ -430,4 +433,4 @@ end
 M.modules = M.modules or {}
 M.modules.sniper = M
 
-aux.print('Sniper Module (Refactored) Loaded')
+aux.print(L['Sniper Module (Refactored) Loaded'])

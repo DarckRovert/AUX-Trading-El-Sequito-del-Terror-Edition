@@ -88,12 +88,12 @@ local function format_gold(copper)
 end
 
 local function format_time_ago(timestamp)
-    if not timestamp then return "Nunca" end
+    if not timestamp then return L["Nunca"] end
     local diff = time() - timestamp
-    if diff < 60 then return "Hace " .. diff .. "s"
-    elseif diff < 3600 then return "Hace " .. math.floor(diff/60) .. "m"
-    elseif diff < 86400 then return "Hace " .. math.floor(diff/3600) .. "h"
-    else return "Hace " .. math.floor(diff/86400) .. "d" end
+    if diff < 60 then return string.format(L["Hace %ds"], diff)
+    elseif diff < 3600 then return string.format(L["Hace %dm"], math.floor(diff/60))
+    elseif diff < 86400 then return string.format(L["Hace %dh"], math.floor(diff/3600))
+    else return string.format(L["Hace %dd"], math.floor(diff/86400)) end
 end
 
 local function create_button(parent, text, width, height, color)
@@ -143,7 +143,7 @@ function aux.handle.INIT_UI()
     icon:SetPoint("LEFT", header, "LEFT", 12, 0)
     icon:SetTexture("Interface\\Icons\\INV_Misc_Coin_01")
     
-    f.titulo = create_text(header, "|cFFFFD700AUX Trading System|r", 16, nil, "LEFT", icon, "RIGHT", 10, 0)
+    f.titulo = create_text(header, L["|cFFFFD700AUX Trading System|r"], 16, nil, "LEFT", icon, "RIGHT", 10, 0)
     f.gold_display = create_text(header, format_gold(GetMoney()), 14, COLORS.gold, "RIGHT", header, "RIGHT", -15, 0)
     
     -- SIDEBAR
@@ -155,23 +155,24 @@ function aux.handle.INIT_UI()
     f.sidebar = sidebar
     
     local tabs = {
-        {id = "dashboard", name = "Dashboard", icon = "Interface\\Icons\\INV_Misc_Note_01"},
-        {id = "grupos", name = "Grupos", icon = "Interface\\Icons\\INV_Box_01"},
-        {id = "oportunidades", name = "Oportunidades", icon = "Interface\\Icons\\INV_Misc_Coin_02"},
-        {id = "sniper", name = "Sniper", icon = "Interface\\Icons\\Ability_Hunter_SniperShot"},
-        {id = "vendor", name = "Vendor Shuffle", icon = "Interface\\Icons\\INV_Misc_Coin_03"}, -- Nuevo Tab
-        {id = "monopoly", name = "Monopolio", icon = "Interface\\Icons\\INV_Misc_Coin_01"},
-        {id = "auctioning", name = "Subastas", icon = "Interface\\Icons\\INV_Misc_Coin_04"},
-        {id = "crafting", name = "Crafting", icon = "Interface\\Icons\\Trade_BlackSmithing"},
-        {id = "item_tracker", name = "Inventario", icon = "Interface\\Icons\\INV_Misc_Bag_08"}, -- Nuevo Tab
-        {id = "historial", name = "Historial", icon = "Interface\\Icons\\INV_Scroll_03"},
-        {id = "config", name = "Configuracion", icon = "Interface\\Icons\\Trade_Engineering"},
+        {id = "dashboard", name = L["Dashboard"], icon = "Interface\\Icons\\Spell_Holy_BlessingOfStrength", build = M.build_dashboard, refresh = M.actualizar_dashboard_ui},
+        {id = "grupos", name = L["Grupos"], icon = "Interface\\Icons\\INV_Box_01"},
+        {id = "oportunidades", name = L["Oportunidades"], icon = "Interface\\Icons\\INV_Misc_Coin_02", build = M.build_oportunidades, refresh = M.update_opportunities},
+        {id = "sniper", name = L["Sniper"], icon = "Interface\\Icons\\Ability_Hunter_SniperShot"},
+        {id = "vendor", name = L["Vendor Shuffle"], icon = "Interface\\Icons\\INV_Misc_Bag_07", build = M.build_vendor, refresh = M.actualizar_vendor_ui},
+        {id = "monopoly", name = L["Monopolio"], icon = "Interface\\Icons\\INV_Misc_Coin_01"},
+        {id = "subastas", name = L["Subastas"], icon = "Interface\\Icons\\INV_Hammer_01", build = M.build_auctioning},
+        {id = "crafting", name = L["Crafting"], icon = "Interface\\Icons\\Trade_BlackSmithing"},
+        {id = "tracker", name = L["Inventario"], icon = "Interface\\Icons\\INV_Misc_Bag_11", build = M.build_item_tracker, refresh = M.refresh_item_tracker},
+        {id = "historial", name = L["Historial"], icon = "Interface\\Icons\\INV_Scroll_03"},
+        {id = "config", name = L["Configuracion"], icon = "Interface\\Icons\\INV_Misc_Gear_01", build = M.build_config},
     }
     
     f.tab_buttons = {}
     local yoff = -10
     
-    for i, t in ipairs(tabs) do
+    for i = 1, getn(tabs) do
+        local t = tabs[i]
         local btn = CreateFrame("Button", nil, sidebar)
         btn:SetWidth(SIZES.sidebar_width - 10)
         btn:SetHeight(SIZES.tab_height)
@@ -231,14 +232,15 @@ function aux.handle.INIT_UI()
     M.create_panels(content)
     M.switch_tab("dashboard")
     
-    aux.print("|cFFFFD700[Trading]|r UI v5.0 cargada - Por Elnazzareno")
+    aux.print(L["|cFFFFD700[Trading]|r UI v5.0 cargada - Por Elnazzareno"])
 end
 
 -- CREAR PANELES
 function M.create_panels(parent)
     local ids = {"dashboard", "grupos", "oportunidades", "sniper", "vendor", "monopoly", "auctioning", "crafting", "item_tracker", "historial", "config"}
     
-    for _, id in ipairs(ids) do
+    for j = 1, getn(ids) do
+        local id = ids[j]
         local panel = CreateFrame("Frame", nil, parent)
         panel:SetAllPoints()
         panel:Hide()
@@ -250,17 +252,17 @@ function M.create_panels(parent)
         create_backdrop(panel_header, {0.1, 0.1, 0.12, 1}, COLORS.border, 1)
         
         local titles = {
-            dashboard = "Dashboard - Resumen de Trading",
-            grupos = "Gestion de Grupos",
-            oportunidades = "Oportunidades de Mercado",
-            sniper = "Sniper - Ofertas en Tiempo Real",
-            vendor = "Vendor Shuffle - Dinero Gratis", -- Titulo
-            monopoly = "Monopolio - Domina el Mercado",
-            auctioning = "Gestion de Subastas",
-            crafting = "Crafting y Profesiones",
-            item_tracker = "Tracker de Inventario",
-            historial = "Historial de Transacciones",
-            config = "Configuracion del Sistema",
+            dashboard = L["Dashboard - Resumen de Trading"],
+            grupos = L["Gestion de Grupos"],
+            oportunidades = L["Oportunidades de Mercado"],
+            sniper = L["Sniper - Ofertas en Tiempo Real"],
+            vendor = L["Vendor Shuffle - Dinero Gratis"], -- Titulo
+            monopoly = L["Monopolio - Domina el Mercado"],
+            auctioning = L["Gestion de Subastas"],
+            crafting = L["Crafting y Profesiones"],
+            item_tracker = L["Tracker de Inventario"],
+            historial = L["Historial de Transacciones"],
+            config = L["Configuracion del Sistema"],
         }
         
         create_text(panel_header, titles[id] or id, 14, COLORS.gold, "LEFT", panel_header, "LEFT", 15, 0)
@@ -376,7 +378,8 @@ function M.refresh_dashboard()
         if AuxTradingAccounting.sales then
             for item_key, records in pairs(AuxTradingAccounting.sales) do
                 item_totals[item_key] = item_totals[item_key] or 0
-                for _, record in ipairs(records) do
+                for j = 1, getn(records) do
+                    local record = records[j]
                     local amount = (record.price or 0) * (record.quantity or 1)
                     item_totals[item_key] = item_totals[item_key] + amount
                     if record.time and record.time >= day_ago then
@@ -392,7 +395,8 @@ function M.refresh_dashboard()
         -- Restar compras
         if AuxTradingAccounting.purchases then
             for item_key, records in pairs(AuxTradingAccounting.purchases) do
-                for _, record in ipairs(records) do
+                for j = 1, getn(records) do
+                    local record = records[j]
                     local amount = (record.price or 0) * (record.quantity or 1)
                     if record.time and record.time >= day_ago then
                         profit_today = profit_today - amount
@@ -415,9 +419,9 @@ function M.refresh_dashboard()
         -- Top items
         local sorted_items = {}
         for item_key, total in pairs(item_totals) do
-            table.insert(sorted_items, {key = item_key, total = total})
+            tinsert(sorted_items, {key = item_key, total = total})
         end
-        table.sort(sorted_items, function(a, b) return a.total > b.total end)
+        sort(sorted_items, function(a, b) return a.total > b.total end)
         
         for i = 1, 6 do
             local row = refs.top_items[i]
@@ -468,19 +472,17 @@ function M.build_grupos(parent)
     left_panel:SetPoint("TOPLEFT", 10, -10)
     left_panel:SetWidth(200)
     left_panel:SetPoint("BOTTOM", 0, 10)
-    create_backdrop(left_panel, COLORS.bg_medium, COLORS.border, 1)
-    
-    create_text(left_panel, "Grupos", 12, COLORS.gold, "TOP", left_panel, "TOP", 0, -10)
+    create_text(left_panel, L["Grupos"], 12, COLORS.gold, "TOP", left_panel, "TOP", 0, -10)
     
     -- Botones de accion grupos
-    local btn_new = create_button(left_panel, "+ Nuevo", 60, 22, {0.2, 0.5, 0.3, 0.9})
+    local btn_new = create_button(left_panel, L["+ Nuevo"], 60, 22, {0.2, 0.5, 0.3, 0.9})
     btn_new:SetPoint("TOPLEFT", 5, -35)
     btn_new:SetScript("OnClick", function()
         -- Mostrar dialogo para crear grupo
         StaticPopupDialogs["AUX_CREATE_GROUP"] = {
-            text = "Nombre del nuevo grupo:",
-            button1 = "Crear",
-            button2 = "Cancelar",
+            text = L["Nombre del nuevo grupo:"],
+            button1 = L["Crear"],
+            button2 = L["Cancelar"],
             hasEditBox = 1,
             maxLetters = 50,
             OnAccept = function()
@@ -498,14 +500,14 @@ function M.build_grupos(parent)
         StaticPopup_Show("AUX_CREATE_GROUP")
     end)
     
-    local btn_del = create_button(left_panel, "Eliminar", 60, 22, {0.5, 0.2, 0.2, 0.9})
+    local btn_del = create_button(left_panel, L["Eliminar"], 60, 22, {0.5, 0.2, 0.2, 0.9})
     btn_del:SetPoint("LEFT", btn_new, "RIGHT", 5, 0)
     btn_del:SetScript("OnClick", function()
         if selected_group then
             StaticPopupDialogs["AUX_DELETE_GROUP"] = {
-                text = "¿Eliminar grupo '" .. selected_group .. "'?",
-                button1 = "Eliminar",
-                button2 = "Cancelar",
+                text = string.format(L["¿Eliminar grupo '%s'?"], selected_group),
+                button1 = L["Eliminar"],
+                button2 = L["Cancelar"],
                 OnAccept = function()
                     if groups.eliminar_grupo(selected_group) then
                         selected_group = nil
@@ -518,11 +520,11 @@ function M.build_grupos(parent)
             }
             StaticPopup_Show("AUX_DELETE_GROUP")
         else
-            aux.print("|cFFFF0000[Error]|r Selecciona un grupo primero")
+            aux.print(L["|cFFFF0000[Error]|r Selecciona un grupo primero"])
         end
     end)
     
-    local btn_import = create_button(left_panel, "Importar", 60, 22, {0.3, 0.4, 0.5, 0.9})
+    local btn_import = create_button(left_panel, L["Importar"], 60, 22, {0.3, 0.4, 0.5, 0.9})
     btn_import:SetPoint("LEFT", btn_del, "RIGHT", 5, 0)
     
     -- Lista de grupos
@@ -572,25 +574,23 @@ function M.build_grupos(parent)
     local right_panel = CreateFrame("Frame", nil, parent)
     right_panel:SetPoint("TOPLEFT", left_panel, "TOPRIGHT", 10, 0)
     right_panel:SetPoint("BOTTOMRIGHT", -10, 10)
-    create_backdrop(right_panel, COLORS.bg_medium, COLORS.border, 1)
-    
-    refs.group_title = create_text(right_panel, "Selecciona un grupo", 12, COLORS.gold, "TOP", right_panel, "TOP", 0, -10)
+    refs.group_title = create_text(right_panel, L["Selecciona un grupo"], 12, COLORS.gold, "TOP", right_panel, "TOP", 0, -10)
     refs.group_desc = create_text(right_panel, "", 10, COLORS.text_dim, "TOP", right_panel, "TOP", 0, -28)
     
     -- Botones de items
-    local btn_add = create_button(right_panel, "+ Agregar Item", 100, 22, {0.2, 0.5, 0.3, 0.9})
+    local btn_add = create_button(right_panel, L["+ Agregar Item"], 100, 22, {0.2, 0.5, 0.3, 0.9})
     btn_add:SetPoint("TOPLEFT", 10, -50)
     btn_add:SetScript("OnClick", function()
         if not selected_group then
-            aux.print("|cFFFF0000[Error]|r Selecciona un grupo primero")
+            aux.print(L["|cFFFF0000[Error]|r Selecciona un grupo primero"])
             return
         end
         
         -- Mostrar dialogo para agregar item
         StaticPopupDialogs["AUX_ADD_ITEM_TO_GROUP"] = {
-            text = "Item ID o link del item:",
-            button1 = "Agregar",
-            button2 = "Cancelar",
+            text = L["Item ID o link del item:"],
+            button1 = L["Agregar"],
+            button2 = L["Cancelar"],
             hasEditBox = 1,
             maxLetters = 100,
             OnAccept = function()
@@ -604,7 +604,7 @@ function M.build_grupos(parent)
                             M.show_group_items(selected_group)
                         end
                     else
-                        aux.print("|cFFFF0000[Error]|r Item ID inv\195\161lido")
+                        aux.print(L["|cFFFF0000[Error]|r Item ID inválido"])
                     end
                 end
             end,
@@ -615,11 +615,11 @@ function M.build_grupos(parent)
         StaticPopup_Show("AUX_ADD_ITEM_TO_GROUP")
     end)
     
-    local btn_remove = create_button(right_panel, "Quitar Item", 90, 22, {0.5, 0.2, 0.2, 0.9})
+    local btn_remove = create_button(right_panel, L["Quitar Item"], 90, 22, {0.5, 0.2, 0.2, 0.9})
     btn_remove:SetPoint("LEFT", btn_add, "RIGHT", 5, 0)
     btn_remove:SetScript("OnClick", function()
         if not selected_group then
-            aux.print("|cFFFF0000[Error]|r Selecciona un grupo primero")
+            aux.print(L["|cFFFF0000[Error]|r Selecciona un grupo primero"])
             return
         end
         
@@ -630,7 +630,7 @@ function M.build_grupos(parent)
                 M.show_group_items(selected_group)
             end
         else
-            aux.print("|cFFFF0000[Error]|r Selecciona un item primero")
+            aux.print(L["|cFFFF0000[Error]|r Selecciona un item primero"])
         end
     end)
     
@@ -706,10 +706,10 @@ function M.refresh_grupos()
         if groups.contar_items_en_grupo then
             count = groups.contar_items_en_grupo(nombre)
         elseif grupo.items then
-            count = table.getn(grupo.items)
+            count = getn(grupo.items)
         end
         
-        table.insert(grupos_array, {
+        tinsert(grupos_array, {
             name = nombre,
             icon = grupo.icono or 'Interface\\Icons\\INV_Misc_QuestionMark',
             count = count,
@@ -718,9 +718,10 @@ function M.refresh_grupos()
     end
     
     -- Ordenar por nombre
-    table.sort(grupos_array, function(a, b) return a.name < b.name end)
+    sort(grupos_array, function(a, b) return a.name < b.name end)
     
-    for i, row in ipairs(refs.group_list) do
+    for i = 1, getn(refs.group_list) do
+        local row = refs.group_list[i]
         if grupos_array[i] then
             local g = grupos_array[i]
             row.icon:SetTexture(g.icon)
@@ -749,7 +750,7 @@ function M.show_group_items(group_name)
     if not grupo then return end
     
     refs.group_title:SetText(group_name)
-    refs.group_desc:SetText(grupo.descripcion or "Items en este grupo")
+    refs.group_desc:SetText(grupo.descripcion or L["Items en este grupo"])
     
     -- Obtener items reales del grupo
     local item_keys = groups.obtener_items_de_grupo(group_name)
@@ -757,7 +758,8 @@ function M.show_group_items(group_name)
     -- Resetear selección
     refs.selected_item = nil
     
-    for i, row in ipairs(refs.item_list) do
+    for i = 1, getn(refs.item_list) do
+        local row = refs.item_list[i]
         if item_keys[i] then
             local item_key = item_keys[i]
             local item_id = extract_item_id(item_key)
@@ -781,7 +783,7 @@ function M.show_group_items(group_name)
             if market_value and market_value > 0 then
                 price_text = format_gold(market_value)
             else
-                price_text = "|cFF888888Sin datos|r"
+                price_text = L["Sin datos"]
             end
             
             row.icon:SetTexture(item_texture)
@@ -810,7 +812,7 @@ function M.build_sniper(parent)
     control_bar:SetHeight(40)
     create_backdrop(control_bar, COLORS.bg_medium, COLORS.border, 1)
     
-    refs.btn_start = create_button(control_bar, "Iniciar Sniper", 110, 28, {0.2, 0.6, 0.3, 0.9})
+    refs.btn_start = create_button(control_bar, L["Iniciar Sniper"], 110, 28, {0.2, 0.6, 0.3, 0.9})
     refs.btn_start:SetPoint("LEFT", control_bar, "LEFT", 10, 0)
     refs.btn_start:SetScript("OnClick", function()
         if M.toggle_sniper then
@@ -818,21 +820,21 @@ function M.build_sniper(parent)
             
             -- Actualizar UI del botón
             if M.is_sniper_running and M.is_sniper_running() then
-                this.label:SetText("Detener")
+                this.label:SetText(L["Detener"])
                 create_backdrop(this, {0.6, 0.2, 0.2, 0.9}, COLORS.border, 1)
                 this.btn_color = {0.6, 0.2, 0.2, 0.9}
             else
-                this.label:SetText("Iniciar Sniper")
+                this.label:SetText(L["Iniciar Sniper"])
                 create_backdrop(this, {0.2, 0.6, 0.3, 0.9}, COLORS.border, 1)
                 this.btn_color = {0.2, 0.6, 0.3, 0.9}
             end
         else
-            aux.print("|cFFFF0000[Error]|r La función toggle_sniper no existe")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe"], "toggle_sniper"))
         end
     end)
     
-    refs.status = create_text(control_bar, "|cFF888888Detenido|r", 11, nil, "LEFT", refs.btn_start, "RIGHT", 15, 0)
-    refs.stats = create_text(control_bar, "Escaneados: 0 | Ofertas: 0", 10, COLORS.text_dim, "RIGHT", control_bar, "RIGHT", -10, 0)
+    refs.status = create_text(control_bar, L["|cFF888888Detenido|r"], 11, nil, "LEFT", refs.btn_start, "RIGHT", 15, 0)
+    refs.stats = create_text(control_bar, L["Escaneados: 0 | Ofertas: 0"], 10, COLORS.text_dim, "RIGHT", control_bar, "RIGHT", -10, 0)
     
     -- Configuracion sniper
     local config_frame = CreateFrame("Frame", nil, parent)
@@ -841,15 +843,15 @@ function M.build_sniper(parent)
     config_frame:SetHeight(120)
     create_backdrop(config_frame, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(config_frame, "Configuracion", 11, COLORS.gold, "TOP", config_frame, "TOP", 0, -8)
-    create_text(config_frame, "Min. Ganancia %:", 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -30)
+    create_text(config_frame, L["Configuracion"], 11, COLORS.gold, "TOP", config_frame, "TOP", 0, -8)
+    create_text(config_frame, L["Min. Ganancia %:"], 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -30)
     refs.config_min_profit = create_text(config_frame, "5%", 10, COLORS.success, "TOPRIGHT", config_frame, "TOPRIGHT", -10, -30)
-    create_text(config_frame, "Max. Precio:", 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -50)
+    create_text(config_frame, L["Max. Precio:"], 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -50)
     refs.config_max_price = create_text(config_frame, "1000g", 10, COLORS.gold, "TOPRIGHT", config_frame, "TOPRIGHT", -10, -50)
-    create_text(config_frame, "Intervalo Scan:", 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -70)
+    create_text(config_frame, L["Intervalo Scan:"], 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -70)
     refs.config_interval = create_text(config_frame, "0.5s", 10, COLORS.primary, "TOPRIGHT", config_frame, "TOPRIGHT", -10, -70)
-    create_text(config_frame, "Sonido Alerta:", 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -90)
-    refs.config_sound = create_text(config_frame, "|cFF00FF00SI|r", 10, nil, "TOPRIGHT", config_frame, "TOPRIGHT", -10, -90)
+    create_text(config_frame, L["Sonido Alerta:"], 10, COLORS.text, "TOPLEFT", config_frame, "TOPLEFT", 10, -90)
+    refs.config_sound = create_text(config_frame, L["|cFF00FF00SI|r"], 10, nil, "TOPRIGHT", config_frame, "TOPRIGHT", -10, -90)
     
     -- Actualizar valores de configuracion desde el modulo sniper
     local function update_config_display()
@@ -864,13 +866,13 @@ function M.build_sniper(parent)
             refs.config_interval:SetText(string.format("%.1fs", config.scan_interval or 0.5))
         end
         if refs.config_sound then
-            refs.config_sound:SetText(config.sound_alert and "|cFF00FF00SI|r" or "|cFFFF0000NO|r")
+            refs.config_sound:SetText(config.sound_alert and L["|cFF00FF00SI|r"] or L["|cFFFF0000NO|r"])
         end
     end
     update_config_display()
     
     -- Lista de ofertas encontradas
-    create_text(parent, "Ofertas Encontradas", 12, COLORS.gold, "TOPLEFT", parent, "TOPLEFT", 220, -60)
+    create_text(parent, L["Ofertas Encontradas"], 12, COLORS.gold, "TOPLEFT", parent, "TOPLEFT", 220, -60)
     
     local list_container = CreateFrame("Frame", nil, parent)
     list_container:SetPoint("TOPLEFT", 220, -80)
@@ -884,11 +886,11 @@ function M.build_sniper(parent)
     header:SetHeight(22)
     create_backdrop(header, {0.12, 0.12, 0.15, 1}, COLORS.border, 1)
     
-    create_text(header, "Item", 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
-    create_text(header, "Precio", 10, COLORS.text_dim, "LEFT", header, "LEFT", 180, 0)
-    create_text(header, "Mercado", 10, COLORS.text_dim, "LEFT", header, "LEFT", 260, 0)
-    create_text(header, "Ganancia", 10, COLORS.text_dim, "LEFT", header, "LEFT", 340, 0)
-    create_text(header, "Accion", 10, COLORS.text_dim, "RIGHT", header, "RIGHT", -10, 0)
+    create_text(header, L["Item"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
+    create_text(header, L["Precio"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 180, 0)
+    create_text(header, L["Mercado"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 260, 0)
+    create_text(header, L["Ganancia"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 340, 0)
+    create_text(header, L["Accion"], 10, COLORS.text_dim, "RIGHT", header, "RIGHT", -10, 0)
     
     -- ScrollFrame para la lista
     local VISIBLE_ROWS = 15
@@ -929,14 +931,14 @@ function M.build_sniper(parent)
         row.market = create_text(row, "", 9, COLORS.text, "LEFT", row, "LEFT", 260, 0)
         row.profit = create_text(row, "", 9, COLORS.success, "LEFT", row, "LEFT", 340, 0)
         
-        local btn_buy = create_button(row, "Comprar", 55, 18, {0.2, 0.5, 0.3, 0.9})
+        local btn_buy = create_button(row, L["Comprar"], 55, 18, {0.2, 0.5, 0.3, 0.9})
         btn_buy:SetPoint("RIGHT", -5, 0)
         btn_buy.row_index = i
         btn_buy:SetScript("OnClick", function()
             if row.deal and M.buy_sniper_deal then
                 M.buy_sniper_deal(row.deal)
             else
-                aux.print("|cFFFF0000[Error]|r No hay deal seleccionado")
+                aux.print(L["|cFFFF0000[Error]|r No hay deal seleccionado"])
             end
         end)
         row.btn_buy = btn_buy
@@ -978,7 +980,7 @@ function M.build_sniper(parent)
     end)
     
     -- Mensaje cuando no hay ofertas
-    refs.no_deals = create_text(list_container, "No hay ofertas. Inicia el sniper para buscar.", 11, COLORS.text_dim, "CENTER")
+    refs.no_deals = create_text(list_container, L["No hay ofertas. Inicia el sniper para buscar."], 11, COLORS.text_dim, "CENTER")
 end
 
 -- Actualizar UI del sniper
@@ -998,7 +1000,7 @@ function M.update_sniper_ui()
     
     -- Actualizar stats
     if refs.stats then
-        refs.stats:SetText(string.format("Escaneados: %d | Ofertas: %d", 
+        refs.stats:SetText(string.format(L["Escaneados: %d | Ofertas: %d"], 
             state.items_scanned or 0, 
             deal_count))
     end
@@ -1006,9 +1008,9 @@ function M.update_sniper_ui()
     -- Actualizar status
     if refs.status then
         if state.running then
-            refs.status:SetText("|cFF00FF00Activo|r")
+            refs.status:SetText(L["|cFF00FF00Activo|r"])
         else
-            refs.status:SetText("|cFF888888Detenido|r")
+            refs.status:SetText(L["|cFF888888Detenido|r"])
         end
     end
     
@@ -1035,7 +1037,7 @@ function M.update_sniper_ui()
         
         if deal then
             -- Obtener info del item
-            local item_name = deal.item_name or "Unknown"
+            local item_name = deal.item_name or L["Desconocido"]
             local item_texture = "Interface\\Icons\\INV_Misc_QuestionMark"
             
             -- FIX: Usar texture del auction_record (obtenido directamente del scan)
@@ -1056,7 +1058,7 @@ function M.update_sniper_ui()
             row.name:SetText(item_name)
             row.price:SetText(format_gold(deal.buyout_price))
             row.market:SetText(format_gold(deal.market_value))
-            row.profit:SetText(string.format("+%s (-%d%%)", format_gold(deal.profit), deal.percent_below))
+            row.profit:SetText(string.format(L["+%s (-%d%%)"], format_gold(deal.profit), deal.percent_below))
             row.deal = deal
             row:Show()
             visible_count = visible_count + 1
@@ -1089,44 +1091,44 @@ function M.build_auctioning(parent)
     action_bar:SetHeight(40)
     create_backdrop(action_bar, COLORS.bg_medium, COLORS.border, 1)
     
-    local btn_post = create_button(action_bar, "Publicar Todo", 100, 28, {0.2, 0.5, 0.3, 0.9})
+    local btn_post = create_button(action_bar, L["Publicar Todo"], 100, 28, {0.2, 0.5, 0.3, 0.9})
     btn_post:SetPoint("LEFT", action_bar, "LEFT", 10, 0)
     btn_post:SetScript("OnClick", function()
         if M.post_all_items then
             M.post_all_items()
         else
-            aux.print("|cFFFF0000[Error]|r La función post_all_items no existe")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe en el módulo"], "post_all_items"))
         end
     end)
     
-    local btn_cancel = create_button(action_bar, "Cancelar Undercut", 120, 28, {0.5, 0.3, 0.2, 0.9})
+    local btn_cancel = create_button(action_bar, L["Cancelar Undercut"], 120, 28, {0.5, 0.3, 0.2, 0.9})
     btn_cancel:SetPoint("LEFT", btn_post, "RIGHT", 10, 0)
     btn_cancel:SetScript("OnClick", function()
         if M.cancel_undercut_auctions then
             M.cancel_undercut_auctions()
         else
-            aux.print("|cFFFF0000[Error]|r La función cancel_undercut_auctions no existe")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe en el módulo"], "cancel_undercut_auctions"))
         end
     end)
     
-    local btn_scan = create_button(action_bar, "Escanear Precios", 110, 28, {0.3, 0.4, 0.5, 0.9})
+    local btn_scan = create_button(action_bar, L["Escanear Precios"], 110, 28, {0.3, 0.4, 0.5, 0.9})
     btn_scan:SetPoint("LEFT", btn_cancel, "RIGHT", 10, 0)
     btn_scan:SetScript("OnClick", function()
         if M.scan_prices then
             M.scan_prices()
         else
-            aux.print("|cFFFF0000[Error]|r La función scan_prices no existe")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe en el módulo"], "scan_prices"))
         end
     end)
     
-    local btn_refresh = create_button(action_bar, "Actualizar", 80, 28, {0.4, 0.4, 0.5, 0.9})
+    local btn_refresh = create_button(action_bar, L["Actualizar"], 80, 28, {0.4, 0.4, 0.5, 0.9})
     btn_refresh:SetPoint("LEFT", btn_scan, "RIGHT", 10, 0)
     btn_refresh:SetScript("OnClick", function()
         M.refresh_auctioning()
-        aux.print("|cFF00FF00Subastas actualizadas|r")
+        aux.print(L["|cFF00FF00Subastas actualizadas|r"])
     end)
     
-    refs.status = create_text(action_bar, "|cFF00FF00Listo|r", 10, nil, "RIGHT", action_bar, "RIGHT", -10, 0)
+    refs.status = create_text(action_bar, L["|cFF00FF00Listo|r"], 10, nil, "RIGHT", action_bar, "RIGHT", -10, 0)
     
     -- Resumen
     local summary = CreateFrame("Frame", nil, parent)
@@ -1135,13 +1137,13 @@ function M.build_auctioning(parent)
     summary:SetHeight(50)
     create_backdrop(summary, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(summary, "Subastas Activas:", 10, COLORS.text, "LEFT", summary, "LEFT", 15, 8)
+    create_text(summary, L["Subastas Activas:"], 10, COLORS.text, "LEFT", summary, "LEFT", 15, 8)
     refs.active_count = create_text(summary, "0", 14, COLORS.primary, "LEFT", summary, "LEFT", 130, 8)
     
-    create_text(summary, "Valor Total:", 10, COLORS.text, "LEFT", summary, "LEFT", 200, 8)
+    create_text(summary, L["Valor Total:"], 10, COLORS.text, "LEFT", summary, "LEFT", 200, 8)
     refs.total_value = create_text(summary, "0g", 14, COLORS.gold, "LEFT", summary, "LEFT", 280, 8)
     
-    create_text(summary, "Vendidas Hoy:", 10, COLORS.text, "LEFT", summary, "LEFT", 400, 8)
+    create_text(summary, L["Vendidas Hoy:"], 10, COLORS.text, "LEFT", summary, "LEFT", 400, 8)
     refs.sold_today = create_text(summary, "0", 14, COLORS.success, "LEFT", summary, "LEFT", 500, 8)
     
     -- Header de lista
@@ -1151,11 +1153,11 @@ function M.build_auctioning(parent)
     header:SetHeight(22)
     create_backdrop(header, {0.12, 0.12, 0.15, 1}, COLORS.border, 1)
     
-    create_text(header, "Item", 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
-    create_text(header, "Cantidad", 10, COLORS.text_dim, "LEFT", header, "LEFT", 200, 0)
-    create_text(header, "Precio Unit.", 10, COLORS.text_dim, "LEFT", header, "LEFT", 280, 0)
-    create_text(header, "Tiempo", 10, COLORS.text_dim, "LEFT", header, "LEFT", 380, 0)
-    create_text(header, "Estado", 10, COLORS.text_dim, "LEFT", header, "LEFT", 460, 0)
+    create_text(header, L["Item"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
+    create_text(header, L["Cantidad"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 200, 0)
+    create_text(header, L["Precio Unit."], 10, COLORS.text_dim, "LEFT", header, "LEFT", 280, 0)
+    create_text(header, L["Tiempo"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 380, 0)
+    create_text(header, L["Estado"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 460, 0)
     
     -- Lista de subastas
     local list_frame = CreateFrame("Frame", nil, parent)
@@ -1195,7 +1197,7 @@ function M.build_auctioning(parent)
         refs.auction_rows[i] = row
     end
     
-    refs.no_auctions = create_text(list_frame, "No tienes subastas activas", 11, COLORS.text_dim, "CENTER")
+    refs.no_auctions = create_text(list_frame, L["No tienes subastas activas"], 11, COLORS.text_dim, "CENTER")
     
     -- Actualizar al mostrar
     M.refresh_auctioning()
@@ -1226,22 +1228,22 @@ function M.refresh_auctioning()
             
             if name then
                 local time_left = GetAuctionItemTimeLeft('owner', i)
-                local time_text = "Corto"
-                if time_left == 1 then time_text = "Corto"
-                elseif time_left == 2 then time_text = "Medio"
-                elseif time_left == 3 then time_text = "Largo"
-                elseif time_left == 4 then time_text = "Muy Largo"
+                local time_text = L["Corto"]
+                if time_left == 1 then time_text = L["Corto"]
+                elseif time_left == 2 then time_text = L["Medio"]
+                elseif time_left == 3 then time_text = L["Largo"]
+                elseif time_left == 4 then time_text = L["Muy Largo"]
                 end
                 
-                local status = "|cFF00FF00Activa|r"
+                local status = L["|cFF00FF00Activa|r"]
                 if bidAmount and bidAmount > 0 then
-                    status = "|cFFFFFF00Con Puja|r"
+                    status = L["|cFFFFFF00Con Puja|r"]
                 end
                 if saleStatus == 1 then
-                    status = "|cFF00FF00Vendida!|r"
+                    status = L["|cFF00FF00Vendida!|r"]
                 end
                 
-                table.insert(auctions, {
+                tinsert(auctions, {
                     name = name,
                     texture = texture,
                     count = count or 1,
@@ -1268,7 +1270,8 @@ function M.refresh_auctioning()
     end
     
     -- Actualizar filas
-    for i, row in ipairs(refs.auction_rows) do
+    for i = 1, getn(refs.auction_rows) do
+        local row = refs.auction_rows[i]
         local auction = auctions[i]
         if auction then
             if auction.texture then
@@ -1347,14 +1350,16 @@ function M.refresh_crafting_ui()
     
     -- Calcular total profit visual (si el backend no lo da directo)
     local total_profit = 0
-    for _, r in ipairs(rentables) do
+    for j = 1, getn(rentables) do
+        local r = rentables[j]
         if r.profit_info then total_profit = total_profit + r.profit_info.profit end
     end
     refs.potential_profit:SetText(format_gold(total_profit))
     
     -- Actualizar lista
     local has_recipes = false
-    for i, row in ipairs(refs.recipe_rows) do
+    for i = 1, getn(refs.recipe_rows) do
+        local row = refs.recipe_rows[i]
         if rentables[i] then
             has_recipes = true
             local recipe = rentables[i]
@@ -1379,8 +1384,9 @@ function M.refresh_crafting_ui()
                 GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
                 GameTooltip:SetHyperlink(recipe.item_link)
                 GameTooltip:AddLine(" ")
-                GameTooltip:AddLine("Materiales Requeridos:", 1, 0.8, 0)
-                for _, mat in ipairs(recipe.reagents) do
+                GameTooltip:AddLine(L["Materiales Requeridos:"], 1, 0.8, 0)
+                for j = 1, getn(recipe.reagents) do
+                    local mat = recipe.reagents[j]
                     local color = "|cFFFF0000" -- red if missing
                     if mat.have >= mat.count then color = "|cFF00FF00" end -- green if have
                     GameTooltip:AddLine(string.format("%s%dx %s (%d/%d)|r", color, mat.count, mat.name, mat.have, mat.count))
@@ -1449,29 +1455,29 @@ function M.build_historial(parent)
     filter_bar:SetHeight(40)
     create_backdrop(filter_bar, COLORS.bg_medium, COLORS.border, 1)
     
-    local btn_all = create_button(filter_bar, "Todo", 60, 26, {0.3, 0.4, 0.5, 0.9})
+    local btn_all = create_button(filter_bar, L["Todo"], 60, 26, {0.3, 0.4, 0.5, 0.9})
     btn_all:SetPoint("LEFT", filter_bar, "LEFT", 10, 0)
     btn_all:SetScript("OnClick", function() M.filter_historial("all") end)
     refs.btn_all = btn_all
     
-    local btn_sales = create_button(filter_bar, "Ventas", 70, 26, {0.2, 0.5, 0.3, 0.9})
+    local btn_sales = create_button(filter_bar, L["Ventas"], 70, 26, {0.2, 0.5, 0.3, 0.9})
     btn_sales:SetPoint("LEFT", btn_all, "RIGHT", 5, 0)
     btn_sales:SetScript("OnClick", function() M.filter_historial("sales") end)
     refs.btn_sales = btn_sales
     
-    local btn_purchases = create_button(filter_bar, "Compras", 70, 26, {0.5, 0.3, 0.2, 0.9})
+    local btn_purchases = create_button(filter_bar, L["Compras"], 70, 26, {0.5, 0.3, 0.2, 0.9})
     btn_purchases:SetPoint("LEFT", btn_sales, "RIGHT", 5, 0)
     btn_purchases:SetScript("OnClick", function() M.filter_historial("purchases") end)
     refs.btn_purchases = btn_purchases
     
-    create_text(filter_bar, "Periodo:", 10, COLORS.text, "LEFT", btn_purchases, "RIGHT", 20, 0)
+    create_text(filter_bar, L["Periodo:"], 10, COLORS.text, "LEFT", btn_purchases, "RIGHT", 20, 0)
     
-    local btn_7d = create_button(filter_bar, "7 dias", 60, 26, {0.25, 0.35, 0.45, 0.9})
+    local btn_7d = create_button(filter_bar, L["7 dias"], 60, 26, {0.25, 0.35, 0.45, 0.9})
     btn_7d:SetPoint("LEFT", btn_purchases, "RIGHT", 70, 0)
     btn_7d:SetScript("OnClick", function() M.filter_historial(nil, 7) end)
     refs.btn_7d = btn_7d
     
-    local btn_30d = create_button(filter_bar, "30 dias", 60, 26, {0.25, 0.35, 0.45, 0.9})
+    local btn_30d = create_button(filter_bar, L["30 dias"], 60, 26, {0.25, 0.35, 0.45, 0.9})
     btn_30d:SetPoint("LEFT", btn_7d, "RIGHT", 5, 0)
     btn_30d:SetScript("OnClick", function() M.filter_historial(nil, 30) end)
     refs.btn_30d = btn_30d
@@ -1479,7 +1485,7 @@ function M.build_historial(parent)
     -- Init state
     M.filter_historial("all", 30)
     
-    refs.total_label = create_text(filter_bar, "Total: 0g", 11, COLORS.gold, "RIGHT", filter_bar, "RIGHT", -10, 0)
+    refs.total_label = create_text(filter_bar, L["Total: "] .. "0g", 11, COLORS.gold, "RIGHT", filter_bar, "RIGHT", -10, 0)
     
     -- Header
     local header = CreateFrame("Frame", nil, parent)
@@ -1488,12 +1494,12 @@ function M.build_historial(parent)
     header:SetHeight(22)
     create_backdrop(header, {0.12, 0.12, 0.15, 1}, COLORS.border, 1)
     
-    create_text(header, "Tipo", 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
-    create_text(header, "Item", 10, COLORS.text_dim, "LEFT", header, "LEFT", 70, 0)
-    create_text(header, "Cantidad", 10, COLORS.text_dim, "LEFT", header, "LEFT", 250, 0)
-    create_text(header, "Precio", 10, COLORS.text_dim, "LEFT", header, "LEFT", 330, 0)
-    create_text(header, "Jugador", 10, COLORS.text_dim, "LEFT", header, "LEFT", 420, 0)
-    create_text(header, "Fecha", 10, COLORS.text_dim, "RIGHT", header, "RIGHT", -10, 0)
+    create_text(header, L["Tipo"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 10, 0)
+    create_text(header, L["Item"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 70, 0)
+    create_text(header, L["Cantidad"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 250, 0)
+    create_text(header, L["Precio"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 330, 0)
+    create_text(header, L["Jugador"], 10, COLORS.text_dim, "LEFT", header, "LEFT", 420, 0)
+    create_text(header, L["Fecha"], 10, COLORS.text_dim, "RIGHT", header, "RIGHT", -10, 0)
     
     -- Lista
     local list_frame = CreateFrame("Frame", nil, parent)
@@ -1535,7 +1541,7 @@ function M.build_historial(parent)
         refs.history_rows[i] = row
     end
     
-    refs.no_history = create_text(list_frame, "No hay transacciones registradas", 11, COLORS.text_dim, "CENTER")
+    refs.no_history = create_text(list_frame, L["No hay transacciones registradas"], 11, COLORS.text_dim, "CENTER")
 end
 
 function M.refresh_historial()
@@ -1553,15 +1559,16 @@ function M.refresh_historial()
         -- Ventas
         if (active_filter_type == "all" or active_filter_type == "sales") and AuxTradingAccounting.sales then
             for item_key, item_records in pairs(AuxTradingAccounting.sales) do
-                for _, record in ipairs(item_records) do
+                for j = 1, getn(item_records) do
+                    local record = item_records[j]
                     if record.time >= cutoff_time then
-                        table.insert(records, {
-                            type = "Venta",
+                        tinsert(records, {
+                            type = L["Venta"],
                             type_color = COLORS.success,
                             item_key = item_key,
                             quantity = record.quantity or 1,
                             price = record.price or 0,
-                            player = record.buyer or "Desconocido",
+                            player = record.buyer or L["Desconocido"],
                             time = record.time or 0
                         })
                         total = total + ((record.price or 0) * (record.quantity or 1))
@@ -1573,15 +1580,16 @@ function M.refresh_historial()
         -- Compras
         if (active_filter_type == "all" or active_filter_type == "purchases") and AuxTradingAccounting.purchases then
             for item_key, item_records in pairs(AuxTradingAccounting.purchases) do
-                for _, record in ipairs(item_records) do
+                for j = 1, getn(item_records) do
+                    local record = item_records[j]
                     if record.time >= cutoff_time then
-                        table.insert(records, {
-                            type = "Compra",
+                        tinsert(records, {
+                            type = L["Compra"],
                             type_color = COLORS.danger,
                             item_key = item_key,
                             quantity = record.quantity or 1,
                             price = record.price or 0,
-                            player = record.seller or "Desconocido",
+                            player = record.seller or L["Desconocido"],
                             time = record.time or 0
                         })
                         total = total - ((record.price or 0) * (record.quantity or 1))
@@ -1592,16 +1600,17 @@ function M.refresh_historial()
     end
     
     -- Ordenar por tiempo
-    table.sort(records, function(a, b) return a.time > b.time end)
+    sort(records, function(a, b) return a.time > b.time end)
     
     -- Actualizar total
     if refs.total_label then
-        refs.total_label:SetText("Total: " .. format_gold(total))
+        refs.total_label:SetText(L["Total: "] .. format_gold(total))
     end
     
     -- Mostrar registros
     local has_records = false
-    for i, row in ipairs(refs.history_rows) do
+    for i = 1, getn(refs.history_rows) do
+        local row = refs.history_rows[i]
         if records[i] then
             has_records = true
             local r = records[i]
@@ -1655,29 +1664,29 @@ function M.build_oportunidades(parent)
     action_bar:SetPoint("TOPRIGHT", -10, -10)
     action_bar:SetHeight(35)
     
-    local btn_scan = create_button(action_bar, "Full Scan", 80, 26, {0.2, 0.5, 0.3, 0.9})
+    local btn_scan = create_button(action_bar, L["Full Scan"], 80, 26, {0.2, 0.5, 0.3, 0.9})
     btn_scan:SetPoint("LEFT", 0, 0)
     btn_scan:SetScript("OnClick", function()
         if M.start_scan then
             M.start_scan()
         else
-            aux.print("|cFFFF0000[Error]|r La función start_scan no existe en el módulo")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe en el módulo"], "start_scan"))
         end
     end)
     refs.btn_scan = btn_scan
     
-    local btn_quick = create_button(action_bar, "Scan Rapido", 90, 26, {0.3, 0.4, 0.5, 0.9})
+    local btn_quick = create_button(action_bar, L["Scan Rapido"], 90, 26, {0.3, 0.4, 0.5, 0.9})
     btn_quick:SetPoint("LEFT", btn_scan, "RIGHT", 5, 0)
     btn_quick:SetScript("OnClick", function()
         if M.start_quick_scan then
             M.start_quick_scan()
         else
-            aux.print("|cFFFF0000[Error]|r La función start_quick_scan no existe en el módulo")
+            aux.print(string.format(L["|cFFFF0000[Error]|r La función %s no existe en el módulo"], "start_quick_scan"))
         end
     end)
     refs.btn_quick = btn_quick
     
-    local btn_stop = create_button(action_bar, "Detener", 70, 26, {0.5, 0.3, 0.2, 0.9})
+    local btn_stop = create_button(action_bar, L["Detener"], 70, 26, {0.5, 0.3, 0.2, 0.9})
     btn_stop:SetPoint("LEFT", btn_quick, "RIGHT", 5, 0)
     btn_stop:SetScript("OnClick", function()
         if M.stop_scan then
@@ -1686,19 +1695,19 @@ function M.build_oportunidades(parent)
     end)
     refs.btn_stop = btn_stop
     
-    local btn_buy = create_button(action_bar, "Comprar", 70, 26, {0.2, 0.4, 0.6, 0.9})
+    local btn_buy = create_button(action_bar, L["Comprar"], 70, 26, {0.2, 0.4, 0.6, 0.9})
     btn_buy:SetPoint("LEFT", btn_stop, "RIGHT", 5, 0)
     btn_buy:SetScript("OnClick", function()
         local selected_opp = refs.selected_opportunity
         if selected_opp and M.buy_opportunity then
             M.buy_opportunity(selected_opp)
         else
-            aux.print("|cFFFF0000[Error]|r Selecciona una oportunidad primero")
+            aux.print(L["|cFFFF0000[Error]|r Selecciona una oportunidad primero"])
         end
     end)
     refs.btn_buy = btn_buy
     
-    refs.status = create_text(action_bar, "|cFF00FF00Listo|r", 10, nil, "RIGHT", action_bar, "RIGHT", -10, 0)
+    refs.status = create_text(action_bar, L["|cFF00FF00Listo|r"], 10, nil, "RIGHT", action_bar, "RIGHT", -10, 0)
     
     -- Header de columnas
     local col_header = CreateFrame("Frame", nil, parent)
@@ -1707,11 +1716,11 @@ function M.build_oportunidades(parent)
     col_header:SetHeight(22)
     create_backdrop(col_header, {0.12, 0.12, 0.15, 1}, COLORS.border, 1)
     
-    create_text(col_header, "Item", 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 10, 0)
-    create_text(col_header, "Precio", 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 200, 0)
-    create_text(col_header, "Mercado", 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 280, 0)
-    create_text(col_header, "Ganancia", 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 360, 0)
-    create_text(col_header, "%", 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 440, 0)
+    create_text(col_header, L["Item"], 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 10, 0)
+    create_text(col_header, L["Precio"], 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 200, 0)
+    create_text(col_header, L["Mercado"], 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 260, 0)
+    create_text(col_header, L["Ganancia"], 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 340, 0)
+    create_text(col_header, L["%"], 10, COLORS.text_dim, "LEFT", col_header, "LEFT", 440, 0)
     
     -- Container para scroll
     local list_container = CreateFrame("Frame", nil, parent)
@@ -1825,7 +1834,7 @@ function M.build_oportunidades(parent)
         end
     end)
     
-    refs.no_items = create_text(list_container, "Haz un Full Scan para encontrar oportunidades", 11, COLORS.text_dim, "CENTER")
+    refs.no_items = create_text(list_container, L["Haz un Full Scan para encontrar oportunidades"], 11, COLORS.text_dim, "CENTER")
     refs.total_items = 0
 end
 
@@ -1862,7 +1871,7 @@ function M.update_opportunities()
             if refs.rows[i] then refs.rows[i]:Hide() end
         end
         if refs.status then
-            refs.status:SetText("|cFF00FF00Listo|r")
+            refs.status:SetText(L["|cFF00FF00Listo|r"])
         end
         return
     end
@@ -1884,7 +1893,7 @@ function M.update_opportunities()
             row.opportunity = opp
             
             local auction_info = opp.auction_info or {}
-            local item_name = auction_info.name or "Item Desconocido"
+            local item_name = auction_info.name or L["Item Desconocido"]
             local buyout_price = auction_info.buyout_price or 0
             local market_price = opp.avg_price or 0
             local profit = opp.profit or 0
@@ -1945,7 +1954,7 @@ function M.update_opportunities()
     
     -- Actualizar status
     if refs.status then
-        refs.status:SetText(string.format("|cFF00FF00%d oportunidades|r", opp_count))
+        refs.status:SetText(string.format(L["|cFF00FF00%d oportunidades|r"], opp_count))
     end
 end
 

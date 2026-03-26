@@ -403,13 +403,14 @@ function M.agregar_item_a_grupo(nombre_grupo, item_key)
     end
     
     -- Verificar si ya existe
-    for _, item in ipairs(grupo.items) do
+    for j = 1, getn(grupo.items) do
+        local item = grupo.items[j]
         if item == item_key then
             return false -- Ya existe
         end
     end
     
-    table.insert(grupo.items, item_key)
+    tinsert(grupo.items, item_key)
     grupo.modificado = time()
     M.guardar_grupos()
     return true
@@ -421,9 +422,10 @@ function M.eliminar_item_de_grupo(nombre_grupo, item_key)
         return false
     end
     
-    for i, item in ipairs(grupo.items) do
+    for j = 1, getn(grupo.items) do
+        local item = grupo.items[j]
         if item == item_key then
-            table.remove(grupo.items, i)
+            tremove(grupo.items, j)
             grupo.modificado = time()
             M.guardar_grupos()
             return true
@@ -438,7 +440,7 @@ function M.contar_items_en_grupo(nombre_grupo)
     if not grupo then
         return 0
     end
-    return table.getn(grupo.items)
+    return getn(grupo.items)
 end
 
 function M.obtener_items_de_grupo(nombre_grupo)
@@ -512,7 +514,8 @@ function M.calcular_valor_grupo(nombre_grupo)
     end
     
     local valor_total = 0
-    for _, item_key in ipairs(grupo.items) do
+    for j = 1, getn(grupo.items) do
+        local item_key = grupo.items[j]
         local market_value = history.value(item_key)
         if market_value then
             valor_total = valor_total + market_value
@@ -529,7 +532,7 @@ function M.obtener_estadisticas_grupo(nombre_grupo)
     end
     
     local stats = {
-        total_items = table.getn(grupo.items),
+        total_items = getn(grupo.items),
         items_con_precio = 0,
         items_sin_precio = 0,
         valor_total = 0,
@@ -538,7 +541,8 @@ function M.obtener_estadisticas_grupo(nombre_grupo)
         precio_max = nil,
     }
     
-    for _, item_key in ipairs(grupo.items) do
+    for j = 1, getn(grupo.items) do
+        local item_key = grupo.items[j]
         local market_value = history.value(item_key)
         if market_value and market_value > 0 then
             stats.items_con_precio = stats.items_con_precio + 1
@@ -573,7 +577,7 @@ function M.exportar_grupo(nombre_grupo)
     end
     
     -- Formato simple: nombre,item1,item2,item3...
-    local items_str = table.concat(grupo.items, ',')
+    local items_str = aux_join(grupo.items, ',')
     return grupo.nombre .. ':' .. items_str
 end
 
@@ -611,9 +615,10 @@ function M.buscar_item_en_grupos(item_key)
     local resultados = {}
     
     for nombre, grupo in pairs(grupos) do
-        for _, item in ipairs(grupo.items) do
+        for j = 1, getn(grupo.items) do
+            local item = grupo.items[j]
             if item == item_key then
-                table.insert(resultados, nombre)
+                tinsert(resultados, nombre)
                 break
             end
         end
@@ -628,7 +633,7 @@ function M.buscar_grupos_por_nombre(texto)
     
     for nombre, grupo in pairs(grupos) do
         if string.find(string.lower(nombre), texto) then
-            table.insert(resultados, nombre)
+            tinsert(resultados, nombre)
         end
     end
     

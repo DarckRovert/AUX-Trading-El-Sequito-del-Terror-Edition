@@ -7,7 +7,7 @@ local M = getfenv()
 -- Alerts UI - Sistema de Alertas Visuales
 -- ============================================================================
 
-aux.print('[ALERTS_UI] Módulo de alertas visuales cargado')
+aux.print(L['[ALERTS_UI] Módulo de alertas visuales cargado'])
 
 -- ============================================================================
 -- Variables
@@ -113,14 +113,14 @@ local function crear_alert_frame()
     f.title:SetPoint('TOPLEFT', f.icon, 'TOPRIGHT', 10, 0)
     f.title:SetPoint('RIGHT', f, 'RIGHT', -10, 0)
     f.title:SetJustifyH('LEFT')
-    f.title:SetText('Alerta')
+    f.title:SetText(L['Alerta'])
     
     -- Mensaje
     f.message = f:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     f.message:SetPoint('TOPLEFT', f.title, 'BOTTOMLEFT', 0, -5)
     f.message:SetPoint('RIGHT', f, 'RIGHT', -10, 0)
     f.message:SetJustifyH('LEFT')
-    f.message:SetText('Mensaje de alerta')
+    f.message:SetText(L['Mensaje de alerta'])
     
     -- Detalles
     f.details = f:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
@@ -137,7 +137,7 @@ local function crear_alert_frame()
     
     f.close_btn.text = f.close_btn:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
     f.close_btn.text:SetPoint('CENTER')
-    f.close_btn.text:SetText('|cFFFF4444✖|r')
+    f.close_btn.text:SetText(L['✖'])
     
     f.close_btn:SetScript('OnClick', function()
         this:GetParent():Hide()
@@ -145,11 +145,11 @@ local function crear_alert_frame()
     end)
     
     f.close_btn:SetScript('OnEnter', function()
-        this.text:SetText('|cFFFFFFFF✖|r')
+        this.text:SetText(L['✖'])
     end)
     
     f.close_btn:SetScript('OnLeave', function()
-        this.text:SetText('|cFFFF4444✖|r')
+        this.text:SetText(L['✖'])
     end)
     
     -- Timer para auto-cerrar
@@ -178,7 +178,8 @@ function M.reorganizar_alertas()
     local y_offset = -100
     local visible_count = 0
     
-    for i, frame in ipairs(alert_frames) do
+    for i = 1, getn(alert_frames) do
+        local frame = alert_frames[i]
         if frame:IsVisible() then
             frame:ClearAllPoints()
             frame:SetPoint('TOP', UIParent, 'TOP', 0, y_offset)
@@ -190,8 +191,8 @@ function M.reorganizar_alertas()
     next_alert_y = y_offset
     
     -- Procesar siguiente alerta en cola
-    if visible_count < max_alerts and table.getn(alert_queue) > 0 then
-        local next_alert = table.remove(alert_queue, 1)
+    if visible_count < max_alerts and getn(alert_queue) > 0 then
+        local next_alert = tremove(alert_queue, 1)
         M.mostrar_alerta_inmediata(next_alert.type, next_alert.title, next_alert.message, next_alert.details)
     end
 end
@@ -208,7 +209,8 @@ function M.mostrar_alerta(alert_type, title, message, details)
     
     -- Contar alertas visibles
     local visible_count = 0
-    for _, frame in ipairs(alert_frames) do
+    for j = 1, getn(alert_frames) do
+        local frame = alert_frames[j]
         if frame:IsVisible() then
             visible_count = visible_count + 1
         end
@@ -216,7 +218,7 @@ function M.mostrar_alerta(alert_type, title, message, details)
     
     -- Si hay demasiadas alertas, añadir a cola
     if visible_count >= max_alerts then
-        table.insert(alert_queue, {
+        tinsert(alert_queue, {
             type = alert_type,
             title = title,
             message = message,
@@ -233,7 +235,8 @@ function M.mostrar_alerta_inmediata(alert_type, title, message, details)
     
     -- Buscar frame disponible o crear uno nuevo
     local frame = nil
-    for _, f in ipairs(alert_frames) do
+    for j = 1, getn(alert_frames) do
+        local f = alert_frames[j]
         if not f:IsVisible() then
             frame = f
             break
@@ -242,14 +245,14 @@ function M.mostrar_alerta_inmediata(alert_type, title, message, details)
     
     if not frame then
         frame = crear_alert_frame()
-        table.insert(alert_frames, frame)
+        tinsert(alert_frames, frame)
     end
     
     -- Configurar frame
     frame.icon:SetText(alert_config.icon)
     frame.icon:SetTextColor(unpack(alert_config.color))
     
-    frame.title:SetText(title or 'Alerta')
+    frame.title:SetText(L[title] or L['Alerta'])
     frame.title:SetTextColor(unpack(alert_config.color))
     
     frame.message:SetText(message or '')
@@ -308,9 +311,9 @@ end
 -- ============================================================================
 
 function M.alerta_oportunidad_excepcional(item_name, profit, discount)
-    local title = '⭐ OPORTUNIDAD EXCEPCIONAL'
-    local message = item_name or 'Item desconocido'
-    local details = string.format('Ganancia: %s | Descuento: %d%%', 
+    local title = L['⭐ OPORTUNIDAD EXCEPCIONAL']
+    local message = item_name or L['Item desconocido']
+    local details = string.format(L['Ganancia: %s | Descuento: %d%%'], 
         format_gold(profit or 0), 
         math.floor((discount or 0) * 100))
     
@@ -318,9 +321,9 @@ function M.alerta_oportunidad_excepcional(item_name, profit, discount)
 end
 
 function M.alerta_sniper(item_name, profit, discount)
-    local title = '🎯 SNIPER: COMPRA RÁPIDO!'
-    local message = item_name or 'Item desconocido'
-    local details = string.format('Ganancia: %s | Descuento: %d%%', 
+    local title = L['🎯 SNIPER: COMPRA RÁPIDO!']
+    local message = item_name or L['Item desconocido']
+    local details = string.format(L['Ganancia: %s | Descuento: %d%%'], 
         format_gold(profit or 0), 
         math.floor((discount or 0) * 100))
     
@@ -328,38 +331,38 @@ function M.alerta_sniper(item_name, profit, discount)
 end
 
 function M.alerta_venta_exitosa(item_name, profit)
-    local title = '✓ Venta Exitosa'
-    local message = item_name or 'Item desconocido'
-    local details = string.format('Ganancia: %s', format_gold(profit or 0))
+    local title = L['✓ Venta Exitosa']
+    local message = item_name or L['Item desconocido']
+    local details = string.format(L['Ganancia: %s'], format_gold(profit or 0))
     
     M.mostrar_alerta('good', title, message, details)
 end
 
 function M.alerta_undercut(item_name)
-    local title = '⚠ Te hicieron Undercut'
-    local message = item_name or 'Item desconocido'
-    local details = 'Considera repostear con nuevo precio'
+    local title = L['⚠ Te hicieron Undercut']
+    local message = item_name or L['Item desconocido']
+    local details = L['Considera repostear con nuevo precio']
     
     M.mostrar_alerta('warning', title, message, details)
 end
 
 function M.alerta_manipulacion(item_name)
-    local title = '⚠ Posible Manipulación'
-    local message = item_name or 'Item desconocido'
-    local details = 'Mercado volátil - Precaución al comprar'
+    local title = L['⚠ Posible Manipulación']
+    local message = item_name or L['Item desconocido']
+    local details = L['Mercado volátil - Precaución al comprar']
     
     M.mostrar_alerta('warning', title, message, details)
 end
 
 function M.alerta_error(mensaje)
-    local title = '✖ Error'
-    local message = mensaje or 'Error desconocido'
+    local title = L['✖ Error']
+    local message = mensaje or L['Error desconocido']
     
     M.mostrar_alerta('error', title, message, '')
 end
 
 function M.alerta_info(titulo, mensaje)
-    M.mostrar_alerta('info', titulo or 'Información', mensaje or '', '')
+    M.mostrar_alerta('info', L[titulo] or L['Información'], message or '', '')
 end
 
 -- ============================================================================
@@ -367,7 +370,8 @@ end
 -- ============================================================================
 
 function M.limpiar_alertas()
-    for _, frame in ipairs(alert_frames) do
+    for j = 1, getn(alert_frames) do
+        local frame = alert_frames[j]
         frame:Hide()
     end
     alert_queue = {}
@@ -388,4 +392,4 @@ M.modules.alerts_ui.alerta_error = M.alerta_error
 M.modules.alerts_ui.alerta_info = M.alerta_info
 M.modules.alerts_ui.limpiar_alertas = M.limpiar_alertas
 
-aux.print('|cFF00FF00[ALERTS_UI]|r Sistema de alertas visuales listo')
+aux.print(L['[ALERTS_UI]|r Sistema de alertas visuales listo'])

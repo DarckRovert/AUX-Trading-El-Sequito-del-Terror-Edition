@@ -98,29 +98,29 @@ end
     header:SetPoint("TOPRIGHT", -10, -10)
     header:SetHeight(60)
     
-    local title = create_text(header, "Vendor Shuffle - Dinero Gratis", 16, COLORS.gold, "TOPLEFT", header, "TOPLEFT", 0, 0)
-    local subtitle = create_text(header, "Encuentra items que venden al NPC mas caro que su precio en subasta.", 10, COLORS.text, "TOPLEFT", title, "BOTTOMLEFT", 0, -5)
+    local title = create_text(header, L["Vendor Shuffle - Dinero Gratis"], 16, COLORS.gold, "TOPLEFT", header, "TOPLEFT", 0, 0)
+    local subtitle = create_text(header, L["Encuentra items que venden al NPC mas caro que su precio en subasta."], 10, COLORS.text, "TOPLEFT", title, "BOTTOMLEFT", 0, -5)
     
     -- Botón Scan
-    local scan_btn = create_button(header, "Iniciar Busqueda", 120, 25, COLORS.primary)
+    local scan_btn = create_button(header, L["Iniciar Busqueda"], 120, 25, COLORS.primary)
     scan_btn:SetPoint("TOPRIGHT", header, "TOPRIGHT", -15, -10)
     scan_btn:SetScript("OnClick", function()
         M.start_vendor_search()
     end)
     
     -- Botón Buy All
-    local buy_all_btn = create_button(header, "Comprar Todo", 100, 25)
+    local buy_all_btn = create_button(header, L["Comprar Todo"], 100, 25)
     buy_all_btn:SetPoint("RIGHT", scan_btn, "LEFT", -10, 0)
     buy_all_btn:SetScript("OnClick", function()
         if M.buy_all_candidates then
             M.buy_all_candidates()
         else
-            aux.print("Función buy_all_candidates no disponible")
+            aux.print(L["Función buy_all_candidates no disponible"])
         end
     end)
     
     -- Stats
-    local stats_text = create_text(header, "Profit Potencial: |cFF00FF000c|r", 12, COLORS.text, "RIGHT", buy_all_btn, "LEFT", -20, 0)
+    local stats_text = create_text(header, L["Profit Potencial: |cFF00FF000c|r"], 12, COLORS.text, "RIGHT", buy_all_btn, "LEFT", -20, 0)
     vendor_frame.stats_text = stats_text
     
     -- Container Lista
@@ -136,7 +136,7 @@ end
     bg:SetVertexColor(0, 0, 0, 0.3)
     
     -- Mensaje de ayuda inicial
-    vendor_frame.help_text = create_text(list_container, "Dale click a 'Iniciar Busqueda' para encontrar dinero gratis.", 12, COLORS.text_dim, "CENTER", list_container, "CENTER", 0, 0)
+    vendor_frame.help_text = create_text(list_container, L["Dale click a 'Iniciar Busqueda' para encontrar dinero gratis."], 12, COLORS.text_dim, "CENTER", list_container, "CENTER", 0, 0)
     
     -- Scroll
     vendor_frame.scroll_frame = CreateFrame("ScrollFrame", "AuxVendorScrollFrame", list_container, "FauxScrollFrameTemplate")
@@ -195,7 +195,7 @@ end
         row:SetScript("OnClick", function()
             if this.data then
                 aux.place_bid(this.data.auction_record.type, this.data.auction_record.index, this.data.buyout, function()
-                    aux.print("Comprado: " .. this.data.name)
+                    aux.print(L["Comprado: "] .. this.data.name)
                     -- Forzar refresh simple
                     -- M.refresh_vendor_ui()
                 end)
@@ -210,7 +210,7 @@ function M.refresh_vendor_ui()
     if not vendor_frame then return end
     
     local items = M.get_vendor_items() or {}
-    local num_items = table.getn(items)
+    local num_items = getn(items)
     
     -- Toggle ayuda
     if vendor_frame.help_text then
@@ -218,15 +218,18 @@ function M.refresh_vendor_ui()
     end
     
     -- Ordenar por profit mayor a menor
-    table.sort(items, function(a,b) return a.profit > b.profit end)
+    sort(items, function(a,b) return a.profit > b.profit end)
     
     local max_profit = 0
     local total_profit = 0
     if num_items > 0 then max_profit = items[1].profit end
-    for _, item in ipairs(items) do total_profit = total_profit + item.profit end
+    for i = 1, getn(items) do
+        local item = items[i]
+        total_profit = total_profit + item.profit
+    end
     
     if vendor_frame.stats_text then
-        vendor_frame.stats_text:SetText("Profit Potencial: " .. format_gold(total_profit))
+        vendor_frame.stats_text:SetText(L["Profit Potencial: "] .. format_gold(total_profit))
     end
     
     FauxScrollFrame_Update(vendor_frame.scroll_frame, num_items or 0, 15, 24)

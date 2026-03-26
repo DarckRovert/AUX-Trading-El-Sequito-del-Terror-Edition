@@ -3,7 +3,7 @@ module 'aux.tabs.trading'
 local aux = require 'aux'
 local M = getfenv()
 
-aux.print('[ITEM_TRACKER_UI] Módulo de UI de tracking y correo cargado')
+aux.print(L['[ITEM_TRACKER_UI] Módulo de UI de tracking y correo cargado'])
 
 -- ============================================================================
 -- Item Tracker + Mailing UI
@@ -36,8 +36,8 @@ function M.crear_item_tracker_ui(parent)
     f:SetAllPoints()
     f:Hide()
     
-    create_text(f, 'ITEM TRACKER + MAILING', 16, COLORS.gold, 'TOPLEFT', 10, -10)
-    create_text(f, 'Rastreador de inventario y sistema de correo rápido', 12, COLORS.text_dim, 'TOPLEFT', 10, -28)
+    create_text(f, L['ITEM TRACKER + MAILING'], 16, COLORS.gold, 'TOPLEFT', 10, -10)
+    create_text(f, L['Rastreador de inventario y sistema de correo rápido'], 12, COLORS.text_dim, 'TOPLEFT', 10, -28)
     
     -- ========================================================================
     -- Panel de Personajes (Izquierda)
@@ -49,9 +49,9 @@ function M.crear_item_tracker_ui(parent)
     alts_panel:SetPoint('BOTTOMLEFT', 10, 10)
     create_backdrop(alts_panel, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(alts_panel, 'Personajes', 14, COLORS.gold, 'TOP', 0, -10)
+    create_text(alts_panel, L['Personajes'], 14, COLORS.gold, 'TOP', 0, -10)
     
-    local gold_total = create_text(alts_panel, 'Total: 0g', 11, COLORS.text, 'TOP', 0, -30)
+    local gold_total = create_text(alts_panel, L['Total: 0g'], 11, COLORS.text, 'TOP', 0, -30)
     alts_panel.gold_total = gold_total
     
     -- Scroll Frame para Alts (Faux Scroll)
@@ -113,10 +113,10 @@ function M.crear_item_tracker_ui(parent)
     inventario_panel:SetPoint('BOTTOMLEFT', alts_panel, 'BOTTOMRIGHT', 10, 0)
     create_backdrop(inventario_panel, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(inventario_panel, 'Inventario', 14, COLORS.gold, 'TOP', 0, -10)
+    create_text(inventario_panel, L['Inventario'], 14, COLORS.gold, 'TOP', 0, -10)
     
     -- Búsqueda
-    local search_label = create_text(inventario_panel, 'Buscar:', 11, COLORS.text_dim, 'TOPLEFT', 10, -40)
+    local search_label = create_text(inventario_panel, L['Buscar:'], 11, COLORS.text_dim, 'TOPLEFT', 10, -40)
     
     local search_input = CreateFrame('EditBox', nil, inventario_panel, 'InputBoxTemplate')
     search_input:SetWidth(180)
@@ -175,10 +175,10 @@ function M.crear_item_tracker_ui(parent)
     correo_panel:SetPoint('BOTTOMRIGHT', -10, 10)
     create_backdrop(correo_panel, COLORS.bg_medium, COLORS.border, 1)
     
-    create_text(correo_panel, 'Correo Rápido', 14, COLORS.gold, 'TOP', 0, -10)
+    create_text(correo_panel, L['Correo Rápido'], 14, COLORS.gold, 'TOP', 0, -10)
     
     -- Inputs
-    create_text(correo_panel, 'Para:', 11, COLORS.text, 'TOPLEFT', 15, -50)
+    create_text(correo_panel, L['Para:'], 11, COLORS.text, 'TOPLEFT', 15, -50)
     local dest_input = CreateFrame('EditBox', nil, correo_panel, 'InputBoxTemplate')
     dest_input:SetWidth(150)
     dest_input:SetHeight(25)
@@ -186,16 +186,16 @@ function M.crear_item_tracker_ui(parent)
     dest_input:SetAutoFocus(false)
     correo_panel.dest_input = dest_input
     
-    create_text(correo_panel, 'Asunto:', 11, COLORS.text, 'TOPLEFT', 15, -80)
+    create_text(correo_panel, L['Asunto:'], 11, COLORS.text, 'TOPLEFT', 15, -80)
     local subject_input = CreateFrame('EditBox', nil, correo_panel, 'InputBoxTemplate')
     subject_input:SetWidth(150)
     subject_input:SetHeight(25)
     subject_input:SetPoint('TOPLEFT', 60, -75)
-    subject_input:SetText('Items')
+    subject_input:SetText(L['Items'])
     subject_input:SetAutoFocus(false)
     correo_panel.subject_input = subject_input
     
-    create_text(correo_panel, 'Gold:', 11, COLORS.text, 'TOPLEFT', 15, -110)
+    create_text(correo_panel, L['Gold:'], 11, COLORS.text, 'TOPLEFT', 15, -110)
     local gold_input = CreateFrame('EditBox', nil, correo_panel, 'InputBoxTemplate')
     gold_input:SetWidth(80)
     gold_input:SetHeight(25)
@@ -205,23 +205,23 @@ function M.crear_item_tracker_ui(parent)
     correo_panel.gold_input = gold_input
     
     -- Botones de Acción
-    local btn_send_all = create_button(correo_panel, 'Enviar Todo el Inventario', 200, 25, {0.6, 0.2, 0.2, 1})
+    local btn_send_all = create_button(correo_panel, L['Enviar Todo el Inventario'], 200, 25, {0.6, 0.2, 0.2, 1})
     btn_send_all:SetPoint('TOP', 0, -150)
     btn_send_all:SetScript('OnClick', function() M.enviar_todo_inventario() end)
     
-    local btn_send_mats = create_button(correo_panel, 'Enviar Solo Materiales', 200, 25, COLORS.warning)
+    local btn_send_mats = create_button(correo_panel, L['Enviar Solo Materiales'], 200, 25, COLORS.warning)
     btn_send_mats:SetPoint('TOP', 0, -180)
     btn_send_mats:SetScript('OnClick', function() M.enviar_materiales() end)
     
-    local btn_send_boe = create_button(correo_panel, 'Enviar Solo Equipamiento', 200, 25, COLORS.warning)
+    local btn_send_boe = create_button(correo_panel, L['Enviar Solo Equipamiento'], 200, 25, COLORS.warning)
     btn_send_boe:SetPoint('TOP', 0, -210)
     btn_send_boe:SetScript('OnClick', function() M.enviar_equipamiento() end)
     
-    local btn_loot = create_button(correo_panel, 'AUTO-LOOT CORREO', 200, 30, COLORS.success)
+    local btn_loot = create_button(correo_panel, L['AUTO-LOOT CORREO'], 200, 30, COLORS.success)
     btn_loot:SetPoint('BOTTOM', 0, 40)
     btn_loot:SetScript('OnClick', function() M.auto_loot_correo() end)
     
-    local status_text = create_text(correo_panel, 'Enviados: 0 | Recibidos: 0', 10, COLORS.text_dim, 'BOTTOM', 0, 10)
+    local status_text = create_text(correo_panel, L['Enviados: 0 | Recibidos: 0'], 10, COLORS.text_dim, 'BOTTOM', 0, 10)
     correo_panel.status_text = status_text
     
     f.correo_panel = correo_panel
@@ -252,13 +252,13 @@ function M.actualizar_lista_alts()
     local alts_array = {}
     local total_gold = 0
     for name, data in pairs(alts) do
-        table.insert(alts_array, {name = name, gold = data.gold or 0})
+        tinsert(alts_array, {name = name, gold = data.gold or 0})
         total_gold = total_gold + (data.gold or 0)
     end
     
     -- Actualizar header de oro
     -- Fix: Use M directly
-    tracker_panel.alts_panel.gold_total:SetText(string.format('Total: %s', M.format_gold(total_gold)))
+    tracker_panel.alts_panel.gold_total:SetText(string.format(L['Total: %s'], M.format_gold(total_gold)))
     
     -- Actualizar Faux Scroll
     local lista = tracker_panel.alts_panel.lista
@@ -266,16 +266,16 @@ function M.actualizar_lista_alts()
     local num_rows = 15
     local ROW_HEIGHT = 24
     
-    FauxScrollFrame_Update(AuxTrackerAltsScroll, table.getn(alts_array) or 0, num_rows, ROW_HEIGHT)
+    FauxScrollFrame_Update(AuxTrackerAltsScroll, getn(alts_array) or 0, num_rows, ROW_HEIGHT)
     local offset = FauxScrollFrame_GetOffset(AuxTrackerAltsScroll)
     
     for i = 1, num_rows do
         local btn = lista[i]
         local index = offset + i
-        if index <= table.getn(alts_array) then
+        if index <= getn(alts_array) then
             local data = alts_array[index]
             btn.alt_name = data.name
-            btn.text:SetText(string.format('%s - %s', data.name, M.format_gold(data.gold)))
+            btn.text:SetText(string.format(L['%s - %s'], data.name, M.format_gold(data.gold)))
             btn:Show()
             
             -- Striping
@@ -305,7 +305,7 @@ function M.actualizar_inventario_display()
     local filtered_items = {}
     for item_key, data in pairs(inventory) do
         if search_text == "" or string.find(string.lower(data.name or ""), search_text) then
-            table.insert(filtered_items, data)
+            tinsert(filtered_items, data)
         end
     end
     
@@ -313,15 +313,15 @@ function M.actualizar_inventario_display()
     local num_rows = 15
     local ROW_HEIGHT = 20
     
-    FauxScrollFrame_Update(AuxTrackerInvScroll, table.getn(filtered_items) or 0, num_rows, ROW_HEIGHT)
+    FauxScrollFrame_Update(AuxTrackerInvScroll, getn(filtered_items) or 0, num_rows, ROW_HEIGHT)
     local offset = FauxScrollFrame_GetOffset(AuxTrackerInvScroll)
     
     for i = 1, num_rows do
         local btn = lista[i]
         local index = offset + i
-        if index <= table.getn(filtered_items) then
+        if index <= getn(filtered_items) then
             local item = filtered_items[index]
-            btn.text:SetText(string.format('%s (x%d)', string.sub(item.name, 1, 30), item.total_count))
+            btn.text:SetText(string.format(L['%s (x%d)'], string.sub(item.name, 1, 30), item.total_count))
             btn:Show()
              if math.mod(i, 2) == 0 then
                 btn.bg:SetTexture(1, 1, 1, 0.05)
@@ -344,7 +344,7 @@ function M.actualizar_correo_stats()
     end
     
     tracker_panel.correo_panel.status_text:SetText(string.format(
-        '|cFFFFFFFFEnviados: %d | Recibidos: %d|r',
+        L['|cFFFFFFFFEnviados: %d | Recibidos: %d|r'],
         stats.sent or 0,
         stats.received or 0
     ))
@@ -353,7 +353,7 @@ end
 function M.seleccionar_alt(alt_name)
     if not alt_name then return end
     
-    aux.print(string.format('|cFF00FF00Alt seleccionado: %s|r', alt_name))
+    aux.print(string.format(L['|cFF00FF00Alt seleccionado: %s|r'], alt_name))
     
     -- Actualizar inventario del alt seleccionado
     M.actualizar_inventario_display()
@@ -363,7 +363,7 @@ function M.enviar_todo_inventario()
     local dest = tracker_panel.correo_panel.dest_input:GetText()
     
     if not dest or dest == '' then
-        aux.print('|cFFFF0000Especifica un destinatario|r')
+        aux.print(L['|cFFFF0000Especifica un destinatario|r'])
         return
     end
     
@@ -377,7 +377,7 @@ function M.enviar_materiales()
     local dest = tracker_panel.correo_panel.dest_input:GetText()
     
     if not dest or dest == '' then
-        aux.print('|cFFFF0000Especifica un destinatario|r')
+        aux.print(L['|cFFFF0000Especifica un destinatario|r'])
         return
     end
     
@@ -391,7 +391,7 @@ function M.enviar_equipamiento()
     local dest = tracker_panel.correo_panel.dest_input:GetText()
     
     if not dest or dest == '' then
-        aux.print('|cFFFF0000Especifica un destinatario|r')
+        aux.print(L['|cFFFF0000Especifica un destinatario|r'])
         return
     end
     
@@ -415,4 +415,4 @@ M.modules.item_tracker_ui = {
     actualizar_item_tracker_ui = M.actualizar_item_tracker_ui,
 }
 
-aux.print('[ITEM_TRACKER_UI] Módulo registrado correctamente')
+aux.print(L['[ITEM_TRACKER_UI] Módulo registrado correctamente'])
