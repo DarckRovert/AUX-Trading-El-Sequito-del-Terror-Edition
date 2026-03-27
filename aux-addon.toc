@@ -1,5 +1,5 @@
-﻿## Interface: 11200
-## Author: shirsig
+## Interface: 11200
+## Author: El Séquito del Terror
 ## OptionalDeps: ShaguTweaks
 ## Title: aux
 ## Notes: Auction House replacement
