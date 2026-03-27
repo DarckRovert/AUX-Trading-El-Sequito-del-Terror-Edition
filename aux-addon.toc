@@ -4,7 +4,7 @@
 ## Title: aux
 ## Notes: Auction House replacement
 ## SavedVariables: aux, AuxTradingMarketData, AuxTradingAccounting, AuxPriceHistory
-## Version: 9.3.0
+## Version: 9.3.0 [God-Tier]
 
 libs\package.lua
 libs\T.lua

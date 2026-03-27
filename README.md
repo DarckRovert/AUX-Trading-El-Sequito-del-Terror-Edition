@@ -13,8 +13,19 @@
 
  **AUX Trading System** ha sido reescrito y optimizado para ser la herramienta definitiva de economía en Turtle WoW. No solo permite escanear subastas, sino que incluye algoritmos avanzados para detectar **Monopolios** y realizar **Sniping** de alta velocidad sin afectar el rendimiento del juego.
 
-### 🌐 Séquito Ecosystem Compatible (Market Intelligence)
-Este addon es ahora la **Inteligencia de Mercado** de la Hermandad. Comparte datos de precios y oportunidades de trading con la red Séquito, permitiendo que el clan domine la economía de Turtle WoW.
+### 🌐 Séquito Ecosystem Compatible (SquadMind Intelligence)
+Este addon es ahora la **Inteligencia de Mercado** de la Mente de Enjambre. 
+
+```mermaid
+graph TD
+    classDef intel fill:#003366,stroke:#00BFFF,stroke-width:2px,color:#fff;
+    classDef core fill:#2C0000,stroke:#FF0000,stroke-width:2px,color:#fff;
+    AUX["💰 aux-addon<br/>(Mercado)"]:::intel
+    WCS["🔮 WCS_Brain<br/>(Vínculo Maestro)"]:::core
+    
+    AUX -.->|Sincronización del Banco Clan| WCS
+```
+Comparte datos de precios y oportunidades de trading con la red Séquito (`WCS_Brain`), valorando automáticamente los bienes del clan y permitiendo dominar la economía de Turtle WoW.
 
 ### ✨ Nuevas Características (v4.1)
 
