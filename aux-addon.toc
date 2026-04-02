@@ -1,10 +1,10 @@
 ## Interface: 11200
 ## Author: El Séquito del Terror
 ## OptionalDeps: ShaguTweaks
-## Title: aux
+## Title: |cffffffffaux |r|cff00ccff[Séquito del Terror]|r
 ## Notes: Auction House replacement
 ## SavedVariables: aux, AuxTradingMarketData, AuxTradingAccounting, AuxPriceHistory
-## Version: 9.3.0 [God-Tier]
+## Version: 9.3.1 [God-Tier]
 
 libs\package.lua
 libs\T.lua
