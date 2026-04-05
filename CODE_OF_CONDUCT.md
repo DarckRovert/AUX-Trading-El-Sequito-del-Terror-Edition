@@ -1,15 +1,10 @@
-# Código de Conducta de El Séquito del Terror
+# Contributor Covenant Code of Conduct
 
-## Nuestro Compromiso
-Como miembros, contribuyentes y líderes de **El Séquito del Terror**, nos comprometemos a hacer de la participación en nuestra comunidad una experiencia libre de acoso para todos.
+Como miembros de **El Séquito del Terror**, nos comprometemos a mantener un ambiente de comercio profesional y respetuoso.
 
-## Nuestros Estándares
-- Demostrar empatía y amabilidad.
-- Respetar las opiniones divergentes.
-- Aceptar la responsabilidad por nuestros actos.
+## Compromiso
+- Cero tolerancia a la manipulación de precios contra miembros del clan.
+- Respeto a las estrategias de mercado del Raid Leader.
+- Enfoque en la eficiencia económica del ecosistema.
 
-## Aplicación
-Los incidentes pueden reportarse a través de GitHub Issues en el repositorio oficial.
-
----
-Adaptado del [Contributor Covenant](https://www.contributor-covenant.org) v2.1.
+Referencia: [CODE_OF_CONDUCT.md en el root del ecosistema].
