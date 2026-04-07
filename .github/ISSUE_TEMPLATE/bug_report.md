@@ -1,34 +1,35 @@
----
-name: "🐞 Bug Report — Professional Trading Hub (aux)"
-about: "Reporta un error técnico en aux-addon v9.4.0+"
-title: "[BUG] Descripción breve del problema"
+﻿---
+name: "ðŸž Bug Report â€” Professional Trading Hub (aux)"
+about: "Reporta un error tÃ©cnico en aux-addon v2.0.1+"
+title: "[BUG] DescripciÃ³n breve del problema"
 labels: ["bug", "market-error"]
 assignees: darckrovert
 
 ---
 
-## 📝 Descripción del Problema
-Describe de manera directa y técnica qué anomalía presenta el hub de trading avanzado.
+## ðŸ“ DescripciÃ³n del Problema
+Describe de manera directa y tÃ©cnica quÃ© anomalÃ­a presenta el hub de trading avanzado.
 
-## 🚀 Pasos para Reproducir
-1.  Abrir la subasta y ve a la pestaña: [ej: Search / Sniper].
+## ðŸš€ Pasos para Reproducir
+1.  Abrir la subasta y ve a la pestaÃ±a: [ej: Search / Sniper].
 2.  Configurar un filtro de compra: [ej: buyout < 10g].
-3.  Observar el fallo visual o lógico: [ej: Error de red o lag de escaneo].
+3.  Observar el fallo visual o lÃ³gico: [ej: Error de red o lag de escaneo].
 
-## 📊 Entorno Financiero
-- **Versión de aux-addon**: [9.4.0 Omni-Tier]
-- **Módulo Afectado**: [ej: core/scan.lua, tabs/trading/sniper.lua]
+## ðŸ“Š Entorno Financiero
+- **VersiÃ³n de aux-addon**: [2.0.1 Trade-Tier]
+- **MÃ³dulo Afectado**: [ej: core/scan.lua, tabs/trading/sniper.lua]
 - **AddOns en conflicto**: [ej: Auctionator, pfUI]
 
-## 📁 Logs (Broker Logger)
+## ðŸ“ Logs (Broker Logger)
 Pega el error LUA completo.
 
 ```lua
--- PEGA EL ERROR AQUÍ
+-- PEGA EL ERROR AQUÃ
 ```
 
-## 📸 Evidencia Visual
+## ðŸ“¸ Evidencia Visual
 Adjunta capturas si el problema es de renderizado de la interfaz de Sniper o tablas de grupos.
 
 ---
-© 2026 **DarckRovert** — El Séquito del Terror.
+Â© 2026 **DarckRovert** â€” El SÃ©quito del Terror.
+
