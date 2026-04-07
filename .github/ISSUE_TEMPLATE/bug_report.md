@@ -1,18 +1,34 @@
 ---
-name: Bug Report (aux)
-about: Reporte de errores en la interfaz de subastas
-title: '[BUG] '
-labels: bug
-assignees: DarckRovert
+name: "🐞 Bug Report — Professional Trading Hub (aux)"
+about: "Reporta un error técnico en aux-addon v9.4.0+"
+title: "[BUG] Descripción breve del problema"
+labels: ["bug", "market-error"]
+assignees: darckrovert
+
 ---
 
-**Descripción**
-Explica el problema al escanear o comprar.
+## 📝 Descripción del Problema
+Describe de manera directa y técnica qué anomalía presenta el hub de trading avanzado.
 
-**Pasos para Reproducir**
-1. Abre la AH...
-2. Busca...
-3. Error...
+## 🚀 Pasos para Reproducir
+1.  Abrir la subasta y ve a la pestaña: [ej: Search / Sniper].
+2.  Configurar un filtro de compra: [ej: buyout < 10g].
+3.  Observar el fallo visual o lógico: [ej: Error de red o lag de escaneo].
 
-**Mensaje de Error (si existe)**
-Pega el log de error de Lua aquí.
+## 📊 Entorno Financiero
+- **Versión de aux-addon**: [9.4.0 Omni-Tier]
+- **Módulo Afectado**: [ej: core/scan.lua, tabs/trading/sniper.lua]
+- **AddOns en conflicto**: [ej: Auctionator, pfUI]
+
+## 📁 Logs (Broker Logger)
+Pega el error LUA completo.
+
+```lua
+-- PEGA EL ERROR AQUÍ
+```
+
+## 📸 Evidencia Visual
+Adjunta capturas si el problema es de renderizado de la interfaz de Sniper o tablas de grupos.
+
+---
+© 2026 **DarckRovert** — El Séquito del Terror.

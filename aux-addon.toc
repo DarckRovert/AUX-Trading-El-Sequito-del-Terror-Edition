@@ -1,10 +1,10 @@
 ## Interface: 11200
-## Author: El Séquito del Terror
-## OptionalDeps: ShaguTweaks
 ## Title: |cffffffffaux |r|cff00ccff[Séquito del Terror]|r
-## Notes: Auction House replacement
+## Version: 9.4.0 [Omni-Tier]
+## Notes: Auction House replacement. Professional Trading Hub for the Sequito ecosystem.
+## Author: El Séquito del Terror (DarckRovert)
 ## SavedVariables: aux, AuxTradingMarketData, AuxTradingAccounting, AuxPriceHistory
-## Version: 9.3.1 [God-Tier]
+## OptionalDeps: ShaguTweaks
 
 libs\package.lua
 libs\T.lua
@@ -71,13 +71,6 @@ tabs\trading\dashboard_ui.lua
 tabs\trading\config_ui.lua
 tabs\trading\alerts_ui.lua
 tabs\trading\tooltips_advanced.lua
-## Módulos adicionales deshabilitados temporalmente
-## tabs\trading\icon_system.lua
-## tabs\trading\sort_system.lua
-## tabs\trading\search_system.lua
-## tabs\trading\filter_system.lua
-## tabs\trading\export_system.lua
-## tabs\trading\backup_system.lua
 tabs\trading\helpers.lua
 tabs\trading\dealfinding.lua
 tabs\trading\price_history.lua
@@ -92,7 +85,6 @@ tabs\trading\monopoly.lua
 tabs\trading\monopoly_ui.lua
 tabs\trading\vendor.lua
 tabs\trading\vendor_ui.lua
-## Módulos TSM-inspired
 tabs\trading\auctioning.lua
 tabs\trading\crafting.lua
 tabs\trading\item_tracker.lua
@@ -102,5 +94,3 @@ tabs\trading\item_tracker_ui.lua
 tabs\trading\frame.lua
 
 localization.lua
-
-
