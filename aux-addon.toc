@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: |cffffffffaux |r|cff00ccff[Séquito del Terror]|r
-## Version: 9.4.0 [Omni-Tier]
+## Version: 2.0.1 [Trade-Tier]
 ## Notes: Auction House replacement. Professional Trading Hub for the Sequito ecosystem.
 ## Author: El Séquito del Terror (DarckRovert)
 ## SavedVariables: aux, AuxTradingMarketData, AuxTradingAccounting, AuxPriceHistory

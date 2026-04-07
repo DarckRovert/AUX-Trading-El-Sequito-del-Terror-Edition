@@ -4,7 +4,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 ---
 
-## [v9.4.0] — 2026-04-07 [Omni-Tier]
+## [v2.0.1] — 2026-04-07 [Trade-Tier]
 
 ### 🏹 Market Sniper & Trading (Mejoras)
 - **Extreme High-Frequency Sniping**: Algoritmo de rastreo de red optimizado para detectar subidas de objetos en < 50ms.
@@ -22,7 +22,7 @@ Todos los cambios notables en este proyecto serán documentados en este archivo 
 
 | Versión | Fecha | Nombre Clave | Estado | Resumen |
 | :--- | :--- | :--- | :---: | :--- |
-| **9.4.0** | 2026-04-07 | **Omni-Tier** | ✅ | Hub de Trading Avanzado v9.4.0. |
+| **2.0.1** | 2026-04-07 | **Trade-Tier** | ✅ | Radar de mercado v2.0.1. |
 | **9.3.1** | 2026-02-14 | **God-Tier** | ⚠️ | Versión inicial de optimización de Sniping. |
 | **9.2.0** | 2025-12-05 | **Market-Flow** | ❌ | Mejoras en el buscador. |
 

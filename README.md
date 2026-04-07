@@ -1,9 +1,9 @@
-# aux — Professional Trading Hub (v9.4.0 [Omni-Tier]) 📈💼
+# aux — Professional Trading Hub (v2.0.1 [Trade-Tier]) 🏹💼
 
 > **The ultimate auction house replacement for Turtle WoW.** Integración profunda de algoritmos de **Sniping** y **Market Analysis** bajo el ecosistema **El Séquito del Terror**, supervisado por **DarckRovert**.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-[![Version](https://img.shields.io/badge/version-v9.4.0--Omni--Tier-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-v2.0.1--Trade--Tier-blue)](./CHANGELOG.md)
 [![World of Warcraft](https://img.shields.io/badge/WoW-1.12.1--Turtle-orange)](https://turtle-wow.org)
 [![Support](https://img.shields.io/badge/Support-Ko--fi-blue)](https://ko-fi.com/darckrovert)
 
