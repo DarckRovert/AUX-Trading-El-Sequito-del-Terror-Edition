@@ -35,12 +35,12 @@ Es un reemplazo completo de la interfaz de la casa de subastas. A diferencia de 
 
 ## 🏗️ Suite de Documentación (Wiki)
 
-Domina la bolsa de Azeroth en nuestra base de conocimientos:
+Domina la bolsa de Azeroth en nuestra base de conocimientos oficial:
 
-- 📐 **[Arquitectura de Trading](./wiki/Architecture.md)**: Cómo gestionamos AuxTradingMarketData.
-- 🛠️ **[Guía de API avanzada](./wiki/API_Guide.md)**: Hooks para WCS_Brain y TerrorMeter.
-- ❓ **[FAQ de Sniping](./wiki/FAQ.md)**: ¿Por qué no recibo alertas de gangas?
-- 📖 **[Manual del Broker](./wiki/User_Manual.md)**: Guía completa de filtros avanzados.
+- 🏰 **[Arquitectura de Trading](https://github.com/DarckRovert/AUX-Trading-El-Sequito-del-Terror-Edition/wiki/Arquitectura-(Extended))**: Cómo gestionamos AuxTradingMarketData.
+- 🛠️ **[Guía de API avanzada](https://github.com/DarckRovert/AUX-Trading-El-Sequito-del-Terror-Edition/wiki/Guía-de-API)**: Hooks para WCS_Brain y TerrorMeter.
+- ❓ **[FAQ de Sniping](https://github.com/DarckRovert/AUX-Trading-El-Sequito-del-Terror-Edition/wiki/FAQ-(Mercado-Avanzado))**: ¿Por qué no recibo alertas de gangas?
+- 📖 **[Manual del Broker](https://github.com/DarckRovert/AUX-Trading-El-Sequito-del-Terror-Edition/wiki/Manual-de-Usuario)**: Guía completa de filtros avanzados.
 
 ## 🚀 Despliegue Rápido (Broker-Flow)
 
